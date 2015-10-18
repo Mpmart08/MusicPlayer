@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainWindow" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="900.0" styleClass="mainWindow" stylesheets="@../css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.MainController">
+   <left>
+      <VBox fx:id="sideBar" maxWidth="-Infinity" minWidth="0.0" prefWidth="250.0" styleClass="sideBar" BorderPane.alignment="CENTER">
+         <children>
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#slideSideBar" prefHeight="50.0" prefWidth="50.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fx:id="sideBarSlideButton" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin>
+                     <image>
+                        <Image url="@../img/LeftArrowIcon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
+            <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="25.0" prefWidth="230.0">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox id="artists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/ArtistIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Artists">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox id="albums" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/AlbumIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Albums">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <HBox id="songs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/SongIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Songs">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="25.0" prefWidth="230.0">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox id="playlists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/PlaylistIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Playlists">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/PlusIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="New Playlist">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="25.0" prefWidth="230.0">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox id="settings" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+               <children>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/SettingsIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Settings">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </left>
+   <bottom>
+      <BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="100.0" styleClass="bottomBar" BorderPane.alignment="CENTER">
+         <left>
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../img/AlbumIcon.png" />
+                     </image>
+                  </ImageView>
+                  <VBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#changeView" prefHeight="100.0">
+                     <children>
+                        <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" styleClass="bottomBarLabel" text="Song">
+                           <VBox.margin>
+                              <Insets left="10.0" right="10.0" top="20.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" styleClass="bottomBarLabel" text="Artist">
+                           <VBox.margin>
+                              <Insets bottom="20.0" left="10.0" right="10.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </left>
+         <center>
+            <BorderPane prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <left>
+                  <Label styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </BorderPane.margin>
+                  </Label>
+               </left>
+               <right>
+                  <Label styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </BorderPane.margin>
+                  </Label>
+               </right>
+               <center>
+                  <Slider BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+         </center>
+         <right>
+            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../img/BackIcon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="playPauseButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#playPause" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../img/PlayIcon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../img/ForwardIcon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../img/LoopIcon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="10.0" right="10.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../img/ShuffleIcon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </right>
+      </BorderPane>
+   </bottom>
+</BorderPane>

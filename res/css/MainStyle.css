@@ -1,0 +1,38 @@
+.mainWindow {
+	-fx-background-color: #ffffff;
+}
+
+.label {
+	-fx-font-family: verdana;
+    -fx-font-size: 18px;
+}
+
+.bottomBarLabel {
+	-fx-text-fill: #ffffff;
+}
+
+.sideBarItem:hover {
+	-fx-background-color: #dadada;
+}
+
+.bottomBarItem:hover {
+	/*-fx-background-color: #aaaaaa;*/
+	-fx-background-color: #1c7db7;
+}
+
+.sideBar, .sideBarItem {
+	/*-fx-border-width: 0 1 0 0;
+	-fx-border-style: solid;
+    -fx-border-color: #c2c2c2;*/
+    -fx-background-color: #f2f2f2;
+}
+
+.bottomBar {
+    /*-fx-background-color: #c2c2c2;*/
+    -fx-background-color: #3495cf;
+}
+
+.separator .line {
+	-fx-border-width: 1 0 0 0;
+	-fx-border-color: #c2c2c2;
+}
