@@ -10,6 +10,9 @@ import javafx.scene.image.Image;
 
 public class MainView extends Application {
 
+    private final String fxmlPath = "res/fxml/";
+    private final String imgPath = "musicplayer/res/img/";
+
     public static void main(String[] args) {
 
         Application.launch(MainView.class);
@@ -20,10 +23,10 @@ public class MainView extends Application {
 
         try {
 
-            BorderPane view = (BorderPane) FXMLLoader.load(MainView.class.getResource("res/fxml/main.fxml"));
+            BorderPane view = (BorderPane) FXMLLoader.load(MainView.class.getResource(fxmlPath + "main.fxml"));
             Scene scene = new Scene(view);
             stage.setScene(scene);
-            stage.getIcons().add(new Image("musicplayer/res/img/SongIcon.png"));
+            stage.getIcons().add(new Image(imgPath + "songsIcon.png"));
             stage.setTitle("Music Player");
             stage.show();
 

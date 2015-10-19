@@ -21,7 +21,7 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
                      <image>
-                        <Image url="@../img/LeftArrowIcon.png" />
+                        <Image url="@../img/leftArrowIcon.png" />
                      </image>
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -34,14 +34,14 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Separator>
-            <HBox id="artists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="artists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/ArtistIcon.png" />
+                        <Image url="@../img/artistsIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Artists">
@@ -51,14 +51,14 @@
                   </Label>
                </children>
             </HBox>
-            <HBox id="albums" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="albums" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/AlbumIcon.png" />
+                        <Image url="@../img/albumsIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Albums">
@@ -71,14 +71,14 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <HBox id="songs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="songs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/SongIcon.png" />
+                        <Image url="@../img/songsIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Songs">
@@ -93,14 +93,14 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Separator>
-            <HBox id="playlists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="playlists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/PlaylistIcon.png" />
+                        <Image url="@../img/playlistsIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Playlists">
@@ -112,12 +112,12 @@
             </HBox>
             <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/PlusIcon.png" />
+                        <Image url="@../img/plusIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="New Playlist">
@@ -132,14 +132,14 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Separator>
-            <HBox id="settings" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#changeView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="settings" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="sideBarItem">
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/SettingsIcon.png" />
+                        <Image url="@../img/settingsIcon.png" />
                      </image>
                   </ImageView>
                   <Label maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="30.0" text="Settings">
@@ -155,17 +155,17 @@
    <bottom>
       <BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="100.0" styleClass="bottomBar" BorderPane.alignment="CENTER">
          <left>
-            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectView" prefHeight="100.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
                <children>
                   <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../img/AlbumIcon.png" />
+                        <Image url="@../img/albumsIcon.png" />
                      </image>
                   </ImageView>
-                  <VBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#changeView" prefHeight="100.0">
+                  <VBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0">
                      <children>
                         <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" styleClass="bottomBarLabel" text="Song">
                            <VBox.margin>
@@ -213,7 +213,7 @@
                               <Insets left="10.0" right="10.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../img/BackIcon.png" />
+                              <Image url="@../img/backIcon.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="playPauseButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#playPause" pickOnBounds="true" preserveRatio="true">
@@ -221,7 +221,7 @@
                               <Insets left="10.0" right="10.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../img/PlayIcon.png" />
+                              <Image url="@../img/playIcon.png" />
                            </image>
                         </ImageView>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -229,7 +229,7 @@
                               <Insets left="10.0" right="10.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../img/ForwardIcon.png" />
+                              <Image url="@../img/forwardIcon.png" />
                            </image>
                         </ImageView>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -237,7 +237,7 @@
                               <Insets left="10.0" right="10.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../img/LoopIcon.png" />
+                              <Image url="@../img/loopIcon.png" />
                            </image>
                         </ImageView>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -245,7 +245,7 @@
                               <Insets left="10.0" right="10.0" />
                            </HBox.margin>
                            <image>
-                              <Image url="@../img/ShuffleIcon.png" />
+                              <Image url="@../img/shuffleIcon.png" />
                            </image>
                         </ImageView>
                      </children>

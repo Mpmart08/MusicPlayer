@@ -11,25 +11,26 @@
 	-fx-text-fill: #ffffff;
 }
 
-.sideBarItem:hover {
+.sideBarItem:hover, .sideBarItemSelected:hover {
 	-fx-background-color: #dadada;
 }
 
-.bottomBarItem:hover {
-	/*-fx-background-color: #aaaaaa;*/
-	-fx-background-color: #1c7db7;
+.sideBarItemSelected > .label {
+	-fx-text-fill: #3495cf;
 }
 
-.sideBar, .sideBarItem {
-	/*-fx-border-width: 0 1 0 0;
-	-fx-border-style: solid;
-    -fx-border-color: #c2c2c2;*/
+.sideBar {
     -fx-background-color: #f2f2f2;
 }
 
 .bottomBar {
     /*-fx-background-color: #c2c2c2;*/
     -fx-background-color: #3495cf;
+}
+
+.bottomBarItem:hover {
+	/*-fx-background-color: #aaaaaa;*/
+	-fx-background-color: #1c7db7;
 }
 
 .separator .line {

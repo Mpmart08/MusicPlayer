@@ -26,6 +26,8 @@ public class MainController {
     private double collapsedWidth = 50;
     private boolean isPaused = true;
     private MediaPlayer mediaPlayer;
+    private final String fxmlPath = "res/fxml/";
+    private final String imgPath = "musicplayer/res/img/";
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -62,12 +64,27 @@ public class MainController {
     private ImageView playPauseButton;
 
     @FXML
-    private void changeView(Event e) {
+    private void selectView(Event e) {
 
         try {
 
-            String fileName = ((Node)e.getSource()).getId();
-            Node view = (Node)FXMLLoader.load(MainView.class.getResource("res/fxml/" + fileName + ".fxml"));
+            HBox eventSource = ((HBox)e.getSource());
+            HBox previousItem = null;
+            for (Node node : sideBar.getChildren()) {
+                if (node.getStyleClass().get(0).equals("sideBarItemSelected")) {
+                    previousItem = (HBox)node;
+                }
+            }
+            if (previousItem != null) {
+                previousItem.getStyleClass().setAll("sideBarItem");
+                String image = imgPath + previousItem.getId() + "Icon.png";
+                ((ImageView)previousItem.getChildren().get(0)).setImage(new Image(image));
+            }
+            eventSource.getStyleClass().setAll("sideBarItemSelected");
+            String image = imgPath + eventSource.getId() + "SelectedIcon.png";
+            ((ImageView)eventSource.getChildren().get(0)).setImage(new Image(image));
+            String fileName = fxmlPath + eventSource.getId() + ".fxml";
+            Node view = (Node)FXMLLoader.load(MainView.class.getResource(fileName));
             mainWindow.setCenter(view);
 
         } catch (Exception ex) {
@@ -98,9 +115,10 @@ public class MainController {
             mediaPlayer.pause();
         }
         isPaused = !isPaused;
-        playPauseButton.setImage(new Image(isPaused
-            ? "musicplayer/res/img/PlayIcon.png"
-            : "musicplayer/res/img/PauseIcon.png"));
+        playPauseButton.setImage(new Image(imgPath
+            + (isPaused
+            ? "playIcon.png"
+            : "pauseIcon.png")));
     }
 
     private void collapseSideBar() {
@@ -152,9 +170,10 @@ public class MainController {
     private void setSlideDirection() {
 
         isSideBarExpanded = !isSideBarExpanded;
-        sideBarSlideButton.setImage(new Image(isSideBarExpanded
-            ? "musicplayer/res/img/LeftArrowIcon.png"
-            : "musicplayer/res/img/RightArrowIcon.png"));
+        sideBarSlideButton.setImage(new Image(imgPath
+            + (isSideBarExpanded
+            ? "leftArrowIcon.png"
+            : "rightArrowIcon.png")));
     }
 
 }
