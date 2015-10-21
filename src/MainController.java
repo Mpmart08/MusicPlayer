@@ -1,5 +1,7 @@
 package musicplayer;
 
+import musicplayer.MainView;
+import musicplayer.Resources;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -10,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.util.Duration;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.event.Event;
 import javafx.event.ActionEvent;
@@ -18,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class MainController {
 
@@ -26,8 +30,6 @@ public class MainController {
     private double collapsedWidth = 50;
     private boolean isPaused = true;
     private MediaPlayer mediaPlayer;
-    private final String fxmlPath = "res/fxml/";
-    private final String imgPath = "musicplayer/res/img/";
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -66,25 +68,32 @@ public class MainController {
     @FXML
     private void selectView(Event e) {
 
+        HBox eventSource = ((HBox)e.getSource());
+
+        Optional<Node> previous = sideBar.getChildren().stream()
+            .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+
+        if (previous.isPresent()) {
+            HBox previousItem = (HBox)previous.get();
+            previousItem.getStyleClass().setAll("sideBarItem");
+        }
+
+        ObservableList<String> styles = eventSource.getStyleClass();
+        
+        if (styles.get(0).equals("sideBarItem")) {
+            styles.setAll("sideBarItemSelected");
+            loadView(eventSource);
+        } else if (styles.get(0).equals("bottomBarItem")) {
+            loadView(eventSource);
+        }
+    }
+
+    private void loadView(HBox eventSource) {
+
         try {
 
-            HBox eventSource = ((HBox)e.getSource());
-            HBox previousItem = null;
-            for (Node node : sideBar.getChildren()) {
-                if (node.getStyleClass().get(0).equals("sideBarItemSelected")) {
-                    previousItem = (HBox)node;
-                }
-            }
-            if (previousItem != null) {
-                previousItem.getStyleClass().setAll("sideBarItem");
-                String image = imgPath + previousItem.getId() + "Icon.png";
-                ((ImageView)previousItem.getChildren().get(0)).setImage(new Image(image));
-            }
-            eventSource.getStyleClass().setAll("sideBarItemSelected");
-            String image = imgPath + eventSource.getId() + "SelectedIcon.png";
-            ((ImageView)eventSource.getChildren().get(0)).setImage(new Image(image));
-            String fileName = fxmlPath + eventSource.getId() + ".fxml";
-            Node view = (Node)FXMLLoader.load(MainView.class.getResource(fileName));
+            String fileName = Resources.FXML + eventSource.getId() + ".fxml";
+            Node view = (Node)FXMLLoader.load(this.getClass().getResource(fileName));
             mainWindow.setCenter(view);
 
         } catch (Exception ex) {
@@ -101,24 +110,6 @@ public class MainController {
         } else {
             expandSideBar();
         }
-    }
-
-    @FXML
-    private void playPause() {
-
-        if (isPaused) {
-            String path = "C:\\Users\\Mpmar\\Music\\Nobuo Uematsu\\Final Fantasy X Original Soundtrack Disc\\02 To Zanarkand.mp3";
-            Media file = new Media(Paths.get(path).toUri().toString());
-            if (mediaPlayer == null) mediaPlayer = new MediaPlayer(file);
-            mediaPlayer.play();
-        } else {
-            mediaPlayer.pause();
-        }
-        isPaused = !isPaused;
-        playPauseButton.setImage(new Image(imgPath
-            + (isPaused
-            ? "playIcon.png"
-            : "pauseIcon.png")));
     }
 
     private void collapseSideBar() {
@@ -170,10 +161,30 @@ public class MainController {
     private void setSlideDirection() {
 
         isSideBarExpanded = !isSideBarExpanded;
-        sideBarSlideButton.setImage(new Image(imgPath
+        sideBarSlideButton.setImage(new Image(this.getClass().getResource(Resources.IMG
             + (isSideBarExpanded
             ? "leftArrowIcon.png"
-            : "rightArrowIcon.png")));
+            : "rightArrowIcon.png")
+        ).toString()));
+    }
+
+    @FXML
+    private void playPause() {
+
+        if (isPaused) {
+            String path = "C:\\Users\\Mpmar\\Music\\Nobuo Uematsu\\Final Fantasy X Original Soundtrack Disc\\02 To Zanarkand.mp3";
+            Media file = new Media(Paths.get(path).toUri().toString());
+            if (mediaPlayer == null) mediaPlayer = new MediaPlayer(file);
+            mediaPlayer.play();
+        } else {
+            mediaPlayer.pause();
+        }
+        isPaused = !isPaused;
+        playPauseButton.setImage(new Image(this.getClass().getResource(Resources.IMG
+            + (isPaused
+            ? "playIcon.png"
+            : "pauseIcon.png")
+        ).toString()));
     }
 
 }

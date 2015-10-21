@@ -16,7 +16,11 @@
 }
 
 .sideBarItemSelected > .label {
-	-fx-text-fill: #3495cf;
+	-fx-text-fill: rgb(124, 62, 144);
+}
+
+.sideBarItemSelected > .iconContainer > .icon {
+	-fx-fill: rgb(124, 62, 144);
 }
 
 .sideBar {
@@ -24,13 +28,11 @@
 }
 
 .bottomBar {
-    /*-fx-background-color: #c2c2c2;*/
-    -fx-background-color: #3495cf;
+    -fx-background-color: rgb(124, 62, 144);
 }
 
 .bottomBarItem:hover {
-	/*-fx-background-color: #aaaaaa;*/
-	-fx-background-color: #1c7db7;
+	-fx-background-color: rgb(100, 38, 120);
 }
 
 .separator .line {
