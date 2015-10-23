@@ -4,9 +4,16 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <Label text="Songs" BorderPane.alignment="CENTER" />
+      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn prefWidth="150.0" text="Name" />
+          <TableColumn prefWidth="150.0" text="Artist" />
+            <TableColumn prefWidth="150.0" text="Album" />
+            <TableColumn prefWidth="75.0" text="Length" />
+            <TableColumn prefWidth="75.0" text="Plays" />
+        </columns>
+      </TableView>
    </center>
 </BorderPane>
