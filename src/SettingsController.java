@@ -5,6 +5,9 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.FieldKey;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
 import java.io.File;
 import java.nio.file.Paths;
 import javax.xml.parsers.DocumentBuilder;
@@ -16,18 +19,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.net.URL;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.time.LocalDateTime;
 
-public class SettingsController {
+public class SettingsController implements Initializable {
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
 
-        SettingsController sc = new SettingsController();
-        sc.importMusic(args[0]);
     }
 
     private void importMusic(String path) throws Exception {

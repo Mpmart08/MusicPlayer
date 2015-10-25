@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <library>
     <songs>
+        <size>2309</size>
         <song>
             <id>0</id>
             <title>Train</title>
@@ -25401,5 +25402,7 @@
             <location>file:/C:/Users/Mpmar/Music/南澤%E3%80%80大介/ファイナルファンタジー%E3%80%80ソロギターコレクションズ/26%20ファイナルファンタジー.m4a</location>
         </song>
     </songs>
-    <playlists/>
+    <playlists>
+        <size>0</size>
+    </playlists>
 </library>

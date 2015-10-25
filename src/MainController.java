@@ -26,21 +26,28 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
-
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.Tag;
 import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
 
-public class MainController {
+public class MainController implements Initializable {
 
     private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
     private boolean isPaused = true;
     private MediaPlayer mediaPlayer;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        
+    }
 
     private Animation collapseAnimation = new Transition() {
         {

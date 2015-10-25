@@ -1,35 +1,27 @@
 package musicplayer;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.Node;
 
-public class SongsController {
+public class SongsController implements Initializable {
 
     @FXML
     private TableView tableView;
 
-    @FXML
-    private TableColumn columnName;
-
-    @FXML
-    private TableColumn columnArtist;
-
-    @FXML
-    private TableColumn columnAlbum;
-
-    @FXML
-    private TableColumn columnLength;
-
-    @FXML
-    private TableColumn columnPlays;
-
-    /*public SongsController() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         
-        //for (Node column : tableView.getChildren()) {
-        //  column.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
-        //}
-        columnName.setPrefWidth(100);
-    }*/
+        for (Object item : tableView.getColumns()) {
+            TableColumn column = (TableColumn) item;
+            column.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
+        }
+
+    }
 
 }

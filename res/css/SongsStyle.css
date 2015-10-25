@@ -1,8 +1,13 @@
-.tableView {
+.table-view {
     -fx-background-color: transparent;
 }
 
-.columnTitle {
+.label {
     -fx-font-family: verdana;
-    -fx-font-size: 18px;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+}
+
+.table-view .column-header {
+    -fx-background-color: white;
 }
