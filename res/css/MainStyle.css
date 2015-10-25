@@ -1,26 +1,26 @@
 .mainWindow {
-	-fx-background-color: #ffffff;
+    -fx-background-color: #ffffff;
 }
 
 .label {
-	-fx-font-family: verdana;
+    -fx-font-family: verdana;
     -fx-font-size: 18px;
 }
 
 .bottomBarLabel {
-	-fx-text-fill: #ffffff;
+    -fx-text-fill: #ffffff;
 }
 
 .sideBarItem:hover, .sideBarItemSelected:hover {
-	-fx-background-color: #dadada;
+    -fx-background-color: #dadada;
 }
 
 .sideBarItemSelected > .label {
-	-fx-text-fill: rgb(124, 62, 144);
+    -fx-text-fill: rgb(124, 62, 144);
 }
 
 .sideBarItemSelected > .iconContainer > .icon {
-	-fx-fill: rgb(124, 62, 144);
+    -fx-fill: rgb(124, 62, 144);
 }
 
 .sideBar {
@@ -32,10 +32,10 @@
 }
 
 .bottomBarItem:hover {
-	-fx-background-color: rgb(100, 38, 120);
+    -fx-background-color: rgb(100, 38, 120);
 }
 
 .separator .line {
-	-fx-border-width: 1 0 0 0;
-	-fx-border-color: #c2c2c2;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #c2c2c2;
 }

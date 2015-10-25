@@ -1,6 +1,5 @@
 package musicplayer;
 
-import musicplayer.Resources;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

@@ -1,10 +1,30 @@
 package musicplayer;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class Playlist {
-	
-	private int id;
-	private int title;
-	private List<Song> songs;
+public final class Playlist {
+
+    private int id;
+    private String title;
+    private ArrayList<Song> songs;
+
+    public Playlist(int id) {
+
+        this.id = id;
+    }
+
+    public int getId() {
+
+        return this.id;
+    }
+
+    public String getTitle() {
+
+        return this.title;
+    }
+
+    public ArrayList<Song> getSongs() {
+
+        return this.songs;
+    }
 }

@@ -1,7 +1,5 @@
 package musicplayer;
 
-import musicplayer.MainView;
-import musicplayer.Resources;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -22,6 +20,19 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.nio.file.Paths;
 import java.util.Optional;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundSize;
+
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.tag.Tag;
+import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class MainController {
 
@@ -64,6 +75,9 @@ public class MainController {
 
     @FXML
     private ImageView playPauseButton;
+
+    @FXML
+    private Region currentSong;
 
     @FXML
     private void selectView(Event e) {
@@ -169,13 +183,22 @@ public class MainController {
     }
 
     @FXML
-    private void playPause() {
+    private void playPause() throws Exception {
 
         if (isPaused) {
             String path = "C:\\Users\\Mpmar\\Music\\Nobuo Uematsu\\Final Fantasy X Original Soundtrack Disc\\02 To Zanarkand.mp3";
             Media file = new Media(Paths.get(path).toUri().toString());
             if (mediaPlayer == null) mediaPlayer = new MediaPlayer(file);
             mediaPlayer.play();
+
+            AudioFile audioFile = AudioFileIO.read(new File(path));
+            Tag tag = audioFile.getTag();
+            byte[] bytes = tag.getFirstArtwork().getBinaryData();
+            InputStream in = new ByteArrayInputStream(bytes);
+            Image img = new Image(in, 80, 80, true, false);
+            BackgroundImage image = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+            currentSong.setBackground(new Background(image));
         } else {
             mediaPlayer.pause();
         }
