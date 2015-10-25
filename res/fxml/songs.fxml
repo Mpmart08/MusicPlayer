@@ -8,11 +8,11 @@
    <center>
       <TableView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tableView" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="150.0" text="Name" />
-          <TableColumn prefWidth="150.0" text="Artist" />
-            <TableColumn prefWidth="150.0" text="Album" />
-            <TableColumn prefWidth="75.0" text="Length" />
-            <TableColumn prefWidth="75.0" text="Plays" />
+          <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Name" />
+          <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Artist" />
+            <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Album" />
+            <TableColumn styleClass="columnTitle" text="Length" />
+            <TableColumn prefWidth="70.0" styleClass="ColumnTitle" text="Plays" />
         </columns>
       </TableView>
    </center>
