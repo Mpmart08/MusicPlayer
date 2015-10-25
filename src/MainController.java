@@ -112,7 +112,7 @@ public class MainController {
 
         } catch (Exception ex) {
 
-            System.out.println(ex.toString());
+            System.out.println(ex.getMessage());
         }
     }
 

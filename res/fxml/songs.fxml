@@ -4,15 +4,15 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mainWindow" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
    <center>
-      <TableView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tableView" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="tableView" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Name" />
-          <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Artist" />
-            <TableColumn prefWidth="150.0" styleClass="columnTitle" text="Album" />
-            <TableColumn styleClass="columnTitle" text="Length" />
-            <TableColumn prefWidth="70.0" styleClass="ColumnTitle" text="Plays" />
+          <TableColumn fx:id="columnName" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" styleClass="columnTitle" text="Name" />
+          <TableColumn fx:id="columnArtist" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" styleClass="columnTitle" text="Artist" />
+          <TableColumn fx:id="columnAlbum" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" styleClass="columnTitle" text="Album" />
+          <TableColumn fx:id="columnLength" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" styleClass="columnTitle" text="Length" />
+          <TableColumn fx:id="columnPlays" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" styleClass="columnTitle" text="Plays" />
         </columns>
       </TableView>
    </center>
