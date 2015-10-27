@@ -20,6 +20,8 @@ public class MainView extends Application {
 
         try {
 
+            Library.getSongs();
+
             BorderPane view = (BorderPane) FXMLLoader.load(this.getClass().getResource(Resources.FXML + "main.fxml"));
             Scene scene = new Scene(view);
             stage.setScene(scene);

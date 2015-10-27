@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mainWindow" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
    <center>
-      <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="Name" />
-          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="Artist" />
-          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="Album" />
-          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="Length" />
-          <TableColumn maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" text="Plays" />
+          <TableColumn fx:id="songColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Song" />
+          <TableColumn fx:id="artistColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Artist" />
+          <TableColumn fx:id="albumColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Album" />
+          <TableColumn fx:id="lengthColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="numberColumn" text="Length" />
+          <TableColumn fx:id="playsColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="numberColumn" text="Plays" />
         </columns>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <BorderPane.margin>
+            <Insets left="25.0" right="25.0" top="25.0" />
+         </BorderPane.margin>
       </TableView>
    </center>
 </BorderPane>

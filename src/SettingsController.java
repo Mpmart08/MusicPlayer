@@ -26,12 +26,17 @@ import java.time.LocalDateTime;
 
 public class SettingsController implements Initializable {
 
+    public static void main(String[] args) throws Exception {
+
+        importMusic("C:\\Users\\Mpmar\\Music");
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
     }
 
-    private void importMusic(String path) throws Exception {
+    private static void importMusic(String path) throws Exception {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -58,7 +63,7 @@ public class SettingsController implements Initializable {
         transformer.transform(source, result);
     }
 
-    private int writeXML(File directory, Document doc, Element songs, int i) {
+    private static int writeXML(File directory, Document doc, Element songs, int i) {
 
         File[] files = directory.listFiles();
 
@@ -104,9 +109,12 @@ public class SettingsController implements Initializable {
                     song.appendChild(location);
 
                 } catch (Exception ex) {
-                    //System.out.println(ex.getMessage());
+                    
+                    System.out.println(ex.getMessage());
                 }
+
             } else if (file.isDirectory()) {
+
                 i = writeXML(file, doc, songs, i);
             }
         }
