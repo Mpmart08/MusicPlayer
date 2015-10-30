@@ -6,11 +6,13 @@ public final class Playlist {
 
     private int id;
     private String title;
-    private ArrayList<Song> songs;
+    private ArrayList<Integer> songIds;
 
-    public Playlist(int id) {
+    public Playlist(int id, String title, ArrayList<Integer> songIds) {
 
         this.id = id;
+        this.title = title;
+        this.songIds = songIds;
     }
 
     public int getId() {
@@ -23,8 +25,8 @@ public final class Playlist {
         return this.title;
     }
 
-    public ArrayList<Song> getSongs() {
+    public ArrayList<Integer> getSongIds() {
 
-        return this.songs;
+        return new ArrayList<Integer>(this.songIds);
     }
 }

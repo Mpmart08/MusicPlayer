@@ -5,7 +5,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
    <center>
       <TableView fx:id="tableView" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
@@ -20,7 +19,7 @@
             <Insets />
          </opaqueInsets>
          <BorderPane.margin>
-            <Insets left="25.0" right="25.0" top="25.0" />
+            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
          </BorderPane.margin>
       </TableView>
    </center>

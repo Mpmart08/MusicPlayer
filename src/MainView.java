@@ -21,6 +21,9 @@ public class MainView extends Application {
         try {
 
             Library.getSongs();
+            Library.getArtists();
+            Library.getAlbums();
+            Library.getPlaylists();
 
             BorderPane view = (BorderPane) FXMLLoader.load(this.getClass().getResource(Resources.FXML + "main.fxml"));
             Scene scene = new Scene(view);
