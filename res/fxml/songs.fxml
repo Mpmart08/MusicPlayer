@@ -9,6 +9,7 @@
    <center>
       <TableView fx:id="tableView" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
         <columns>
+            <TableColumn fx:id="idColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="numberColumn" text="ID" visible="false" />
           <TableColumn fx:id="songColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Song" />
           <TableColumn fx:id="artistColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Artist" />
           <TableColumn fx:id="albumColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" styleClass="textColumn" text="Album" />

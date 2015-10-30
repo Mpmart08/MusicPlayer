@@ -8,22 +8,25 @@ import javafx.stage.Stage;
 import java.io.File;
 import javafx.scene.image.Image;
 
-public class MainView extends Application {
+public class MusicPlayer extends Application {
+
+    private static boolean isPlaying = false;
+    private static Song selectedSong;
 
     public static void main(String[] args) {
 
-        Application.launch(MainView.class);
+        Application.launch(MusicPlayer.class);
     }
 
     @Override
     public void start(Stage stage) {
 
-        try {
+        Library.getSongs();
+        Library.getArtists();
+        Library.getAlbums();
+        Library.getPlaylists();
 
-            Library.getSongs();
-            Library.getArtists();
-            Library.getAlbums();
-            Library.getPlaylists();
+        try {
 
             BorderPane view = (BorderPane) FXMLLoader.load(this.getClass().getResource(Resources.FXML + "main.fxml"));
             Scene scene = new Scene(view);
@@ -36,6 +39,26 @@ public class MainView extends Application {
 
             System.out.println(ex.getMessage());
         }
+    }
+
+    public static void play() {
+
+        isPlaying = true;
+    }
+
+    public static void pause() {
+
+        isPlaying = false;
+    }
+
+    public static boolean isPlaying() {
+
+        return isPlaying;
+    }
+
+    public static void setSelectedSong(Song song) {
+
+        selectedSong = song;
     }
 
 }

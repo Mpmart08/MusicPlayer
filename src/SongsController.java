@@ -17,6 +17,9 @@ public class SongsController implements Initializable {
     private TableView<Song> tableView;
 
     @FXML
+    private TableColumn<Song, Integer> idColumn;
+
+    @FXML
     private TableColumn<Song, String> songColumn;
 
     @FXML
@@ -42,6 +45,7 @@ public class SongsController implements Initializable {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
 
+        idColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("id"));
         songColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
@@ -49,6 +53,14 @@ public class SongsController implements Initializable {
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
         tableView.setItems(songs);
+
+        tableView.getSelectionModel().selectedItemProperty().addListener(
+
+            (list, oldSelection, newSelection) -> {
+
+                MusicPlayer.setSelectedSong(newSelection);
+            }
+        );
     }
 
 }

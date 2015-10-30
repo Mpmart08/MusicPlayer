@@ -190,9 +190,24 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void playPause() throws Exception {
+    private void playPause() {
 
-        if (isPaused) {
+        Image icon;
+
+        if (MusicPlayer.isPlaying()) {
+
+            MusicPlayer.pause();
+            icon = new Image(this.getClass().getResource(Resources.IMG + "pauseIcon.png").toString());
+
+        } else {
+
+            MusicPlayer.play();
+            icon = new Image(this.getClass().getResource(Resources.IMG + "playIcon.png").toString());
+        }
+
+        playPauseButton.setImage(icon);
+
+        /*if (isPaused) {
             String path = "C:\\Users\\Mpmar\\Music\\Nobuo Uematsu\\Final Fantasy X Original Soundtrack Disc\\02 To Zanarkand.mp3";
             Media file = new Media(Paths.get(path).toUri().toString());
             if (mediaPlayer == null) mediaPlayer = new MediaPlayer(file);
@@ -214,7 +229,7 @@ public class MainController implements Initializable {
             + (isPaused
             ? "playIcon.png"
             : "pauseIcon.png")
-        ).toString()));
+        ).toString()));*/
     }
 
 }
