@@ -36,11 +36,11 @@ public class SongsController implements Initializable {
 
         ObservableList<Song> songs = Library.getSongs();
 
-        songColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
-        artistColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
-        albumColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
-        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
-        playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.2));
+        songColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        artistColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        albumColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
+        playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
 
         songColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
