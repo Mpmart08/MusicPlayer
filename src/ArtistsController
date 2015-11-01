@@ -1,0 +1,64 @@
+package musicplayer;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.collections.ObservableList;
+
+public class ArtistsController implements Initializable {
+
+	private class Artist {
+		private String title;
+		private Image artwork;
+
+		public Artist(String title, Image artwork) {
+			this.title = title;
+			this.artwork = artwork;
+		}
+
+		public String getTitle() {
+			return this.title;
+		}
+
+		public Image getArtwork() {
+			return this.artwork;
+		}
+	}
+
+	@FXML
+    private TableView<Artist> tableView;
+
+    @FXML
+    private TableColumn<Artist, Image> imageColumn;
+
+    @FXML
+    private TableColumn<Artist, String> artistColumn;
+
+    @FXML
+    private ListView<Image> albumList;
+
+    @FXML
+    private ListView<String> songList;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+        ObservableList<Artist> artists = Library.getArtists();
+        ObservableList<String> titles = Library.getArtists();
+        titles.stream().foreach(title -> {
+        	Image artwork = Library.getSongsByArtist(title).get(0).getArtwork();
+        	artists.add(new Artist(title, artwork))
+        });
+
+        artistColumn.setCellValueFactory(new PropertyValueFactory<Artist, String>("title"));
+        imageColumn.setCellValueFactory(new PropertyValueFactory<Artist, Image>("artwork"));
+        
+
+        tableView.setItems(artists);
+        
+}
