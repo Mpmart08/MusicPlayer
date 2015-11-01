@@ -11,6 +11,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Media;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.logging.LogManager;
 
 public class MusicPlayer extends Application {
 
@@ -25,6 +26,8 @@ public class MusicPlayer extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        LogManager.getLogManager().reset();
 
         Library.getSongs();
         Library.getArtists();

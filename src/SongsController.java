@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.Node;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
 

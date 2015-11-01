@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
    <center>
       <VBox BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -22,7 +22,7 @@
       <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
    </padding>
    <left>
-      <TableView fx:id="tableView" prefWidth="250.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" prefWidth="250.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="imageColumn" prefWidth="75.0" />
           <TableColumn fx:id="artistColumn" prefWidth="174.0" />

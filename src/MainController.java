@@ -142,7 +142,7 @@ public class MainController implements Initializable {
 
         } catch (Exception ex) {
 
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

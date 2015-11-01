@@ -104,7 +104,7 @@ public final class Song {
 
             } catch (Exception ex) {
 
-                System.out.println(ex.getMessage());
+                //ex.printStackTrace();
             }
         }
 

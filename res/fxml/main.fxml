@@ -143,14 +143,14 @@
                   </Region>
                   <VBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0">
                      <children>
-                        <Label fx:id="nowPlayingTitle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Song" textOverrun="CLIP" wrapText="true">
+                        <Label fx:id="nowPlayingTitle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Song" textOverrun="CLIP" wrapText="true">
                            <VBox.margin>
-                              <Insets right="10.0" top="20.0" />
+                              <Insets right="10.0" top="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Label fx:id="nowPlayingArtist" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Artist" textOverrun="CLIP" wrapText="true">
+                        <Label fx:id="nowPlayingArtist" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Artist" textOverrun="CLIP" wrapText="true">
                            <VBox.margin>
-                              <Insets bottom="20.0" right="10.0" />
+                              <Insets bottom="10.0" right="10.0" />
                            </VBox.margin>
                         </Label>
                      </children>
@@ -161,14 +161,14 @@
          <center>
             <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
                <left>
-                  <Label styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
+                  <Label fx:id="timePassed" styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </BorderPane.margin>
                   </Label>
                </left>
                <right>
-                  <Label styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
+                  <Label fx:id="timeRemaining" styleClass="bottomBarLabel" text="Time" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </BorderPane.margin>
@@ -230,4 +230,11 @@
          </right>
       </BorderPane>
    </bottom>
+   <center>
+      <ScrollPane prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </center>
 </BorderPane>

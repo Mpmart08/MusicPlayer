@@ -262,7 +262,7 @@ public final class Library {
         ObservableList<Song> songsByArtist = FXCollections.observableArrayList();
 
         songs.stream()
-            .filter(song -> song.getArtist().equals(artist))
+            .filter(song -> artist.equals(song.getArtist()))
             .forEach(song -> songsByArtist.add(song));
 
         return songsByArtist;
@@ -277,7 +277,7 @@ public final class Library {
         ObservableList<Song> songsByAlbum = FXCollections.observableArrayList();
 
         songs.stream()
-            .filter(song -> song.getAlbum().equals(album))
+            .filter(song -> album.equals(song.getAlbum()))
             .forEach(song -> songsByAlbum.add(song));
 
         return songsByAlbum;
