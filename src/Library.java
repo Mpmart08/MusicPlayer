@@ -359,7 +359,8 @@ public final class Library {
                     trackNumber.setTextContent(tag.getFirst(FieldKey.TRACK));
                     playCount.setTextContent("0");
                     playDate.setTextContent(LocalDateTime.now().toString());
-                    location.setTextContent(file.toURI().toString());
+                    //location.setTextContent(file.toURI().toString());
+                    location.setTextContent(Paths.get(file.getAbsolutePath()).toString());
 
                     song.appendChild(id);
                     song.appendChild(title);

@@ -7,11 +7,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import java.io.File;
 import javafx.scene.image.Image;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.Media;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 
 public class MusicPlayer extends Application {
 
-    private static boolean isPlaying = false;
     private static Song selectedSong;
+    private static MediaPlayer mediaPlayer;
+    private static LinkedList<Song> nowPlayingStack;
 
     public static void main(String[] args) {
 
@@ -25,6 +30,8 @@ public class MusicPlayer extends Application {
         Library.getArtists();
         Library.getAlbums();
         Library.getPlaylists();
+
+        nowPlayingStack = new LinkedList<Song>();
 
         try {
 
@@ -43,17 +50,49 @@ public class MusicPlayer extends Application {
 
     public static void play() {
 
-        isPlaying = true;
+        if (mediaPlayer == null) {
+
+            String path = selectedSong.getLocation();
+            Media song = new Media(Paths.get(path).toUri().toString());
+            mediaPlayer = new MediaPlayer(song);
+            nowPlayingStack.addFirst(selectedSong);
+        
+        } else if (selectedSong != nowPlayingStack.getFirst()) {
+
+            mediaPlayer.stop();
+            String path = selectedSong.getLocation();
+            Media song = new Media(Paths.get(path).toUri().toString());
+            mediaPlayer = new MediaPlayer(song);
+            nowPlayingStack.addFirst(selectedSong);
+        }
+
+        if (mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+
+            mediaPlayer.play();
+        }
     }
 
     public static void pause() {
 
-        isPlaying = false;
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+
+            mediaPlayer.pause();
+        }
     }
 
     public static boolean isPlaying() {
 
-        return isPlaying;
+        if (mediaPlayer == null) {
+
+            return false;
+        }
+
+        return mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+    }
+
+    public static Song getSelectedSong() {
+
+        return selectedSong;
     }
 
     public static void setSelectedSong(Song song) {
@@ -61,4 +100,8 @@ public class MusicPlayer extends Application {
         selectedSong = song;
     }
 
+    public static LinkedList<Song> getNowPlayingStack() {
+
+        return nowPlayingStack;
+    }
 }

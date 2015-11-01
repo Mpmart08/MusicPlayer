@@ -1,20 +1,55 @@
 .table-view {
     -fx-background-color: white;
+    -fx-table-cell-border-color: transparent;
 }
 
 .table-view .column-header {
     -fx-background-color: white;
-    -fx-alignment: CENTER-LEFT;
 }
 
-.textColumn {
+.column-header > .label {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 0 10 0;
+}
+
+.textColumn, .numberColumn {
     -fx-alignment: CENTER-LEFT;
     -fx-padding: 0 10 0 10;
 }
 
-.numberColumn {
-    -fx-alignment: CENTER-RIGHT;
-    -fx-padding: 0 10 0 10;
+.table-view:row-selection .table-row-cell:even:filled {
+    -fx-background-color: #f2f2f2;
+    -fx-text-fill: black;
+}
+
+.table-view:row-selection .table-row-cell:odd:filled {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.table-view:row-selection .table-row-cell:filled:hover {
+    -fx-background-color: #dadada;
+    -fx-text-fill: black;
+}
+
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: rgb(52, 109, 207);
+    -fx-text-fill: white;
+}
+
+.table-row-cell:filled:focused:selected {
+    -fx-background-color: rgb(52, 109, 207);
+    -fx-text-fill: white;
+}
+
+.table-view:focused .table-row-cell:filled:focused:selected:hover {
+    -fx-background-color: rgb(47, 98, 187);
+    -fx-text-fill: white;
+}
+
+.table-view:row-selection .table-row-cell:filled:focused:hover {
+    -fx-background-color: rgb(47, 98, 187);
+    -fx-text-fill: white;
 }
 
 .table-view .column-header .text {

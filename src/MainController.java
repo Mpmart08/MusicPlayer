@@ -11,14 +11,9 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.util.Duration;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.event.Event;
-import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import java.nio.file.Paths;
 import java.util.Optional;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Background;
@@ -26,12 +21,6 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.tag.Tag;
-import java.io.File;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -41,13 +30,14 @@ public class MainController implements Initializable {
     private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
-    private boolean isPaused = true;
-    private MediaPlayer mediaPlayer;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        
-    }
+    @FXML private BorderPane mainWindow;
+    @FXML private VBox sideBar;
+    @FXML private ImageView sideBarSlideButton;
+    @FXML private ImageView playPauseButton;
+    @FXML private Region nowPlayingArtwork;
+    @FXML private Label nowPlayingTitle;
+    @FXML private Label nowPlayingArtist;
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -71,20 +61,10 @@ public class MainController implements Initializable {
         }
     };
 
-    @FXML
-    private BorderPane mainWindow;
-
-    @FXML
-    private VBox sideBar;
-
-    @FXML
-    private ImageView sideBarSlideButton;
-
-    @FXML
-    private ImageView playPauseButton;
-
-    @FXML
-    private Region currentSong;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        
+    }
 
     @FXML
     private void selectView(Event e) {
@@ -109,6 +89,49 @@ public class MainController implements Initializable {
         }
     }
 
+    @FXML
+    private void slideSideBar() {
+
+        if (isSideBarExpanded) {
+            collapseSideBar();
+        } else {
+            expandSideBar();
+        }
+    }
+
+    @FXML
+    private void playPause() {
+
+        Image icon;
+
+        if (MusicPlayer.isPlaying()) {
+
+            MusicPlayer.pause();
+            icon = new Image(this.getClass().getResource(Resources.IMG + "playIcon.png").toString());
+            playPauseButton.setImage(icon);
+
+        } else {
+
+            MusicPlayer.play();
+            icon = new Image(this.getClass().getResource(Resources.IMG + "pauseIcon.png").toString());
+            playPauseButton.setImage(icon);
+
+            Song song = MusicPlayer.getNowPlayingStack().getFirst();
+
+            nowPlayingTitle.setText(song.getTitle());
+            nowPlayingArtist.setText(song.getArtist());
+
+            Image artwork = song.getArtwork();
+            if (artwork == null) {
+                artwork = new Image(this.getClass().getResource(Resources.IMG + "albumsIcon.png").toString());
+            }
+            BackgroundImage image = new BackgroundImage(artwork, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+
+            nowPlayingArtwork.setBackground(new Background(image));
+        }
+    }
+
     private void loadView(HBox eventSource) {
 
         try {
@@ -120,16 +143,6 @@ public class MainController implements Initializable {
         } catch (Exception ex) {
 
             System.out.println(ex.getMessage());
-        }
-    }
-
-    @FXML
-    private void slideSideBar() {
-
-        if (isSideBarExpanded) {
-            collapseSideBar();
-        } else {
-            expandSideBar();
         }
     }
 
@@ -188,48 +201,4 @@ public class MainController implements Initializable {
             : "rightArrowIcon.png")
         ).toString()));
     }
-
-    @FXML
-    private void playPause() {
-
-        Image icon;
-
-        if (MusicPlayer.isPlaying()) {
-
-            MusicPlayer.pause();
-            icon = new Image(this.getClass().getResource(Resources.IMG + "pauseIcon.png").toString());
-
-        } else {
-
-            MusicPlayer.play();
-            icon = new Image(this.getClass().getResource(Resources.IMG + "playIcon.png").toString());
-        }
-
-        playPauseButton.setImage(icon);
-
-        /*if (isPaused) {
-            String path = "C:\\Users\\Mpmar\\Music\\Nobuo Uematsu\\Final Fantasy X Original Soundtrack Disc\\02 To Zanarkand.mp3";
-            Media file = new Media(Paths.get(path).toUri().toString());
-            if (mediaPlayer == null) mediaPlayer = new MediaPlayer(file);
-            mediaPlayer.play();
-
-            AudioFile audioFile = AudioFileIO.read(new File(path));
-            Tag tag = audioFile.getTag();
-            byte[] bytes = tag.getFirstArtwork().getBinaryData();
-            InputStream in = new ByteArrayInputStream(bytes);
-            Image img = new Image(in, 80, 80, true, false);
-            BackgroundImage image = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-            currentSong.setBackground(new Background(image));
-        } else {
-            mediaPlayer.pause();
-        }
-        isPaused = !isPaused;
-        playPauseButton.setImage(new Image(this.getClass().getResource(Resources.IMG
-            + (isPaused
-            ? "playIcon.png"
-            : "pauseIcon.png")
-        ).toString()));*/
-    }
-
 }

@@ -136,21 +136,21 @@
          <left>
             <HBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectView" prefHeight="100.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
                <children>
-                  <Region fx:id="currentSong" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
+                  <Region fx:id="nowPlayingArtwork" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                   </Region>
                   <VBox id="nowplaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0">
                      <children>
-                        <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" styleClass="bottomBarLabel" text="Song">
+                        <Label fx:id="nowPlayingTitle" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Song" textOverrun="CLIP" wrapText="true">
                            <VBox.margin>
-                              <Insets left="10.0" right="10.0" top="20.0" />
+                              <Insets right="10.0" top="20.0" />
                            </VBox.margin>
                         </Label>
-                        <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" styleClass="bottomBarLabel" text="Artist">
+                        <Label fx:id="nowPlayingArtist" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="130.0" styleClass="bottomBarLabel" text="Artist" textOverrun="CLIP" wrapText="true">
                            <VBox.margin>
-                              <Insets bottom="20.0" left="10.0" right="10.0" />
+                              <Insets bottom="20.0" right="10.0" />
                            </VBox.margin>
                         </Label>
                      </children>
