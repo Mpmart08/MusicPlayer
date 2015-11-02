@@ -22,11 +22,6 @@
       <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
    </padding>
    <left>
-      <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" prefWidth="250.0" BorderPane.alignment="CENTER">
-        <columns>
-          <TableColumn fx:id="imageColumn" prefWidth="75.0" />
-          <TableColumn fx:id="artistColumn" prefWidth="174.0" />
-        </columns>
-      </TableView>
+      <ListView fx:id="artistList" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

@@ -2,12 +2,18 @@ package musicplayer;
 
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileInputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -30,6 +36,7 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.datatype.Artwork;
 
 public final class Library {
 
@@ -45,27 +52,42 @@ public final class Library {
     private static final String SONGID = "songId";
 
     private static ObservableList<Song> songs;
+    private static ObservableList<Artist> artists;
+    private static ObservableList<Album> albums;
     private static ObservableList<Playlist> playlists;
-    private static Map<String, List<Song>> artists;
-    private static Map<String, List<Song>> albums;
 
-    public static ObservableList<String> getArtists() {
+    public static ObservableList<Artist> getArtists() {
     
         if (artists == null) {
 
-            if (songs == null) {
-                getSongs();
+            if (albums == null) {
+                getAlbums();
             }
 
-            artists = songs.stream()
-                .filter(song -> song.getArtist() != null)
-                .collect(Collectors.groupingBy(Song::getArtist));
+            artists = FXCollections.observableArrayList();
+
+            TreeMap<String, List<Album>> artistMap = new TreeMap<String, List<Album>>(
+                albums.stream()
+                    .filter(album -> album.getArtist() != null)
+                    .collect(Collectors.groupingBy(Album::getArtist))
+            );
+
+            for (Map.Entry<String, List<Album>> entry : artistMap.entrySet()) {
+
+                ArrayList<Integer> albumIds = new ArrayList<Integer>();
+
+                for (Album album : entry.getValue()) {
+                    albumIds.add(album.getId());
+                }
+
+                artists.add(new Artist(entry.getKey(), albumIds));
+            }
         }
 
-        return FXCollections.observableArrayList(artists.keySet());
+        return artists;
     }
 
-    public static ObservableList<String> getAlbums() {
+    public static ObservableList<Album> getAlbums() {
 
         if (albums == null) {
 
@@ -73,12 +95,30 @@ public final class Library {
                 getSongs();
             }
 
-            albums = songs.stream()
-                .filter(song -> song.getAlbum() != null)
-                .collect(Collectors.groupingBy(Song::getAlbum));
+            albums = FXCollections.observableArrayList();
+
+            TreeMap<String, List<Song>> albumMap = new TreeMap<String, List<Song>>(
+                songs.stream()
+                    .filter(song -> song.getAlbum() != null)
+                    .collect(Collectors.groupingBy(Song::getAlbum))
+            );
+
+            int id = 0;
+
+            for (Map.Entry<String, List<Song>> entry : albumMap.entrySet()) {
+
+                ArrayList<Integer> songIds = new ArrayList<Integer>();
+                String artist = entry.getValue().get(0).getArtist();
+
+                for (Song song : entry.getValue()) {
+                    songIds.add(song.getId());
+                }
+
+                albums.add(new Album(id++, entry.getKey(), artist, songIds));
+            }
         }
 
-        return FXCollections.observableArrayList(albums.keySet());
+        return albums;
     }
 
     public static ObservableList<Song> getSongs() {
@@ -253,48 +293,75 @@ public final class Library {
         return playlists;
     }
 
-    public static ObservableList<Song> getSongsByArtist(String artist) {
+    public static ObservableList<Song> getSongsByArtist(String title) {
 
         if (artists == null) {
             getArtists();
         }
 
+        Artist artist = artists.stream().filter(x -> title.equals(x.getTitle())).findFirst().get();
+
+        return getSongsByArtist(artist);
+    }
+
+    public static ObservableList<Song> getSongsByArtist(Artist artist) {
+
+        if (songs == null) {
+            getSongs();
+        }
+
         ObservableList<Song> songsByArtist = FXCollections.observableArrayList();
 
-        songs.stream()
-            .filter(song -> artist.equals(song.getArtist()))
-            .forEach(song -> songsByArtist.add(song));
+        for (int albumId : artist.getAlbumIds()) {
+            for (int songId : albums.get(albumId).getSongIds()) {
+                songsByArtist.add(songs.get(songId));
+            }
+        }
 
         return songsByArtist;
     }
 
-    public static ObservableList<Song> getSongsByAlbum(String album) {
+    public static ObservableList<Song> getSongsByAlbum(String title) {
         
         if (albums == null) {
             getAlbums();
         }
 
+        Album album = albums.stream().filter(x -> title.equals(x.getTitle())).findFirst().get();
+
+        return getSongsByAlbum(album);
+    }
+
+    public static ObservableList<Song> getSongsByAlbum(Album album) {
+        
+        if (songs == null) {
+            getSongs();
+        }
+
         ObservableList<Song> songsByAlbum = FXCollections.observableArrayList();
 
-        songs.stream()
-            .filter(song -> album.equals(song.getAlbum()))
-            .forEach(song -> songsByAlbum.add(song));
+        for (int songId : album.getSongIds()) {
+            songsByAlbum.add(songs.get(songId));
+        }
 
         return songsByAlbum;
     }
 
     public static ObservableList<Song> getSongsByPlaylist(Playlist playlist) {
 
+        if (songs == null) {
+            getSongs();
+        }
+
         if (playlists == null) {
             getPlaylists();
         }
 
         ObservableList<Song> songsByPlaylist = FXCollections.observableArrayList();
-        ArrayList<Integer> songIds = playlist.getSongIds();
 
-        songs.stream()
-            .filter(song -> songIds.contains(song.getId()))
-            .forEach(song -> songsByPlaylist.add(song));
+        for (int songId : playlist.getSongIds()) {
+            songsByPlaylist.add(songs.get(songId));
+        }
 
         return songsByPlaylist;
     }

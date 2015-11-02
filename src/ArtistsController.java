@@ -16,39 +16,40 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import java.util.Collections;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
+import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 
 public class ArtistsController implements Initializable {
 
-	public class Artist {
+	public static class ArtistHBox extends HBox {
 
-		private String title;
-		private Image artwork;
+		private Label title = new Label();
+		private ImageView artistImage = new ImageView();
 
-		public Artist(String title, Image artwork) {
-			this.title = title;
-			this.artwork = artwork;
-		}
+		public ArtistHBox(String title, Image artistImage) {
 
-		public String getTitle() {
-			return this.title;
-		}
-
-		public ImageView getArtwork() {
-			return new ImageView(this.artwork);
+            super();
+            this.title.setMaxSize(195, 50);
+            this.title.setMinSize(195, 50);
+            this.artistImage.setFitWidth(40);
+            this.artistImage.setFitHeight(40);
+            this.artistImage.setPreserveRatio(true);
+            this.artistImage.setSmooth(true);
+            this.artistImage.setCache(true);
+            this.artistImage.setImage(artistImage);
+            this.title.setText(title);
+            this.getChildren().addAll(this.artistImage, this.title);
+            this.setMargin(this.artistImage, new Insets(5, 10, 5, 5));
 		}
 	}
 
 	@FXML
-    private TableView<Artist> tableView;
+    private ListView<ArtistHBox> artistList;
 
     @FXML
-    private TableColumn<Artist, ImageView> imageColumn;
-
-    @FXML
-    private TableColumn<Artist, String> artistColumn;
-
-    @FXML
-    private ListView<Image> albumList;
+    private ListView<ImageView> albumList;
 
     @FXML
     private ListView<String> songList;
@@ -56,20 +57,14 @@ public class ArtistsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        ArrayList<Artist> artists = new ArrayList<Artist>();
-        ObservableList<String> titles = Library.getArtists();
-        Collections.sort(titles);
+        ObservableList<ArtistHBox> artistHBoxes = FXCollections.observableArrayList();
+        ObservableList<Artist> artists = Library.getArtists();
 
-        for (String title : titles) {
+        for (Artist artist : artists) {
 
-            Image artwork = Library.getSongsByArtist(title).get(0).getArtwork();
-            artists.add(new Artist(title, artwork));
+            artistHBoxes.add(new ArtistHBox(artist.getTitle(), artist.getArtistImage()));
         }
 
-        artistColumn.setCellValueFactory(new PropertyValueFactory<Artist, String>("title"));
-        imageColumn.setCellValueFactory(new PropertyValueFactory<Artist, ImageView>("artwork"));
-
-        tableView.setItems(FXCollections.observableArrayList(artists));
-        tableView.autosize();
+        artistList.setItems(artistHBoxes);
     }
 }

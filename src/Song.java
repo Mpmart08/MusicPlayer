@@ -90,7 +90,7 @@ public final class Song {
         return this.location;
     }
 
-    public Image getArtwork() {
+    public Image getArtwork(int size) {
 
         if (artwork == null) {
 
@@ -100,7 +100,7 @@ public final class Song {
                 Tag tag = audioFile.getTag();
                 byte[] bytes = tag.getFirstArtwork().getBinaryData();
                 ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-                artwork = new Image(in, 80, 80, true, false);
+                artwork = new Image(in, size, size, true, true);
 
             } catch (Exception ex) {
 
@@ -109,5 +109,10 @@ public final class Song {
         }
 
         return artwork;
+    }
+
+    public Image getArtwork() {
+
+        return getArtwork(80);
     }
 }

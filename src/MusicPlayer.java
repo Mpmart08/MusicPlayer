@@ -25,13 +25,13 @@ public class MusicPlayer extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
 
         LogManager.getLogManager().reset();
 
         Library.getSongs();
-        Library.getArtists();
         Library.getAlbums();
+        Library.getArtists();
         Library.getPlaylists();
 
         nowPlayingStack = new LinkedList<Song>();
