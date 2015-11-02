@@ -28,13 +28,12 @@ public class MusicPlayer extends Application {
     public void start(Stage stage) throws Exception {
 
         LogManager.getLogManager().reset();
+        nowPlayingStack = new LinkedList<Song>();
 
         Library.getSongs();
         Library.getAlbums();
         Library.getArtists();
         Library.getPlaylists();
-
-        nowPlayingStack = new LinkedList<Song>();
 
         try {
 
