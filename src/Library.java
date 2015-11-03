@@ -130,7 +130,8 @@ public final class Library {
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                File library = new File("musicplayer\\" + Resources.XML + "library.xml");
+                factory.setProperty("javax.xml.stream.isCoalescing", true);
+                File library = new File("musicplayer/" + Resources.XML + "library.xml");
                 XMLStreamReader reader = factory.createXMLStreamReader(new FileInputStream(library), "UTF-8");
 
                 String element = "";
@@ -213,7 +214,7 @@ public final class Library {
 
             } catch (Exception ex) {
 
-                System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
 
@@ -286,7 +287,7 @@ public final class Library {
 
             } catch (Exception ex) {
 
-                System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
 
@@ -423,10 +424,12 @@ public final class Library {
                     artist.setTextContent(tag.getFirst(FieldKey.ARTIST));
                     album.setTextContent(tag.getFirst(FieldKey.ALBUM));
                     length.setTextContent(Integer.toString(header.getTrackLength()));
-                    trackNumber.setTextContent(tag.getFirst(FieldKey.TRACK));
+                    String track = tag.getFirst(FieldKey.TRACK);
+                    trackNumber.setTextContent(
+                        (track == null || track.equals("")) ? "0" : tag.getFirst(FieldKey.TRACK)
+                    );
                     playCount.setTextContent("0");
                     playDate.setTextContent(LocalDateTime.now().toString());
-                    //location.setTextContent(file.toURI().toString());
                     location.setTextContent(Paths.get(file.getAbsolutePath()).toString());
 
                     song.appendChild(id);
@@ -441,7 +444,7 @@ public final class Library {
 
                 } catch (Exception ex) {
                     
-                    System.out.println(ex.getMessage());
+                    ex.printStackTrace();
                 }
 
             } else if (file.isDirectory()) {

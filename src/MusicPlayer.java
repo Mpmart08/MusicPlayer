@@ -46,7 +46,7 @@ public class MusicPlayer extends Application {
 
         } catch (Exception ex) {
 
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

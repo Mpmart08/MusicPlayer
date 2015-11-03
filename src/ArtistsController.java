@@ -28,7 +28,7 @@ public class ArtistsController implements Initializable {
 		private Label title = new Label();
 		private ImageView artistImage = new ImageView();
 
-		public ArtistHBox(String title, Image artistImage) {
+		public ArtistHBox(Artist artist) {
 
             super();
             this.title.setMaxSize(195, 50);
@@ -38,8 +38,8 @@ public class ArtistsController implements Initializable {
             this.artistImage.setPreserveRatio(true);
             this.artistImage.setSmooth(true);
             this.artistImage.setCache(true);
-            this.artistImage.setImage(artistImage);
-            this.title.setText(title);
+            this.artistImage.setImage(artist.getArtistImage());
+            this.title.setText(artist.getTitle());
             this.getChildren().addAll(this.artistImage, this.title);
             this.setMargin(this.artistImage, new Insets(5, 10, 5, 5));
 		}
@@ -62,7 +62,7 @@ public class ArtistsController implements Initializable {
 
         for (Artist artist : artists) {
 
-            artistHBoxes.add(new ArtistHBox(artist.getTitle(), artist.getArtistImage()));
+            artistHBoxes.add(new ArtistHBox(artist));
         }
 
         artistList.setItems(artistHBoxes);

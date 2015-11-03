@@ -104,7 +104,7 @@ public final class Song {
 
             } catch (Exception ex) {
 
-                //ex.printStackTrace();
+                artwork = new Image(this.getClass().getResource(Resources.IMG + "albumsIcon.png").toString());
             }
         }
 

@@ -122,9 +122,6 @@ public class MainController implements Initializable {
             nowPlayingArtist.setText(song.getArtist());
 
             Image artwork = song.getArtwork();
-            if (artwork == null) {
-                artwork = new Image(this.getClass().getResource(Resources.IMG + "albumsIcon.png").toString());
-            }
             BackgroundImage image = new BackgroundImage(artwork, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
 
