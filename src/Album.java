@@ -52,7 +52,7 @@ public final class Album {
 
     public Image getAlbumArtwork() {
 
-        return Library.getSongs().get(songIds.get(0)).getArtwork();
+        return Library.getSong(songIds.get(0)).getArtwork(300);
     }
 
     public void downloadAlbumArtwork() {

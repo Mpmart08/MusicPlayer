@@ -367,6 +367,33 @@ public final class Library {
         return songsByPlaylist;
     }
 
+    public static Artist getArtist(int id) {
+
+        if (artists == null) {
+            getArtists();
+        }
+
+        return artists.get(id);
+    }
+
+    public static Album getAlbum(int id) {
+
+        if (albums == null) {
+            getAlbums();
+        }
+
+        return albums.get(id);
+    }
+
+    public static Song getSong(int id) {
+
+        if (songs == null) {
+            getSongs();
+        }
+
+        return songs.get(id);
+    }
+
     public static void importMusic(String path) throws Exception {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

@@ -9,7 +9,7 @@
 
 .column-header > .label {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 16 0 16 0;
 }
 
 .textColumn, .numberColumn {

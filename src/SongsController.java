@@ -7,28 +7,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
 
 public class SongsController implements Initializable {
 
-    @FXML
-    private TableView<Song> tableView;
-
-    @FXML
-    private TableColumn<Song, String> titleColumn;
-
-    @FXML
-    private TableColumn<Song, String> artistColumn;
-
-    @FXML
-    private TableColumn<Song, String> albumColumn;
-
-    @FXML
-    private TableColumn<Song, String> lengthColumn;
-
-    @FXML
-    private TableColumn<Song, Integer> playsColumn;
+    @FXML private TableView<Song> tableView;
+    @FXML private TableColumn<Song, String> titleColumn;
+    @FXML private TableColumn<Song, String> artistColumn;
+    @FXML private TableColumn<Song, String> albumColumn;
+    @FXML private TableColumn<Song, String> lengthColumn;
+    @FXML private TableColumn<Song, Integer> playsColumn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,5 +46,18 @@ public class SongsController implements Initializable {
                 MusicPlayer.setSelectedSong(newSelection);
             }
         );
+
+        tableView.setRowFactory(x -> {
+            TableRow<Song> row = new TableRow<Song>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    Song song = row.getItem();
+                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    MusicPlayer.setNowPlaying(song);
+                    MusicPlayer.play();
+                }
+            });
+            return row ;
+        });
     }
 }

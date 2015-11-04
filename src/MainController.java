@@ -3,6 +3,7 @@ package musicplayer;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -38,6 +39,7 @@ public class MainController implements Initializable {
     @FXML private Region nowPlayingArtwork;
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
+    @FXML private Slider timeSlider;
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -80,7 +82,7 @@ public class MainController implements Initializable {
         }
 
         ObservableList<String> styles = eventSource.getStyleClass();
-        
+
         if (styles.get(0).equals("sideBarItem")) {
             styles.setAll("sideBarItemSelected");
             loadView(eventSource);
@@ -100,33 +102,57 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void playPause() {
+    public void playPause() {
+
+        if (MusicPlayer.isPlaying()) {
+            MusicPlayer.pause();
+        } else {
+            MusicPlayer.play();
+        }
+    }
+
+    public void updatePlayPauseIcon() {
 
         Image icon;
 
         if (MusicPlayer.isPlaying()) {
 
-            MusicPlayer.pause();
             icon = new Image(this.getClass().getResource(Resources.IMG + "playIcon.png").toString());
             playPauseButton.setImage(icon);
 
         } else {
 
-            MusicPlayer.play();
             icon = new Image(this.getClass().getResource(Resources.IMG + "pauseIcon.png").toString());
             playPauseButton.setImage(icon);
-
-            Song song = MusicPlayer.getNowPlayingStack().getFirst();
-
-            nowPlayingTitle.setText(song.getTitle());
-            nowPlayingArtist.setText(song.getArtist());
-
-            Image artwork = song.getArtwork();
-            BackgroundImage image = new BackgroundImage(artwork, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-
-            nowPlayingArtwork.setBackground(new Background(image));
         }
+    }
+
+    public void updateNowPlayingButton() {
+
+        Song song = MusicPlayer.getNowPlaying();
+
+        nowPlayingTitle.setText(song.getTitle());
+        nowPlayingArtist.setText(song.getArtist());
+
+        Image artwork = song.getArtwork();
+        BackgroundImage image = new BackgroundImage(artwork, BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+
+        nowPlayingArtwork.setBackground(new Background(image));
+    }
+
+    public void initializeTimeSlider() {
+
+        Song song = MusicPlayer.getNowPlaying();
+        timeSlider.setMin(0);
+        timeSlider.setMax(song.getLength().getSeconds());
+        timeSlider.setValue(0);
+        timeSlider.setBlockIncrement(1);
+    }
+
+    public void updateTimeSlider() {
+
+        timeSlider.increment();
     }
 
     private void loadView(HBox eventSource) {

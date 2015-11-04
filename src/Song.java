@@ -115,4 +115,10 @@ public final class Song {
 
         return getArtwork(80);
     }
+
+    @Override
+    public String toString() {
+
+        return this.title;
+    }
 }

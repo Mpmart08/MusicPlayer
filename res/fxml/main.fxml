@@ -175,7 +175,7 @@
                   </Label>
                </right>
                <center>
-                  <Slider BorderPane.alignment="CENTER" />
+                  <Slider fx:id="timeSlider" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </center>
@@ -230,11 +230,4 @@
          </right>
       </BorderPane>
    </bottom>
-   <center>
-      <ScrollPane prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-        </content>
-      </ScrollPane>
-   </center>
 </BorderPane>
