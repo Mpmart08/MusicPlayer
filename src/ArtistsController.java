@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.input.KeyCode;
 
 public class ArtistsController implements Initializable {
 
@@ -67,12 +68,12 @@ public class ArtistsController implements Initializable {
             super();
             this.album = album;
             this.setAlignment(Pos.CENTER);
-            this.albumArtwork.maxWidth(130);
-            this.albumArtwork.maxHeight(130);
-            this.albumArtwork.minWidth(130);
-            this.albumArtwork.minHeight(130);
-            this.albumArtwork.setFitWidth(130);
-            this.albumArtwork.setFitHeight(130);
+            this.albumArtwork.maxWidth(125);
+            this.albumArtwork.maxHeight(125);
+            this.albumArtwork.minWidth(125);
+            this.albumArtwork.minHeight(125);
+            this.albumArtwork.setFitWidth(125);
+            this.albumArtwork.setFitHeight(125);
             this.albumArtwork.setPreserveRatio(true);
             this.albumArtwork.setSmooth(true);
             this.albumArtwork.setCache(true);
@@ -101,6 +102,7 @@ public class ArtistsController implements Initializable {
 
     private Album selectedAlbum;
     private Artist selectedArtist;
+    private boolean newAlbumSelected = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -123,62 +125,58 @@ public class ArtistsController implements Initializable {
 
         artistList.setItems(artistHBoxes);
 
-        artistList.getSelectionModel().selectedItemProperty().addListener(
+        artistList.setOnMouseClicked(event -> {
 
-            (list, oldSelection, newSelection) -> {
+            selectedArtist = artistList.getSelectionModel().getSelectedItem().getArtist();
+            showAllSongs(selectedArtist);
+        });
 
-                Artist artist = newSelection.getArtist();
-                showAllSongs(artist);
-                selectedArtist = artist;
+        artistList.setOnKeyPressed(event -> {
+
+            KeyCode key = event.getCode();
+            int index = -1;
+            switch (key) {
+                case DOWN:
+                    index = artistList.getSelectionModel().getSelectedIndex() + 1;
+                    break;
+                case UP:
+                    index = artistList.getSelectionModel().getSelectedIndex() - 1;
+                    break;
             }
-        );
 
-        /*artistList.setOnMouseClicked(event -> {
-
-            Artist selectedItem = artistList.getSelectionModel().getSelectedItem().getArtist();
-
-            if (selectedArtist == selectedItem) {
-
+            if (index >= 0 && index < Library.getArtists().size()) {
+                Artist artist = Library.getArtist(index);
+                selectedArtist = artist;
                 showAllSongs(selectedArtist);
             }
-        });*/
+        });
 
-        albumList.getSelectionModel().selectedItemProperty().addListener(
+        albumList.setOnMouseClicked(event -> {
 
-            (list, oldSelection, newSelection) -> {
+            AlbumHBox selectedItem = albumList.getSelectionModel().getSelectedItem();
+            Album album = (selectedItem == null) ? null : selectedItem.getAlbum();
+            selectAlbum(album);
+        });
 
-                if (newSelection == null) {
+        albumList.setOnKeyPressed(event -> {
 
-                    selectedAlbum = null;
-
-                } else {
-
-                    Album album = newSelection.getAlbum();
-                    ObservableList<Song> songs = FXCollections.observableArrayList();
-
-                    for (int songId : album.getSongIds()) {
-
-                        Song song = Library.getSong(songId);
-                        songs.add(song);
-                    }
-
-                    songTable.setItems(songs);
-                    albumLabel.setText(album.getTitle());
-                    selectedAlbum = album;
-                }
+            KeyCode key = event.getCode();
+            int index = -1;
+            switch (key) {
+                case LEFT:
+                    index = albumList.getSelectionModel().getSelectedIndex() - 1;
+                    break;
+                case RIGHT:
+                    index = albumList.getSelectionModel().getSelectedIndex() + 1;
+                    break;
             }
-        );
 
-        /*albumList.setOnMouseClicked(event -> {
-
-            Album selectedItem = albumList.getSelectionModel().getSelectedItem().getAlbum();
-
-            if (selectedAlbum == selectedItem) {
-
-                showAllSongs(artistList.getSelectionModel().getSelectedItem().getArtist());
-                selectedAlbum = null;
+            if (index >= 0 && index < selectedArtist.getAlbumIds().size()) {
+                int albumId = selectedArtist.getAlbumIds().get(index);
+                Album album = Library.getAlbum(albumId);
+                selectAlbum(album);
             }
-        });*/
+        });
 
         songTable.getSelectionModel().selectedItemProperty().addListener(
 
@@ -202,6 +200,29 @@ public class ArtistsController implements Initializable {
         });
     }
 
+    private void selectAlbum(Album album) {
+
+        if (selectedAlbum == album) {
+
+            selectedAlbum = null;
+            showAllSongs(artistList.getSelectionModel().getSelectedItem().getArtist());
+
+        } else {
+
+            selectedAlbum = album;
+            ObservableList<Song> songs = FXCollections.observableArrayList();
+
+            for (int songId : album.getSongIds()) {
+
+                Song song = Library.getSong(songId);
+                songs.add(song);
+            }
+
+            songTable.setItems(songs);
+            albumLabel.setText(album.getTitle());
+        }
+    }
+
     private void showAllSongs(Artist artist) {
 
         ObservableList<AlbumHBox> albums = FXCollections.observableArrayList();
@@ -219,6 +240,7 @@ public class ArtistsController implements Initializable {
             }
         }
 
+        selectedAlbum = null;
         albumList.setItems(albums);
         songTable.setItems(songs);
         songTable.setVisible(true);
