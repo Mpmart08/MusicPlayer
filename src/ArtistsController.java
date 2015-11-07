@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
+import javafx.scene.control.Separator;
 
 public class ArtistsController implements Initializable {
 
@@ -36,10 +37,6 @@ public class ArtistsController implements Initializable {
             super();
             this.artist = artist;
             this.setAlignment(Pos.CENTER_LEFT);
-            this.artistImage.maxWidth(40);
-            this.artistImage.maxHeight(40);
-            this.artistImage.minWidth(40);
-            this.artistImage.minHeight(40);
             this.artistImage.setFitWidth(40);
             this.artistImage.setFitHeight(40);
             this.artistImage.setPreserveRatio(true);
@@ -68,16 +65,12 @@ public class ArtistsController implements Initializable {
             super();
             this.album = album;
             this.setAlignment(Pos.CENTER);
-            this.albumArtwork.maxWidth(125);
-            this.albumArtwork.maxHeight(125);
-            this.albumArtwork.minWidth(125);
-            this.albumArtwork.minHeight(125);
-            this.albumArtwork.setFitWidth(125);
-            this.albumArtwork.setFitHeight(125);
+            this.albumArtwork.setFitWidth(130);
+            this.albumArtwork.setFitHeight(130);
             this.albumArtwork.setPreserveRatio(true);
             this.albumArtwork.setSmooth(true);
             this.albumArtwork.setCache(true);
-            this.albumArtwork.setImage(album.getAlbumArtwork());
+            this.albumArtwork.setImage(album.getArtwork());
             this.getChildren().addAll(this.albumArtwork);
         }
 
@@ -98,7 +91,9 @@ public class ArtistsController implements Initializable {
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    @FXML private Label artistLabel;
     @FXML private Label albumLabel;
+    @FXML private Separator separator;
 
     private Album selectedAlbum;
     private Artist selectedArtist;
@@ -129,6 +124,8 @@ public class ArtistsController implements Initializable {
 
             selectedArtist = artistList.getSelectionModel().getSelectedItem().getArtist();
             showAllSongs(selectedArtist);
+            artistLabel.setText(selectedArtist.getTitle());
+            separator.setVisible(true);
         });
 
         artistList.setOnKeyPressed(event -> {
@@ -148,6 +145,7 @@ public class ArtistsController implements Initializable {
                 Artist artist = Library.getArtist(index);
                 selectedArtist = artist;
                 showAllSongs(selectedArtist);
+                artistLabel.setText(selectedArtist.getTitle());
             }
         });
 

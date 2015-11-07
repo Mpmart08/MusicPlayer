@@ -50,9 +50,9 @@ public final class Album {
         return new ArrayList<Integer>(this.songIds);
     }
 
-    public Image getAlbumArtwork() {
+    public Image getArtwork() {
 
-        return Library.getSong(songIds.get(0)).getArtwork(300);
+        return Library.getSong(songIds.get(0)).getArtwork();
     }
 
     public void downloadAlbumArtwork() {

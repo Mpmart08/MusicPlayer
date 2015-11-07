@@ -36,10 +36,12 @@ public class MainController implements Initializable {
     @FXML private VBox sideBar;
     @FXML private ImageView sideBarSlideButton;
     @FXML private ImageView playPauseButton;
-    @FXML private Region nowPlayingArtwork;
+    @FXML private ImageView nowPlayingArtwork;
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
     @FXML private Slider timeSlider;
+    @FXML private Label timePassed;
+    @FXML private Label timeRemaining;
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -135,17 +137,14 @@ public class MainController implements Initializable {
         nowPlayingArtist.setText(song.getArtist());
 
         Image artwork = song.getArtwork();
-        BackgroundImage image = new BackgroundImage(artwork, BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-
-        nowPlayingArtwork.setBackground(new Background(image));
+        nowPlayingArtwork.setImage(artwork);
     }
 
     public void initializeTimeSlider() {
 
         Song song = MusicPlayer.getNowPlaying();
         timeSlider.setMin(0);
-        timeSlider.setMax(song.getLength().getSeconds());
+        timeSlider.setMax(song.getLength().getSeconds() * 4);
         timeSlider.setValue(0);
         timeSlider.setBlockIncrement(1);
     }
@@ -153,6 +152,18 @@ public class MainController implements Initializable {
     public void updateTimeSlider() {
 
         timeSlider.increment();
+    }
+
+    public void initializeTimeLabels() {
+
+        timePassed.setText("0:00");
+        timeRemaining.setText(MusicPlayer.getNowPlaying().getLengthAsString());
+    }
+
+    public void updateTimeLabels() {
+
+        timePassed.setText(MusicPlayer.getTimePassed());
+        timeRemaining.setText(MusicPlayer.getTimeRemaining());
     }
 
     private void loadView(HBox eventSource) {

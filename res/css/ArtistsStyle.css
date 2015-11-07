@@ -177,3 +177,8 @@
     -fx-padding: 0;
     -fx-shape: null;
 }
+
+.separator .line {
+    -fx-border-width: 0 1 0 0;
+    -fx-border-color: #c2c2c2;
+}

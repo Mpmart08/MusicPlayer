@@ -1,6 +1,7 @@
 package musicplayer;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -22,8 +23,9 @@ public class MusicPlayer extends Application {
     private static Song selectedSong;
     private static MediaPlayer mediaPlayer;
     private static ArrayList<Song> nowPlayingList;
-    private static Song nowPlaying;
+    private static int nowPlayingIndex;
     private static Timer timer;
+    private static int timerCounter;
 
     public static void main(String[] args) {
 
@@ -35,6 +37,7 @@ public class MusicPlayer extends Application {
 
         LogManager.getLogManager().reset();
         timer = new Timer();
+        timerCounter = 0;
 
         Library.getSongs();
         Library.getAlbums();
@@ -58,12 +61,30 @@ public class MusicPlayer extends Application {
         }
     }
 
+    private static class SongSkipper implements Runnable {
+
+        @Override
+        public void run() {
+
+            if (++nowPlayingIndex < nowPlayingList.size()) {
+                setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
+                play();
+            }
+        }
+    }
+
     private static class TimeUpdater extends TimerTask {
 
         @Override
         public void run() {
 
-           mainController.updateTimeSlider();
+            Platform.runLater(() -> {
+
+                if (++timerCounter % 4 == 0) {
+                    mainController.updateTimeLabels();
+                }
+                mainController.updateTimeSlider();
+            });
         }
      }
 
@@ -72,7 +93,7 @@ public class MusicPlayer extends Application {
         if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
 
             mediaPlayer.play();
-            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 1000);
+            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
             mainController.updatePlayPauseIcon();
         }
     }
@@ -115,22 +136,47 @@ public class MusicPlayer extends Application {
 
     public static Song getNowPlaying() {
 
-        return nowPlaying;
+        return nowPlayingList.get(nowPlayingIndex);
     }
 
     public static void setNowPlaying(Song song) {
 
         if (nowPlayingList.contains(song)) {
 
-            nowPlaying = song;
+            nowPlayingIndex = nowPlayingList.indexOf(song);
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
             }
-            String path = selectedSong.getLocation();
+            if (timer != null) {
+                timer.cancel();
+            }
+            timer = new Timer();
+            timerCounter = 0;
+            String path = song.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(new SongSkipper());
             mainController.updateNowPlayingButton();
             mainController.initializeTimeSlider();
+            mainController.initializeTimeLabels();
         }
+    }
+
+    public static String getTimePassed() {
+
+        int secondsPassed = timerCounter / 4;
+        int minutes = secondsPassed / 60;
+        int seconds = secondsPassed % 60;
+        return Integer.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds));
+    }
+
+    public static String getTimeRemaining() {
+
+        long secondsPassed = timerCounter / 4;
+        long totalSeconds = getNowPlaying().getLength().getSeconds();
+        long secondsRemaining = totalSeconds - secondsPassed;
+        long minutes = secondsRemaining / 60;
+        long seconds = secondsRemaining % 60;
+        return Long.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Long.toString(seconds));
     }
 }

@@ -66,7 +66,7 @@ public final class Song {
 
     public String getLengthAsString() {
 
-        long seconds = length.getSeconds() - (length.toMinutes() * 60);
+        long seconds = length.getSeconds() % 60;
         return length.toMinutes() + ":" + (seconds < 10 ? "0" + seconds : seconds);
     }
 
@@ -90,7 +90,7 @@ public final class Song {
         return this.location;
     }
 
-    public Image getArtwork(int size) {
+    public Image getArtwork() {
 
         if (artwork == null) {
 
@@ -100,7 +100,7 @@ public final class Song {
                 Tag tag = audioFile.getTag();
                 byte[] bytes = tag.getFirstArtwork().getBinaryData();
                 ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-                artwork = new Image(in, size, size, true, true);
+                artwork = new Image(in, 300, 300, true, true);
 
             } catch (Exception ex) {
 
@@ -109,16 +109,5 @@ public final class Song {
         }
 
         return artwork;
-    }
-
-    public Image getArtwork() {
-
-        return getArtwork(80);
-    }
-
-    @Override
-    public String toString() {
-
-        return this.title;
     }
 }
