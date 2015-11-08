@@ -67,7 +67,18 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+
+        timeSlider.valueChangingProperty().addListener(
+            (value, wasChanging, isChanging) -> {
+
+                if (wasChanging) {
+
+                    int quarterSeconds = (int) Math.round(timeSlider.getValue());
+                    timeSlider.setValue(quarterSeconds);
+                    MusicPlayer.seek(quarterSeconds / 4);
+                }
+            }
+        );
     }
 
     @FXML

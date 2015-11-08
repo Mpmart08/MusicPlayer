@@ -42,3 +42,18 @@
     -fx-border-width: 1 0 0 0;
     -fx-border-color: #c2c2c2;
 }
+
+.slider *.thumb {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15 15 0 0;
+    -fx-background-image: url("../img/sliderIcon.png");
+}
+
+.slider *.track {
+    -fx-background-color: white;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 1px;
+}

@@ -10,6 +10,7 @@ import java.io.File;
 import javafx.scene.image.Image;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Media;
+import javafx.util.Duration;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class MusicPlayer extends Application {
         @Override
         public void run() {
 
-            if (++nowPlayingIndex < nowPlayingList.size()) {
+            if (nowPlayingIndex < nowPlayingList.size()) {
                 setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
                 play();
             }
@@ -107,6 +108,13 @@ public class MusicPlayer extends Application {
             timer = new Timer();
             mainController.updatePlayPauseIcon();
         }
+    }
+
+    public static void seek(int seconds) {
+
+        mediaPlayer.seek(new Duration(seconds * 1000));
+        timerCounter = seconds * 4;
+        mainController.updateTimeLabels();
     }
 
     public static boolean isPlaying() {
