@@ -73,9 +73,9 @@ public class MainController implements Initializable {
 
                 if (wasChanging) {
 
-                    int quarterSeconds = (int) Math.round(timeSlider.getValue());
-                    timeSlider.setValue(quarterSeconds);
-                    MusicPlayer.seek(quarterSeconds / 4);
+                    int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
+                    timeSlider.setValue(seconds * 4);
+                    MusicPlayer.seek(seconds);
                 }
             }
         );
@@ -98,9 +98,9 @@ public class MainController implements Initializable {
 
         if (styles.get(0).equals("sideBarItem")) {
             styles.setAll("sideBarItemSelected");
-            loadView(eventSource);
+            loadView(eventSource.getId());
         } else if (styles.get(0).equals("bottomBarItem")) {
-            loadView(eventSource);
+            loadView(eventSource.getId());
         }
     }
 
@@ -121,6 +121,20 @@ public class MainController implements Initializable {
             MusicPlayer.pause();
         } else {
             MusicPlayer.play();
+        }
+    }
+
+    public void loadView(String viewName) {
+
+        try {
+
+            String fileName = Resources.FXML + viewName + ".fxml";
+            Node view = (Node)FXMLLoader.load(this.getClass().getResource(fileName));
+            mainWindow.setCenter(view);
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
         }
     }
 
@@ -175,20 +189,6 @@ public class MainController implements Initializable {
 
         timePassed.setText(MusicPlayer.getTimePassed());
         timeRemaining.setText(MusicPlayer.getTimeRemaining());
-    }
-
-    private void loadView(HBox eventSource) {
-
-        try {
-
-            String fileName = Resources.FXML + eventSource.getId() + ".fxml";
-            Node view = (Node)FXMLLoader.load(this.getClass().getResource(fileName));
-            mainWindow.setCenter(view);
-
-        } catch (Exception ex) {
-
-            ex.printStackTrace();
-        }
     }
 
     private void collapseSideBar() {

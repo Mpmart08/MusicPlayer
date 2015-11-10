@@ -76,15 +76,19 @@ public class MusicPlayer extends Application {
 
     private static class TimeUpdater extends TimerTask {
 
+        int length = (int) getNowPlaying().getLength().getSeconds() * 4;
+
         @Override
         public void run() {
 
             Platform.runLater(() -> {
 
-                if (++timerCounter % 4 == 0) {
-                    mainController.updateTimeLabels();
+                if (timerCounter < length) {
+                    if (++timerCounter % 4 == 0) {
+                        mainController.updateTimeLabels();
+                    }
+                    mainController.updateTimeSlider();
                 }
-                mainController.updateTimeSlider();
             });
         }
      }
@@ -115,6 +119,26 @@ public class MusicPlayer extends Application {
         mediaPlayer.seek(new Duration(seconds * 1000));
         timerCounter = seconds * 4;
         mainController.updateTimeLabels();
+    }
+
+    public static void skip() {
+
+        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+
+            mediaPlayer.play();
+            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
+            mainController.updatePlayPauseIcon();
+        }
+    }
+
+    public static void back() {
+
+        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+
+            mediaPlayer.play();
+            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
+            mainController.updatePlayPauseIcon();
+        }
     }
 
     public static boolean isPlaying() {

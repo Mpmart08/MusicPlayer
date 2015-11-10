@@ -55,7 +55,7 @@ public final class Album {
         return Library.getSong(songIds.get(0)).getArtwork();
     }
 
-    public void downloadAlbumArtwork() {
+    public void downloadArtwork() {
 
         try {
 

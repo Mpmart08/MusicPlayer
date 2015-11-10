@@ -23,70 +23,83 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Separator;
+import javafx.util.Callback;
+import javafx.scene.control.ListCell;
 
 public class ArtistsController implements Initializable {
 
-	public static class ArtistHBox extends HBox {
+    public class ArtistCell extends ListCell<Artist>{
 
-		private Label title = new Label();
-		private ImageView artistImage = new ImageView();
-        private Artist artist;
+        HBox cell = new HBox();
+        ImageView artistImage = new ImageView();
+        Label title = new Label();
 
-		public ArtistHBox(Artist artist) {
-
-            super();
-            this.artist = artist;
-            this.setAlignment(Pos.CENTER_LEFT);
-            this.artistImage.setFitWidth(40);
-            this.artistImage.setFitHeight(40);
-            this.artistImage.setPreserveRatio(true);
-            this.artistImage.setSmooth(true);
-            this.artistImage.setCache(true);
-            this.artistImage.setImage(artist.getArtistImage());
-            this.title.setMaxWidth(190);
-            this.title.setText(artist.getTitle());
-            this.getChildren().addAll(this.artistImage, this.title);
-            this.setMargin(this.artistImage, new Insets(0, 10, 0, 0));
-		}
-
-        public Artist getArtist() {
-
-            return this.artist;
-        }
-	}
-
-    public static class AlbumHBox extends HBox {
-
-        private ImageView albumArtwork = new ImageView();
-        private Album album;
-
-        public AlbumHBox(Album album) {
+        public ArtistCell(){
 
             super();
-            this.album = album;
-            this.setAlignment(Pos.CENTER);
-            this.albumArtwork.setFitWidth(130);
-            this.albumArtwork.setFitHeight(130);
-            this.albumArtwork.setPreserveRatio(true);
-            this.albumArtwork.setSmooth(true);
-            this.albumArtwork.setCache(true);
-            this.albumArtwork.setImage(album.getArtwork());
-            this.getChildren().addAll(this.albumArtwork);
+            artistImage.setFitWidth(40);
+            artistImage.setFitHeight(40);
+            artistImage.setPreserveRatio(true);
+            artistImage.setSmooth(true);
+            artistImage.setCache(true);
+            title.setMaxWidth(190);
+            cell.getChildren().addAll(artistImage, title);
+            cell.setAlignment(Pos.CENTER_LEFT);
+            cell.setMargin(artistImage, new Insets(0, 10, 0, 0));
         }
 
-        public Album getAlbum() {
+        @Override
+        protected void updateItem(Artist artist, boolean empty){
 
-            return this.album;
-        }
+            super.updateItem(artist, empty);
 
-        public ImageView getImageView() {
+            if (empty){
 
-            return this.albumArtwork;
+                setGraphic(null);
+
+            } else {
+
+                title.setText(artist.getTitle());
+                artistImage.setImage(artist.getArtistImage());
+                setGraphic(cell);
+            }
         }
     }
 
-	@FXML private ListView<ArtistHBox> artistList;
-    @FXML private ListView<AlbumHBox> albumList;
+    public class AlbumCell extends ListCell<Album>{
+
+        ImageView albumArtwork = new ImageView();
+
+        public AlbumCell(){
+
+            super();
+            setAlignment(Pos.CENTER);
+            albumArtwork.setFitWidth(130);
+            albumArtwork.setFitHeight(130);
+            albumArtwork.setPreserveRatio(true);
+            albumArtwork.setSmooth(true);
+            albumArtwork.setCache(true);
+        }
+
+        @Override
+        protected void updateItem(Album album, boolean empty){
+
+            super.updateItem(album, empty);
+
+            if (empty){
+
+                setGraphic(null);
+
+            } else {
+
+                albumArtwork.setImage(album.getArtwork());
+                setGraphic(albumArtwork);
+            }
+        }
+    }
+
+	@FXML private ListView<Artist> artistList;
+    @FXML private ListView<Album> albumList;
     @FXML private TableView<Song> songTable;
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
@@ -97,7 +110,6 @@ public class ArtistsController implements Initializable {
 
     private Album selectedAlbum;
     private Artist selectedArtist;
-    private boolean newAlbumSelected = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -110,19 +122,13 @@ public class ArtistsController implements Initializable {
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
-        ObservableList<ArtistHBox> artistHBoxes = FXCollections.observableArrayList();
-        ObservableList<Artist> artists = Library.getArtists();
-
-        for (Artist artist : artists) {
-
-            artistHBoxes.add(new ArtistHBox(artist));
-        }
-
-        artistList.setItems(artistHBoxes);
+        albumList.setCellFactory(listView -> new AlbumCell());
+        artistList.setCellFactory(listView -> new ArtistCell());
+        artistList.setItems(Library.getArtists());
 
         artistList.setOnMouseClicked(event -> {
 
-            selectedArtist = artistList.getSelectionModel().getSelectedItem().getArtist();
+            selectedArtist = artistList.getSelectionModel().getSelectedItem();
             showAllSongs(selectedArtist);
             artistLabel.setText(selectedArtist.getTitle());
             separator.setVisible(true);
@@ -151,8 +157,7 @@ public class ArtistsController implements Initializable {
 
         albumList.setOnMouseClicked(event -> {
 
-            AlbumHBox selectedItem = albumList.getSelectionModel().getSelectedItem();
-            Album album = (selectedItem == null) ? null : selectedItem.getAlbum();
+            Album album = albumList.getSelectionModel().getSelectedItem();
             selectAlbum(album);
         });
 
@@ -202,8 +207,8 @@ public class ArtistsController implements Initializable {
 
         if (selectedAlbum == album) {
 
-            selectedAlbum = null;
-            showAllSongs(artistList.getSelectionModel().getSelectedItem().getArtist());
+            albumList.getSelectionModel().clearSelection();
+            showAllSongs(artistList.getSelectionModel().getSelectedItem());
 
         } else {
 
@@ -223,13 +228,13 @@ public class ArtistsController implements Initializable {
 
     private void showAllSongs(Artist artist) {
 
-        ObservableList<AlbumHBox> albums = FXCollections.observableArrayList();
+        ObservableList<Album> albums = FXCollections.observableArrayList();
         ObservableList<Song> songs = FXCollections.observableArrayList();
 
         for (int albumId : artist.getAlbumIds()) {
 
             Album album = Library.getAlbum(albumId);
-            albums.add(new AlbumHBox(album));
+            albums.add(album);
 
             for (int songId : album.getSongIds()) {
 
