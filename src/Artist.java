@@ -11,7 +11,7 @@ import java.io.File;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-public final class Artist {
+public final class Artist implements Comparable<Artist> {
 
     private String title;
     private ArrayList<Integer> albumIds;
@@ -78,5 +78,43 @@ public final class Artist {
         }
 
         return artistImage;
+    }
+
+    @Override
+    public int compareTo(Artist other) throws NullPointerException {
+
+        if (other == null) {
+
+            throw new NullPointerException();
+        }
+
+        String first = removeArticle(this.title);
+        String second = removeArticle(other.title);
+
+        return first.compareTo(second);
+    }
+
+    private String removeArticle(String title) {
+
+        String arr[] = title.split(" ", 2);
+
+        if (arr.length < 2) {
+
+            return title;
+
+        } else {
+
+            String firstWord = arr[0];
+            String theRest = arr[1];
+
+            switch (firstWord) {
+                case "A":
+                case "An":
+                case "The":
+                    return theRest;
+                default:
+                    return title;
+            }
+        }
     }
 }

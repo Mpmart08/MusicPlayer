@@ -15,7 +15,7 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.datatype.Artwork;
 
-public final class Album {
+public final class Album implements Comparable<Album> {
 
     private int id;
     private String title;
@@ -102,6 +102,44 @@ public final class Album {
         } catch (Exception ex) {
 
             ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public int compareTo(Album other) throws NullPointerException {
+
+        if (other == null) {
+
+            throw new NullPointerException();
+        }
+
+        String first = removeArticle(this.title);
+        String second = removeArticle(other.title);
+
+        return first.compareTo(second);
+    }
+
+    private String removeArticle(String title) {
+
+        String arr[] = title.split(" ", 2);
+
+        if (arr.length < 2) {
+
+            return title;
+
+        } else {
+
+            String firstWord = arr[0];
+            String theRest = arr[1];
+
+            switch (firstWord) {
+                case "A":
+                case "An":
+                case "The":
+                    return theRest;
+                default:
+                    return title;
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ import javax.xml.stream.XMLInputFactory;
 import java.io.FileInputStream;
 import javax.xml.stream.XMLStreamReader;
 
-public final class Song {
+public final class Song implements Comparable<Song> {
 
     private int id;
     private String title;
@@ -109,5 +109,16 @@ public final class Song {
         }
 
         return artwork;
+    }
+
+    @Override
+    public int compareTo(Song other) throws NullPointerException {
+
+        if (other == null) {
+
+            throw new NullPointerException();
+        }
+
+        return Integer.compare(this.trackNumber, other.trackNumber);
     }
 }

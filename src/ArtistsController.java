@@ -124,7 +124,10 @@ public class ArtistsController implements Initializable {
 
         albumList.setCellFactory(listView -> new AlbumCell());
         artistList.setCellFactory(listView -> new ArtistCell());
-        artistList.setItems(Library.getArtists());
+
+        ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
+        Collections.sort(artists);
+        artistList.setItems(artists);
 
         artistList.setOnMouseClicked(event -> {
 
@@ -221,6 +224,7 @@ public class ArtistsController implements Initializable {
                 songs.add(song);
             }
 
+            Collections.sort(songs);
             songTable.setItems(songs);
             albumLabel.setText(album.getTitle());
         }
@@ -243,6 +247,15 @@ public class ArtistsController implements Initializable {
             }
         }
 
+        Collections.sort(songs, (first, second) -> {
+
+            if (first.getAlbum().compareTo(second.getAlbum()) != 0) {
+                return first.getAlbum().compareTo(second.getAlbum());
+            } else {
+                return first.compareTo(second);
+            }
+        });
+        Collections.sort(albums);
         selectedAlbum = null;
         albumList.setItems(albums);
         songTable.setItems(songs);
