@@ -151,7 +151,7 @@ public class ArtistsController implements Initializable {
             }
 
             if (index >= 0 && index < Library.getArtists().size()) {
-                Artist artist = Library.getArtist(index);
+                Artist artist = artists.get(index);
                 selectedArtist = artist;
                 showAllSongs(selectedArtist);
                 artistLabel.setText(selectedArtist.getTitle());
@@ -178,8 +178,7 @@ public class ArtistsController implements Initializable {
             }
 
             if (index >= 0 && index < selectedArtist.getAlbumIds().size()) {
-                int albumId = selectedArtist.getAlbumIds().get(index);
-                Album album = Library.getAlbum(albumId);
+                Album album = albumList.getItems().get(index);
                 selectAlbum(album);
             }
         });
