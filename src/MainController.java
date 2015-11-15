@@ -124,17 +124,20 @@ public class MainController implements Initializable {
         }
     }
 
-    public void loadView(String viewName) {
+    public Initializable loadView(String viewName) {
 
         try {
 
             String fileName = Resources.FXML + viewName + ".fxml";
-            Node view = (Node)FXMLLoader.load(this.getClass().getResource(fileName));
+            FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
+            Node view = (Node) loader.load();
             mainWindow.setCenter(view);
+            return loader.getController();
 
         } catch (Exception ex) {
 
             ex.printStackTrace();
+            return null;
         }
     }
 

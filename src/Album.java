@@ -77,25 +77,28 @@ public final class Album implements Comparable<Album> {
                     && reader.getAttributeValue(0).equals("extralarge")) {
 
                     reader.next();
-                    BufferedImage bufferedImage = ImageIO.read(new URL(reader.getText()));
-                    BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
-                        bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                    newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-                    File file = File.createTempFile("temp", "temp");
-                    ImageIO.write(newBufferedImage, "jpg", file);
 
-                    for (int songId : songIds) {
+                    if (reader.hasText()) {
+                        BufferedImage bufferedImage = ImageIO.read(new URL(reader.getText()));
+                        BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
+                            bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                        newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+                        File file = File.createTempFile("temp", "temp");
+                        ImageIO.write(newBufferedImage, "jpg", file);
 
-                        AudioFile audioFile = AudioFileIO.read(new File(Library.getSongs().get(songId).getLocation()));
-                        Tag tag = audioFile.getTag();
-                        tag.deleteArtworkField();
+                        for (int songId : songIds) {
 
-                        Artwork artwork = Artwork.createArtworkFromFile(file);
-                        tag.setField(artwork);
-                        AudioFileIO.write(audioFile);
+                            AudioFile audioFile = AudioFileIO.read(new File(Library.getSongs().get(songId).getLocation()));
+                            Tag tag = audioFile.getTag();
+                            tag.deleteArtworkField();
+
+                            Artwork artwork = Artwork.createArtworkFromFile(file);
+                            tag.setField(artwork);
+                            AudioFileIO.write(audioFile);
+                        }
+
+                        file.delete();
                     }
-
-                    file.delete();
                 }
             }
 

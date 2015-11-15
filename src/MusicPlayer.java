@@ -211,4 +211,9 @@ public class MusicPlayer extends Application {
         long seconds = secondsRemaining % 60;
         return Long.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Long.toString(seconds));
     }
+
+    public static MainController getMainController() {
+
+        return mainController;
+    }
 }
