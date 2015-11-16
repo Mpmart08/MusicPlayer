@@ -233,4 +233,11 @@
          </right>
       </BorderPane>
    </bottom>
+   <center>
+      <ScrollPane fx:id="subViewRoot" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </ScrollPane>
+   </center>
 </BorderPane>

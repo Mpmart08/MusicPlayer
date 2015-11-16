@@ -2,8 +2,10 @@ package musicplayer;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -31,8 +33,11 @@ public class MainController implements Initializable {
     private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
+    private double expandedHeight = 50;
+    private double collapsedHeight = 0;
 
     @FXML private BorderPane mainWindow;
+    @FXML private ScrollPane subViewRoot;
     @FXML private VBox sideBar;
     @FXML private ImageView sideBarSlideButton;
     @FXML private ImageView playPauseButton;
@@ -65,13 +70,43 @@ public class MainController implements Initializable {
         }
     };
 
+    private Animation loadViewAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+            subViewRoot.setVvalue(0);
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            if (frac < 0.25) {
+                subViewRoot.getContent().setTranslateY(expandedHeight - curHeight * 4);
+            } else {
+                subViewRoot.getContent().setTranslateY(collapsedHeight);
+            }
+            subViewRoot.getContent().setOpacity(frac);
+        }
+    };
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         timeSlider.valueChangingProperty().addListener(
-            (value, wasChanging, isChanging) -> {
+            (slider, wasChanging, isChanging) -> {
 
                 if (wasChanging) {
+
+                    int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
+                    timeSlider.setValue(seconds * 4);
+                    MusicPlayer.seek(seconds);
+                }
+            }
+        );
+
+        timeSlider.valueProperty().addListener(
+            (slider, oldValue, newValue) -> {
+
+                double previous = oldValue.doubleValue();
+                double current = newValue.doubleValue();
+                if (!timeSlider.isValueChanging() && current != previous + 1) {
 
                     int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
                     timeSlider.setValue(seconds * 4);
@@ -131,7 +166,11 @@ public class MainController implements Initializable {
             String fileName = Resources.FXML + viewName + ".fxml";
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
             Node view = (Node) loader.load();
-            mainWindow.setCenter(view);
+            subViewRoot.setContent(view);
+            if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                loadViewAnimation.stop();
+            }
+            loadViewAnimation.play();
             return loader.getController();
 
         } catch (Exception ex) {
@@ -233,7 +272,7 @@ public class MainController implements Initializable {
             if (n instanceof HBox) {
                 for (Node m : ((HBox)n).getChildren()) {
                     if (m instanceof Label) {
-                        m.setOpacity(isVisible ? 1 : 0);
+                        m.setVisible(isVisible);
                     }
                 }
             }

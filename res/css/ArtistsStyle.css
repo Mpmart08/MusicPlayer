@@ -179,7 +179,7 @@
     -fx-border-color: #c2c2c2;
 }
 
-.scroll-pane, .flow-pane {
+.scroll-pane, .scroll-pane > .viewport, .flow-pane {
     -fx-background-color: white;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 0 0;
