@@ -18,6 +18,7 @@ import javafx.collections.FXCollections;
 import java.util.Collections;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,6 +26,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.control.Separator;
 import javafx.util.Callback;
 import javafx.scene.control.ListCell;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
+import javafx.util.Duration;
 
 public class ArtistsMainController implements Initializable {
 
@@ -118,9 +122,27 @@ public class ArtistsMainController implements Initializable {
     @FXML private Label artistLabel;
     @FXML private Label albumLabel;
     @FXML private Separator separator;
+    @FXML private VBox subViewRoot;
 
     private Album selectedAlbum;
     private Artist selectedArtist;
+    private double expandedHeight = 50;
+    private double collapsedHeight = 0;
+
+    private Animation loadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            if (frac < 0.25) {
+                subViewRoot.setTranslateY(expandedHeight - curHeight * 4);
+            } else {
+                subViewRoot.setTranslateY(collapsedHeight);
+            }
+            subViewRoot.setOpacity(frac);
+        }
+    };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -146,6 +168,10 @@ public class ArtistsMainController implements Initializable {
             showAllSongs(selectedArtist);
             artistLabel.setText(selectedArtist.getTitle());
             albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+            if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                loadAnimation.stop();
+            }
+            loadAnimation.play();
         });
 
         artistList.setOnKeyPressed(event -> {
@@ -166,9 +192,12 @@ public class ArtistsMainController implements Initializable {
                 selectedArtist = artist;
                 showAllSongs(selectedArtist);
                 artistLabel.setText(selectedArtist.getTitle());
+                albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    loadAnimation.stop();
+                }
+                loadAnimation.play();
             }
-
-            albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
         });
 
         albumList.setOnMouseClicked(event -> {
@@ -279,7 +308,9 @@ public class ArtistsMainController implements Initializable {
 
         selectedArtist = artist;
         artistList.getSelectionModel().select(artist);
+        artistList.scrollTo(artistList.getSelectionModel().getSelectedIndex());
         showAllSongs(artist);
+        albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
         artistLabel.setText(artist.getTitle());
         separator.setVisible(true);
     }

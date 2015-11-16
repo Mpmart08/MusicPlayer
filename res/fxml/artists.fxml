@@ -5,12 +5,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane fx:id="scroll" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" stylesheets="@../css/ArtistsStyle.css" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
-   <content>
-      <FlowPane fx:id="grid">
-         <padding>
-            <Insets bottom="25.0" left="25.0" />
-         </padding>
-      </FlowPane>
-   </content>
-</ScrollPane>
+
+<FlowPane fx:id="grid" stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
+   <padding>
+      <Insets bottom="25.0" left="25.0" />
+   </padding>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</FlowPane>

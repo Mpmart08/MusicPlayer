@@ -61,3 +61,11 @@
     -fx-background-insets: 0;
     -fx-padding: 1px;
 }
+
+.scroll-pane, .scroll-pane > .viewport {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
