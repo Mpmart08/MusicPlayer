@@ -19,7 +19,7 @@
 }
 
 .sideBarItem:pressed, .sideBarItemSelected:pressed {
-    -fx-background-color:#c2c2c2;
+    -fx-background-color: #c2c2c2;
 }
 
 .sideBarItemSelected > .label {

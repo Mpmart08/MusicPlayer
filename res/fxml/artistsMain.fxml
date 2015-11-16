@@ -13,7 +13,7 @@
             <Insets left="25.0" />
          </BorderPane.margin>
          <children>
-            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0">
+            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
                <children>
                   <Label fx:id="artistLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP">
                      <HBox.margin>
@@ -25,7 +25,7 @@
                         <Insets bottom="10.0" top="10.0" />
                      </HBox.margin>
                   </Separator>
-                  <Label fx:id="albumLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
+                  <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
                </children>
             </HBox>
             <ListView fx:id="albumList" fixedCellSize="150.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0">
