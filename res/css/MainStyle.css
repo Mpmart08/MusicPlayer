@@ -18,6 +18,10 @@
     -fx-background-color: #dadada;
 }
 
+.sideBarItem:pressed, .sideBarItemSelected:pressed {
+    -fx-background-color: #c2c2c2;
+}
+
 .sideBarItemSelected > .label {
     -fx-text-fill: rgb(52, 109, 207);
 }

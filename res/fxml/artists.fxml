@@ -1,54 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
-   <center>
-      <VBox BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets left="25.0" />
-         </BorderPane.margin>
-         <children>
-            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0">
-               <children>
-                  <Label fx:id="artistLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </Label>
-                  <Separator fx:id="separator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0" visible="false">
-                     <HBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
-                     </HBox.margin>
-                  </Separator>
-                  <Label fx:id="albumLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
-               </children>
-            </HBox>
-            <ListView fx:id="albumList" fixedCellSize="150.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin></ListView>
-            <TableView fx:id="songTable" fixedCellSize="50.0" visible="false">
-              <columns>
-                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="textColumn" text="Title" />
-                <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="numberColumn" text="Length" />
-                  <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="numberColumn" text="Plays" />
-              </columns>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </TableView>
-         </children>
-      </VBox>
-   </center>
-   <padding>
-      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-   </padding>
-   <left>
-      <ListView fx:id="artistList" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER" />
-   </left>
-</BorderPane>
+<ScrollPane fx:id="scroll" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" stylesheets="@../css/ArtistsStyle.css" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsController">
+   <content>
+      <FlowPane fx:id="grid">
+         <padding>
+            <Insets bottom="25.0" left="25.0" />
+         </padding>
+      </FlowPane>
+   </content>
+</ScrollPane>

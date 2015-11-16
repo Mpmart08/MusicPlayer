@@ -40,29 +40,37 @@ public final class Artist implements Comparable<Artist> {
 
             try {
 
-                File file = new File("./musicplayer/" + Resources.IMG + this.title + ".jpeg");
+                File file = new File("./musicplayer/" + Resources.IMG + this.title + ".jpg");
 
                 if (!file.exists()) {
 
                     file.mkdirs();
                     XMLInputFactory factory = XMLInputFactory.newInstance();
-                    URL xmlData = new URL(Resources.APIBASE + "method=artist.getinfo&artist=" + URLEncoder.encode(this.title, "UTF-8") + "&api_key=" + Resources.APIKEY);
+                    URL xmlData = new URL(Resources.APIBASE
+                        + "method=artist.getinfo"
+                        + "&artist=" + URLEncoder.encode(this.title, "UTF-8")
+                        + "&api_key=" + Resources.APIKEY);
                     XMLStreamReader reader = factory.createXMLStreamReader(xmlData.openStream(), "UTF-8");
+                    boolean imageFound = false;
 
-                    while (reader.hasNext()) {
+                    while (reader.hasNext() && !imageFound) {
 
                         reader.next();
 
                         if (reader.isStartElement()
                             && reader.getName().getLocalPart().equals("image")
-                            && reader.getAttributeValue(0).equals("large")) {
+                            && reader.getAttributeValue(0).equals("extralarge")) {
 
-                                reader.next();
+                            reader.next();
+
+                            if (reader.hasText()) {
                                 BufferedImage bufferedImage = ImageIO.read(new URL(reader.getText()));
                                 BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
                                     bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
                                 newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
                                 ImageIO.write(newBufferedImage, "jpg", file);
+                                imageFound = true;
+                            }
                         }
                     }
                 }
@@ -71,7 +79,7 @@ public final class Artist implements Comparable<Artist> {
 
             } catch (Exception ex) {
 
-                File file = new File("./musicplayer/" + Resources.IMG + this.title + ".jpeg");
+                File file = new File("./musicplayer/" + Resources.IMG + this.title + ".jpg");
                 file.delete();
                 artistImage = new Image(this.getClass().getResource(Resources.IMG + "artistsIcon.png").toString());
             }
