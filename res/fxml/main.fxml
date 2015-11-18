@@ -185,7 +185,7 @@
          <right>
             <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="backButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#back" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
@@ -201,7 +201,7 @@
                         <Image url="@../img/playIcon.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="skipButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#skip" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>

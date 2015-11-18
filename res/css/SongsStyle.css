@@ -23,6 +23,11 @@
     -fx-font-weight: normal;
 }
 
+.table-cell {
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+}
+
 .table-row-cell .text {
     -fx-font-family: verdana;
     -fx-font-size: 12px;
@@ -43,12 +48,14 @@
 
 .table-row-cell:filled:selected:focused, .table-row-cell:filled:selected {
     -fx-background-color: rgb(52, 109, 207);
-    -fx-text-fill: white;
 }
 
 .table-row-cell:filled:selected:focused:hover, .table-row-cell:filled:selected:hover {
     -fx-background-color: rgb(47, 98, 187);
-    -fx-text-fill: white;
+}
+
+.table-row-cell:filled:selected .text, .table-row-cell:filled:selected:hover .text {
+    -fx-fill: white;
 }
 
 .table-row-cell:even:filled {

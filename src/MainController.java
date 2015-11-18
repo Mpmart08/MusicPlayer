@@ -47,6 +47,8 @@ public class MainController implements Initializable {
     @FXML private Slider timeSlider;
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
+    @FXML private ImageView backButton;
+    @FXML private ImageView skipButton;
 
     private Animation collapseAnimation = new Transition() {
         {
@@ -108,7 +110,7 @@ public class MainController implements Initializable {
                 double current = newValue.doubleValue();
                 if (!timeSlider.isValueChanging() && current != previous + 1) {
 
-                    int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
+                    int seconds = (int) Math.round(current / 4.0);
                     timeSlider.setValue(seconds * 4);
                     MusicPlayer.seek(seconds);
                 }
@@ -159,6 +161,18 @@ public class MainController implements Initializable {
         }
     }
 
+    @FXML
+    private void back() {
+
+        MusicPlayer.back();
+    }
+
+    @FXML
+    private void skip() {
+
+        MusicPlayer.skip();
+    }
+
     public Initializable loadView(String viewName) {
 
         try {
@@ -199,21 +213,31 @@ public class MainController implements Initializable {
     public void updateNowPlayingButton() {
 
         Song song = MusicPlayer.getNowPlaying();
-
-        nowPlayingTitle.setText(song.getTitle());
-        nowPlayingArtist.setText(song.getArtist());
-
-        Image artwork = song.getArtwork();
-        nowPlayingArtwork.setImage(artwork);
+        if (song != null) {
+            nowPlayingTitle.setText(song.getTitle());
+            nowPlayingArtist.setText(song.getArtist());
+            nowPlayingArtwork.setImage(song.getArtwork());
+        } else {
+            nowPlayingTitle.setText("");
+            nowPlayingArtist.setText("");
+            nowPlayingArtwork.setImage(null);
+        }
     }
 
     public void initializeTimeSlider() {
 
         Song song = MusicPlayer.getNowPlaying();
-        timeSlider.setMin(0);
-        timeSlider.setMax(song.getLength().getSeconds() * 4);
-        timeSlider.setValue(0);
-        timeSlider.setBlockIncrement(1);
+        if (song != null) {
+            timeSlider.setMin(0);
+            timeSlider.setMax(song.getLength().getSeconds() * 4);
+            timeSlider.setValue(0);
+            timeSlider.setBlockIncrement(1);
+        } else {
+            timeSlider.setMin(0);
+            timeSlider.setMax(1);
+            timeSlider.setValue(0);
+            timeSlider.setBlockIncrement(1);
+        }
     }
 
     public void updateTimeSlider() {
@@ -223,8 +247,14 @@ public class MainController implements Initializable {
 
     public void initializeTimeLabels() {
 
-        timePassed.setText("0:00");
-        timeRemaining.setText(MusicPlayer.getNowPlaying().getLengthAsString());
+        Song song = MusicPlayer.getNowPlaying();
+        if (song != null) {
+            timePassed.setText("0:00");
+            timeRemaining.setText(song.getLengthAsString());
+        } else {
+            timePassed.setText("");
+            timeRemaining.setText("");
+        }
     }
 
     public void updateTimeLabels() {

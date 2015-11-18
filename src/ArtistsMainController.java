@@ -38,7 +38,7 @@ public class ArtistsMainController implements Initializable {
         ImageView artistImage = new ImageView();
         Label title = new Label();
 
-        public ArtistCell(){
+        public ArtistCell() {
 
             super();
             artistImage.setFitWidth(40);
@@ -50,19 +50,10 @@ public class ArtistsMainController implements Initializable {
             cell.getChildren().addAll(artistImage, title);
             cell.setAlignment(Pos.CENTER_LEFT);
             cell.setMargin(artistImage, new Insets(0, 10, 0, 0));
-            this.selectedProperty().addListener(
-                (cell, oldValue, isSelected) -> {
-                    if (isSelected) {
-                        title.setStyle("-fx-text-fill: white;");
-                    } else {
-                        title.setStyle("-fx-text-fill: black;");
-                    }
-                }
-            );
         }
 
         @Override
-        protected void updateItem(Artist artist, boolean empty){
+        protected void updateItem(Artist artist, boolean empty) {
 
             super.updateItem(artist, empty);
 
@@ -164,14 +155,36 @@ public class ArtistsMainController implements Initializable {
 
         artistList.setOnMouseClicked(event -> {
 
-            selectedArtist = artistList.getSelectionModel().getSelectedItem();
-            showAllSongs(selectedArtist);
-            artistLabel.setText(selectedArtist.getTitle());
-            albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-            if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                loadAnimation.stop();
+            ObservableList<Song> songs;
+
+            if (selectedArtist != artistList.getSelectionModel().getSelectedItem()) {
+
+                selectedArtist = artistList.getSelectionModel().getSelectedItem();
+                songs = showAllSongs(selectedArtist);
+                artistLabel.setText(selectedArtist.getTitle());
+                albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+
+                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    loadAnimation.stop();
+                }
+                loadAnimation.play();
+
+            } else {
+
+                songs = showAllSongs(selectedArtist);
             }
-            loadAnimation.play();
+
+            if (event.getClickCount() == 2) {
+
+                Thread thread = new Thread(() -> {
+                    Song song = songs.get(0);
+                    MusicPlayer.setNowPlayingList(songs);
+                    MusicPlayer.setNowPlaying(song);
+                    MusicPlayer.play();
+                });
+
+                thread.start();
+            }
         });
 
         artistList.setOnKeyPressed(event -> {
@@ -203,7 +216,29 @@ public class ArtistsMainController implements Initializable {
         albumList.setOnMouseClicked(event -> {
 
             Album album = albumList.getSelectionModel().getSelectedItem();
-            selectAlbum(album);
+
+            if (event.getClickCount() == 2) {
+
+                if (album != selectedAlbum) {
+                    selectAlbum(album);
+                }
+
+                ArrayList<Song> nowPlayingList = MusicPlayer.getNowPlayingList();
+                ArrayList<Song> songs = new ArrayList<Song>();
+
+                for (int songId : selectedAlbum.getSongIds()) {
+
+                    songs.add(Library.getSong(songId));
+                }
+
+                MusicPlayer.setNowPlayingList(songs);
+                MusicPlayer.setNowPlaying(songs.get(0));
+                MusicPlayer.play();
+
+            } else {
+
+                selectAlbum(album);
+            }
         });
 
         albumList.setOnKeyPressed(event -> {
@@ -237,8 +272,38 @@ public class ArtistsMainController implements Initializable {
             TableRow<Song> row = new TableRow<Song>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    ArrayList<Song> songs = MusicPlayer.getNowPlayingList();
+
+                    if (!songs.contains(song)) {
+
+                        songs.clear();
+
+                        if (selectedAlbum != null) {
+
+                            for (int songId : selectedAlbum.getSongIds()) {
+
+                                songs.add(Library.getSong(songId));
+                            }
+
+                        } else {
+
+                            for (int albumId : selectedArtist.getAlbumIds()) {
+
+                                Album album = Library.getAlbum(albumId);
+
+                                for (int songId : album.getSongIds()) {
+
+                                    Song s = Library.getSong(songId);
+                                    songs.add(s);
+                                }
+                            }
+                        }
+
+                        MusicPlayer.setNowPlayingList(songs);
+                    }
+
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
@@ -271,7 +336,7 @@ public class ArtistsMainController implements Initializable {
         }
     }
 
-    private void showAllSongs(Artist artist) {
+    private ObservableList<Song> showAllSongs(Artist artist) {
 
         ObservableList<Album> albums = FXCollections.observableArrayList();
         ObservableList<Song> songs = FXCollections.observableArrayList();
@@ -298,10 +363,13 @@ public class ArtistsMainController implements Initializable {
         });
         Collections.sort(albums);
         selectedAlbum = null;
+        albumList.getSelectionModel().clearSelection();
         albumList.setItems(albums);
         songTable.setItems(songs);
         songTable.setVisible(true);
         albumLabel.setText("All Songs");
+
+        return songs;
     }
 
     public void selectArtist(Artist artist) {
