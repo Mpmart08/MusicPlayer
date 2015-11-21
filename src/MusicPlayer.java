@@ -67,10 +67,7 @@ public class MusicPlayer extends Application {
         @Override
         public void run() {
 
-            if (nowPlayingIndex < nowPlayingList.size()) {
-                setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
-                play();
-            }
+            skip();
         }
     }
 
@@ -116,28 +113,45 @@ public class MusicPlayer extends Application {
 
     public static void seek(int seconds) {
 
-        mediaPlayer.seek(new Duration(seconds * 1000));
-        timerCounter = seconds * 4;
-        mainController.updateTimeLabels();
+        if (mediaPlayer != null) {
+            mediaPlayer.seek(new Duration(seconds * 1000));
+            timerCounter = seconds * 4;
+            mainController.updateTimeLabels();
+        }
     }
 
     public static void skip() {
 
-        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+        if (nowPlayingIndex < nowPlayingList.size() - 1) {
 
-            mediaPlayer.play();
-            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
+            play();
+
+        } else {
+
+            timer.cancel();
+            timer = new Timer();
+            mediaPlayer = null;
+            nowPlayingList = null;
+            nowPlayingIndex = 0;
+            mainController.initializeTimeSlider();
+            mainController.initializeTimeLabels();
+            mainController.updateNowPlayingButton();
             mainController.updatePlayPauseIcon();
         }
     }
 
     public static void back() {
 
-        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+        if (timerCounter > 20) {
 
-            mediaPlayer.play();
-            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
-            mainController.updatePlayPauseIcon();
+            mainController.initializeTimeSlider();
+            seek(0);
+
+        } else if (nowPlayingIndex > 0) {
+
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
+            play();
         }
     }
 
@@ -158,7 +172,7 @@ public class MusicPlayer extends Application {
 
     public static ArrayList<Song> getNowPlayingList() {
 
-        return new ArrayList<Song>(nowPlayingList);
+        return nowPlayingList == null ? new ArrayList<Song>() : new ArrayList<Song>(nowPlayingList);
     }
 
     public static void setNowPlayingList(List<Song> list) {
@@ -168,7 +182,7 @@ public class MusicPlayer extends Application {
 
     public static Song getNowPlaying() {
 
-        return nowPlayingList.get(nowPlayingIndex);
+        return nowPlayingList == null ? null : nowPlayingList.get(nowPlayingIndex);
     }
 
     public static void setNowPlaying(Song song) {
@@ -188,9 +202,11 @@ public class MusicPlayer extends Application {
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
-            mainController.updateNowPlayingButton();
-            mainController.initializeTimeSlider();
-            mainController.initializeTimeLabels();
+            Platform.runLater(() -> {
+                mainController.updateNowPlayingButton();
+                mainController.initializeTimeSlider();
+                mainController.initializeTimeLabels();
+            });
         }
     }
 

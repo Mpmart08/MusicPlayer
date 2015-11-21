@@ -52,7 +52,9 @@ public class SongsController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    if (MusicPlayer.getNowPlayingList().isEmpty()) {
+                        MusicPlayer.setNowPlayingList(Library.getSongs());
+                    }
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
