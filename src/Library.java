@@ -227,6 +227,17 @@ public final class Library {
 
             playlists = FXCollections.observableArrayList();
 
+            int id = 0;
+            String title = "Most Played";
+            ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
+            Collections.sort(songs, (x, y) -> Integer.compare(y.getPlayCount(), x.getPlayCount()));
+            playlists.add(new Playlist(id, title, new ArrayList<Song>(songs.subList(0, 25))));
+
+            id = 1;
+            title = "Recently Played";
+            Collections.sort(songs, (x, y) -> y.getPlayDate().compareTo(x.getPlayDate()));
+            playlists.add(new Playlist(id, title, new ArrayList<Song>(songs.subList(0, 25))));
+
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -235,9 +246,8 @@ public final class Library {
 
                 String element = "";
                 boolean isPlaylist = false;
-                int id = -1;
-                String title = null;
-                ArrayList<Integer> songIds = new ArrayList<Integer>();
+                title = null;
+                songs = new ArrayList<Song>();
 
                 while(reader.hasNext()) {
 
@@ -260,7 +270,7 @@ public final class Library {
                                 title = value;
                                 break;
                             case SONGID:
-                                songIds.add(Integer.parseInt(value));
+                                songs.add(getSong(Integer.parseInt(value)));
                                 break;
                         }
 
@@ -273,10 +283,10 @@ public final class Library {
 
                     } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("playlist")) {
 
-                        playlists.add(new Playlist(id, title, songIds));
+                        playlists.add(new Playlist(id, title, songs));
                         id = -1;
                         title = null;
-                        songIds = new ArrayList<Integer>();
+                        songs = new ArrayList<Song>();
 
                     } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("playlists")) {
 
@@ -292,79 +302,6 @@ public final class Library {
         }
 
         return playlists;
-    }
-
-    public static ObservableList<Song> getSongsByArtist(String title) {
-
-        if (artists == null) {
-            getArtists();
-        }
-
-        Artist artist = artists.stream().filter(x -> title.equals(x.getTitle())).findFirst().get();
-
-        return getSongsByArtist(artist);
-    }
-
-    public static ObservableList<Song> getSongsByArtist(Artist artist) {
-
-        if (songs == null) {
-            getSongs();
-        }
-
-        ObservableList<Song> songsByArtist = FXCollections.observableArrayList();
-
-        for (int albumId : artist.getAlbumIds()) {
-            for (int songId : albums.get(albumId).getSongIds()) {
-                songsByArtist.add(songs.get(songId));
-            }
-        }
-
-        return songsByArtist;
-    }
-
-    public static ObservableList<Song> getSongsByAlbum(String title) {
-        
-        if (albums == null) {
-            getAlbums();
-        }
-
-        Album album = albums.stream().filter(x -> title.equals(x.getTitle())).findFirst().get();
-
-        return getSongsByAlbum(album);
-    }
-
-    public static ObservableList<Song> getSongsByAlbum(Album album) {
-        
-        if (songs == null) {
-            getSongs();
-        }
-
-        ObservableList<Song> songsByAlbum = FXCollections.observableArrayList();
-
-        for (int songId : album.getSongIds()) {
-            songsByAlbum.add(songs.get(songId));
-        }
-
-        return songsByAlbum;
-    }
-
-    public static ObservableList<Song> getSongsByPlaylist(Playlist playlist) {
-
-        if (songs == null) {
-            getSongs();
-        }
-
-        if (playlists == null) {
-            getPlaylists();
-        }
-
-        ObservableList<Song> songsByPlaylist = FXCollections.observableArrayList();
-
-        for (int songId : playlist.getSongIds()) {
-            songsByPlaylist.add(songs.get(songId));
-        }
-
-        return songsByPlaylist;
     }
 
     public static Artist getArtist(int id) {

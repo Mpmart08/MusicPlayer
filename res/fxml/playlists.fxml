@@ -4,9 +4,18 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.PlaylistsController">
+   <left>
+      <ListView fx:id="playlistList" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER" />
+   </left>
    <center>
-      <Label text="Playlists" BorderPane.alignment="CENTER" />
+      <TableView fx:id="tableView" fixedCellSize="50.0" visible="false" BorderPane.alignment="CENTER">
+        <columns>
+            <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Title" />
+            <TableColumn fx:id="artistColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Artist" />
+            <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+            <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
+        </columns>
+      </TableView>
    </center>
 </BorderPane>

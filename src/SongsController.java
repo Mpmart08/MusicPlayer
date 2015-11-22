@@ -31,6 +31,12 @@ public class SongsController implements Initializable {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
 
+        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
@@ -50,11 +56,9 @@ public class SongsController implements Initializable {
         tableView.setRowFactory(x -> {
             TableRow<Song> row = new TableRow<Song>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty()) ) {
                     Song song = row.getItem();
-                    if (MusicPlayer.getNowPlayingList().isEmpty()) {
-                        MusicPlayer.setNowPlayingList(Library.getSongs());
-                    }
+                    MusicPlayer.setNowPlayingList(Library.getSongs());
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }

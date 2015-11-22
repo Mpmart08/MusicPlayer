@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -24,7 +25,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Separator;
-import javafx.util.Callback;
 import javafx.scene.control.ListCell;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -32,7 +32,7 @@ import javafx.util.Duration;
 
 public class ArtistsMainController implements Initializable {
 
-    public class ArtistCell extends ListCell<Artist>{
+    public class ArtistCell extends ListCell<Artist> {
 
         HBox cell = new HBox();
         ImageView artistImage = new ImageView();
@@ -70,11 +70,11 @@ public class ArtistsMainController implements Initializable {
         }
     }
 
-    public class AlbumCell extends ListCell<Album>{
+    public class AlbumCell extends ListCell<Album> {
 
         ImageView albumArtwork = new ImageView();
 
-        public AlbumCell(){
+        public AlbumCell() {
 
             super();
             setAlignment(Pos.CENTER);
@@ -88,7 +88,7 @@ public class ArtistsMainController implements Initializable {
         }
 
         @Override
-        protected void updateItem(Album album, boolean empty){
+        protected void updateItem(Album album, boolean empty) {
 
             super.updateItem(album, empty);
 
@@ -120,7 +120,7 @@ public class ArtistsMainController implements Initializable {
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
 
-    private Animation loadAnimation = new Transition() {
+    private Animation artistLoadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(1000));
         }
@@ -135,12 +135,31 @@ public class ArtistsMainController implements Initializable {
         }
     };
 
+    private Animation albumLoadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            if (frac < 0.25) {
+                songTable.setTranslateY(expandedHeight - curHeight * 4);
+            } else {
+                songTable.setTranslateY(collapsedHeight);
+            }
+            songTable.setOpacity(frac);
+        }
+    };
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         titleColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.25));
+
+        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
@@ -163,11 +182,12 @@ public class ArtistsMainController implements Initializable {
                 songs = showAllSongs(selectedArtist);
                 artistLabel.setText(selectedArtist.getTitle());
                 albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+                albumList.scrollTo(0);
 
-                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    loadAnimation.stop();
+                if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    artistLoadAnimation.stop();
                 }
-                loadAnimation.play();
+                artistLoadAnimation.play();
 
             } else {
 
@@ -206,10 +226,11 @@ public class ArtistsMainController implements Initializable {
                 showAllSongs(selectedArtist);
                 artistLabel.setText(selectedArtist.getTitle());
                 albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    loadAnimation.stop();
+                albumList.scrollTo(0);
+                if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    artistLoadAnimation.stop();
                 }
-                loadAnimation.play();
+                artistLoadAnimation.play();
             }
         });
 
@@ -238,6 +259,10 @@ public class ArtistsMainController implements Initializable {
             } else {
 
                 selectAlbum(album);
+                if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    albumLoadAnimation.stop();
+                }
+                albumLoadAnimation.play();
             }
         });
 
@@ -257,6 +282,10 @@ public class ArtistsMainController implements Initializable {
             if (index >= 0 && index < selectedArtist.getAlbumIds().size()) {
                 Album album = albumList.getItems().get(index);
                 selectAlbum(album);
+                if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    albumLoadAnimation.stop();
+                }
+                albumLoadAnimation.play();
             }
         });
 
@@ -331,7 +360,9 @@ public class ArtistsMainController implements Initializable {
             }
 
             Collections.sort(songs);
+            songTable.getSelectionModel().clearSelection();
             songTable.setItems(songs);
+            songTable.scrollTo(0);
             albumLabel.setText(album.getTitle());
         }
     }
@@ -355,8 +386,10 @@ public class ArtistsMainController implements Initializable {
 
         Collections.sort(songs, (first, second) -> {
 
-            if (first.getAlbum().compareTo(second.getAlbum()) != 0) {
-                return first.getAlbum().compareTo(second.getAlbum());
+            Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
+            Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
+            if (firstAlbum.compareTo(secondAlbum) != 0) {
+                return firstAlbum.compareTo(secondAlbum);
             } else {
                 return first.compareTo(second);
             }
@@ -366,6 +399,8 @@ public class ArtistsMainController implements Initializable {
         albumList.getSelectionModel().clearSelection();
         albumList.setItems(albums);
         songTable.setItems(songs);
+        songTable.getSelectionModel().clearSelection();
+        songTable.scrollTo(0);
         songTable.setVisible(true);
         albumLabel.setText("All Songs");
 

@@ -131,6 +131,7 @@ public class MusicPlayer extends Application {
 
             timer.cancel();
             timer = new Timer();
+            mediaPlayer.stop();
             mediaPlayer = null;
             nowPlayingList = null;
             nowPlayingIndex = 0;

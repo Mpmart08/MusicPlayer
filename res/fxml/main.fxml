@@ -35,7 +35,7 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Separator>
-            <HBox id="artists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
+            <HBox id="artists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItemSelected">
                <children>
                   <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="30.0" styleClass="iconContainer">
                      <children>
@@ -51,6 +51,9 @@
                      </HBox.margin>
                   </Label>
                </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
             </HBox>
             <HBox id="albums" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
@@ -178,7 +181,12 @@
                   </Label>
                </right>
                <center>
-                  <Slider fx:id="timeSlider" blockIncrement="1.0" BorderPane.alignment="CENTER" />
+                  <StackPane BorderPane.alignment="CENTER">
+                     <children>
+                        <Slider fx:id="invisibleSlider" blockIncrement="1.0" pickOnBounds="false" />
+                        <Slider fx:id="timeSlider" blockIncrement="1.0" pickOnBounds="false" styleClass="visibleSlider" />
+                     </children>
+                  </StackPane>
                </center>
             </BorderPane>
          </center>
@@ -238,6 +246,9 @@
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
+         <padding>
+            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+         </padding>
       </ScrollPane>
    </center>
 </BorderPane>

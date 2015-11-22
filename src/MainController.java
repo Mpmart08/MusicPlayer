@@ -45,6 +45,7 @@ public class MainController implements Initializable {
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
     @FXML private Slider timeSlider;
+    @FXML private Slider invisibleSlider;
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
     @FXML private ImageView backButton;
@@ -98,24 +99,28 @@ public class MainController implements Initializable {
 
                     int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
                     timeSlider.setValue(seconds * 4);
+                    invisibleSlider.setValue(seconds * 4);
                     MusicPlayer.seek(seconds);
                 }
             }
         );
 
-        timeSlider.valueProperty().addListener(
+        invisibleSlider.valueProperty().addListener(
             (slider, oldValue, newValue) -> {
 
                 double previous = oldValue.doubleValue();
                 double current = newValue.doubleValue();
-                if (!timeSlider.isValueChanging() && current != previous + 1) {
+                if (!invisibleSlider.isValueChanging() && current != previous + 1) {
 
                     int seconds = (int) Math.round(current / 4.0);
+                    invisibleSlider.setValue(seconds * 4);
                     timeSlider.setValue(seconds * 4);
                     MusicPlayer.seek(seconds);
                 }
             }
         );
+
+        loadView("artists");
     }
 
     @FXML
@@ -232,16 +237,25 @@ public class MainController implements Initializable {
             timeSlider.setMax(song.getLength().getSeconds() * 4);
             timeSlider.setValue(0);
             timeSlider.setBlockIncrement(1);
+            invisibleSlider.setMin(0);
+            invisibleSlider.setMax(song.getLength().getSeconds() * 4);
+            invisibleSlider.setValue(0);
+            invisibleSlider.setBlockIncrement(1);
         } else {
             timeSlider.setMin(0);
             timeSlider.setMax(1);
             timeSlider.setValue(0);
             timeSlider.setBlockIncrement(1);
+            invisibleSlider.setMin(0);
+            invisibleSlider.setMax(1);
+            invisibleSlider.setValue(0);
+            invisibleSlider.setBlockIncrement(1);
         }
     }
 
     public void updateTimeSlider() {
 
+        invisibleSlider.increment();
         timeSlider.increment();
     }
 

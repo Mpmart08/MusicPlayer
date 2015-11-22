@@ -47,7 +47,20 @@
     -fx-border-color: #c2c2c2;
 }
 
-.slider *.thumb {
+.slider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.slider .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15px;
+}
+
+.visibleSlider .thumb {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
@@ -55,7 +68,7 @@
     -fx-background-image: url("../img/sliderIcon.png");
 }
 
-.slider *.track {
+.visibleSlider .track {
     -fx-background-color: white;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
@@ -63,7 +76,7 @@
 }
 
 .scroll-pane, .scroll-pane > .viewport {
-    -fx-background-color: white;
+    -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0 0 0 0;
     -fx-background-radius: 0;

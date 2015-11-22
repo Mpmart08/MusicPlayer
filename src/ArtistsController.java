@@ -14,6 +14,9 @@ import javafx.collections.FXCollections;
 import java.util.Collections;
 import javafx.geometry.Insets;
 import javafx.scene.control.OverrunStyle;
+import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
+import javafx.application.Platform;
 
 public class ArtistsController implements Initializable {
 
@@ -25,44 +28,68 @@ public class ArtistsController implements Initializable {
         ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
         Collections.sort(artists);
 
-        for (Artist artist : artists) {
+        int limit = (artists.size() < 25) ? artists.size() : 25;
 
-            VBox cell = new VBox();
-            Label title = new Label(artist.getTitle());
-            ImageView image = new ImageView(artist.getArtistImage());
+        for (int i = 0; i < limit; i++) {
 
-            title.setTextOverrun(OverrunStyle.CLIP);
-            title.setWrapText(true);
-            title.setPrefHeight(50);
-            title.prefWidthProperty().bind(grid.widthProperty().divide(4).subtract(52));
-
-            image.fitWidthProperty().bind(grid.widthProperty().divide(4).subtract(52));
-            image.fitHeightProperty().bind(grid.widthProperty().divide(4).subtract(52));
-            image.setPreserveRatio(true);
-            image.setSmooth(true);
-            image.setCache(true);
-
-            cell.getChildren().addAll(image, title);
-            cell.setPadding(new Insets(10, 10, 0, 10));
-            cell.getStyleClass().add("artist-cell");
-            cell.setOnMouseClicked(event -> {
-
-                MainController mainController = MusicPlayer.getMainController();
-                ArtistsMainController artistsMainController = (ArtistsMainController) mainController.loadView("artistsMain");
-
-                VBox artistCell = (VBox) event.getSource();
-                String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
-                Artist a = Library.getArtists().stream().filter(x -> artistTitle.equals(x.getTitle())).findFirst().get();
-                artistsMainController.selectArtist(a);
-            });
-
-            grid.getChildren().add(cell);
-            grid.setMargin(cell, new Insets(25, 25, 0, 0));
+            Artist artist = artists.get(i);
+            grid.getChildren().add(createCell(artist));
         }
 
-        grid.getStyleClass().add("flow-pane");
+        int rows = (artists.size() % 5 == 0) ? artists.size() / 5 : artists.size() / 5 + 1;
+        grid.prefHeightProperty().bind(grid.widthProperty().divide(5).add(16).multiply(rows));
 
-        int rows = (artists.size() % 4 == 0) ? artists.size() / 4 : artists.size() / 4 + 1;
-        grid.prefHeightProperty().bind(grid.widthProperty().divide(4).add(18).multiply(rows));
+        new Thread(() -> {
+
+            for (int j = 25; j < artists.size(); j++) {
+                Artist artist = artists.get(j);
+                Platform.runLater(() -> {
+                    grid.getChildren().add(createCell(artist));
+                });
+            }
+
+        }).start();
+    }
+
+    private VBox createCell(Artist artist) {
+
+        VBox cell = new VBox();
+        Label title = new Label(artist.getTitle());
+        ImageView image = new ImageView(artist.getArtistImage());
+        VBox imageBox = new VBox();
+
+        title.setTextOverrun(OverrunStyle.CLIP);
+        title.setWrapText(true);
+        title.setPadding(new Insets(10, 0, 10, 0));
+        title.setAlignment(Pos.TOP_LEFT);
+        title.setPrefHeight(66);
+        title.prefWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
+
+        image.fitWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        image.fitHeightProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        image.setPreserveRatio(true);
+        image.setSmooth(true);
+
+        imageBox.prefWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        imageBox.prefHeightProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        imageBox.setAlignment(Pos.CENTER);
+        imageBox.getChildren().add(image);
+
+        cell.getChildren().addAll(imageBox, title);
+        cell.setPadding(new Insets(10, 10, 0, 10));
+        cell.getStyleClass().add("artist-cell");
+        cell.setAlignment(Pos.CENTER);
+        cell.setOnMouseClicked(event -> {
+
+            MainController mainController = MusicPlayer.getMainController();
+            ArtistsMainController artistsMainController = (ArtistsMainController) mainController.loadView("artistsMain");
+
+            VBox artistCell = (VBox) event.getSource();
+            String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
+            Artist a = Library.getArtists().stream().filter(x -> artistTitle.equals(x.getTitle())).findFirst().get();
+            artistsMainController.selectArtist(a);
+        });
+
+        return cell;
     }
 }

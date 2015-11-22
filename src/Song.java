@@ -37,6 +37,7 @@ public final class Song implements Comparable<Song> {
         this.playCount = playCount;
         this.playDate = playDate;
         this.location = location;
+        getArtwork();
     }
 
     public int getId() {

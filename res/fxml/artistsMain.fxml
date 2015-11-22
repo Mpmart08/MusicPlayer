@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsMainController">
+<BorderPane stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.ArtistsMainController">
    <center>
       <VBox fx:id="subViewRoot" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -34,9 +34,9 @@
                </VBox.margin></ListView>
             <TableView fx:id="songTable" fixedCellSize="50.0" visible="false">
               <columns>
-                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="textColumn" text="Title" />
-                <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="numberColumn" text="Length" />
-                  <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" styleClass="numberColumn" text="Plays" />
+                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Title" />
+                <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+                  <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
               </columns>
                <VBox.margin>
                   <Insets />
@@ -45,9 +45,6 @@
          </children>
       </VBox>
    </center>
-   <padding>
-      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-   </padding>
    <left>
       <ListView fx:id="artistList" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER" />
    </left>
