@@ -228,15 +228,8 @@ public final class Library {
             playlists = FXCollections.observableArrayList();
 
             int id = 0;
-            String title = "Most Played";
-            ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
-            Collections.sort(songs, (x, y) -> Integer.compare(y.getPlayCount(), x.getPlayCount()));
-            playlists.add(new Playlist(id, title, new ArrayList<Song>(songs.subList(0, 25))));
-
-            id = 1;
-            title = "Recently Played";
-            Collections.sort(songs, (x, y) -> y.getPlayDate().compareTo(x.getPlayDate()));
-            playlists.add(new Playlist(id, title, new ArrayList<Song>(songs.subList(0, 25))));
+            playlists.add(new MostPlayedPlaylist(id++));
+            playlists.add(new RecentlyPlayedPlaylist(id++));
 
             try {
 
@@ -246,8 +239,8 @@ public final class Library {
 
                 String element = "";
                 boolean isPlaylist = false;
-                title = null;
-                songs = new ArrayList<Song>();
+                String title = null;
+                ArrayList<Song> songs = new ArrayList<Song>();
 
                 while(reader.hasNext()) {
 

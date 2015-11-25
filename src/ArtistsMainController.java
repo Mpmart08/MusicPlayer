@@ -30,7 +30,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable {
+public class ArtistsMainController implements Initializable, Refreshable {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -174,29 +174,15 @@ public class ArtistsMainController implements Initializable {
 
         artistList.setOnMouseClicked(event -> {
 
-            ObservableList<Song> songs;
-
-            if (selectedArtist != artistList.getSelectionModel().getSelectedItem()) {
-
-                selectedArtist = artistList.getSelectionModel().getSelectedItem();
-                songs = showAllSongs(selectedArtist);
-                artistLabel.setText(selectedArtist.getTitle());
-                albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-                albumList.scrollTo(0);
-
-                if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    artistLoadAnimation.stop();
-                }
-                artistLoadAnimation.play();
-
-            } else {
-
-                songs = showAllSongs(selectedArtist);
-            }
-
             if (event.getClickCount() == 2) {
 
                 Thread thread = new Thread(() -> {
+                    ObservableList<Song> songs = FXCollections.observableArrayList();
+                    for (int albumId : selectedArtist.getAlbumIds()) {
+                        for (int songId : Library.getAlbum(albumId).getSongIds()) {
+                            songs.add(Library.getSong(songId));
+                        }
+                    }
                     Song song = songs.get(0);
                     MusicPlayer.setNowPlayingList(songs);
                     MusicPlayer.setNowPlaying(song);
@@ -204,6 +190,30 @@ public class ArtistsMainController implements Initializable {
                 });
 
                 thread.start();
+
+            } else {
+
+                if (selectedArtist != artistList.getSelectionModel().getSelectedItem()) {
+
+                    selectedArtist = artistList.getSelectionModel().getSelectedItem();
+                    showAllSongs(selectedArtist);
+                    artistLabel.setText(selectedArtist.getTitle());
+                    albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+                    albumList.scrollTo(0);
+
+                    if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                        artistLoadAnimation.stop();
+                    }
+                    artistLoadAnimation.play();
+
+                } else {
+
+                    showAllSongs(selectedArtist);
+                    if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                        albumLoadAnimation.stop();
+                    }
+                    albumLoadAnimation.play();
+                }
             }
         });
 
@@ -220,7 +230,7 @@ public class ArtistsMainController implements Initializable {
                     break;
             }
 
-            if (index >= 0 && index < Library.getArtists().size()) {
+            if (index >= 0 && index < artists.size()) {
                 Artist artist = artists.get(index);
                 selectedArtist = artist;
                 showAllSongs(selectedArtist);
@@ -341,6 +351,14 @@ public class ArtistsMainController implements Initializable {
         });
     }
 
+
+    @Override
+    public void refresh() {
+
+        songTable.getColumns().get(0).setVisible(false);
+        songTable.getColumns().get(0).setVisible(true);
+    }
+
     private void selectAlbum(Album album) {
 
         if (selectedAlbum == album) {
@@ -367,7 +385,7 @@ public class ArtistsMainController implements Initializable {
         }
     }
 
-    private ObservableList<Song> showAllSongs(Artist artist) {
+    private void showAllSongs(Artist artist) {
 
         ObservableList<Album> albums = FXCollections.observableArrayList();
         ObservableList<Song> songs = FXCollections.observableArrayList();
@@ -403,8 +421,6 @@ public class ArtistsMainController implements Initializable {
         songTable.scrollTo(0);
         songTable.setVisible(true);
         albumLabel.setText("All Songs");
-
-        return songs;
     }
 
     public void selectArtist(Artist artist) {

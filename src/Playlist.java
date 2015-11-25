@@ -1,8 +1,10 @@
 package musicplayer;
 
 import java.util.ArrayList;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 
-public final class Playlist {
+public class Playlist {
 
     private int id;
     private String title;
@@ -15,6 +17,13 @@ public final class Playlist {
         this.songs = songs;
     }
 
+    protected Playlist(int id, String title) {
+
+        this.id = id;
+        this.title = title;
+        this.songs = null;
+    }
+
     public int getId() {
 
         return this.id;
@@ -25,9 +34,9 @@ public final class Playlist {
         return this.title;
     }
 
-    public ArrayList<Song> getSongs() {
+    public ObservableList<Song> getSongs() {
 
-        return new ArrayList<Song>(this.songs);
+        return FXCollections.observableArrayList(this.songs);
     }
 
     @Override

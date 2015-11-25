@@ -28,13 +28,14 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable, Refreshable {
 
     private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
+    private Refreshable subViewController;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -58,7 +59,7 @@ public class MainController implements Initializable {
         }
         protected void interpolate(double frac) {
             double curWidth = collapsedWidth + (expandedWidth - collapsedWidth) * (1.0 - frac);
-            slide(curWidth);
+            sideBar.setPrefWidth(curWidth);
         }
     };
 
@@ -69,7 +70,7 @@ public class MainController implements Initializable {
         }
         protected void interpolate(double frac) {
             double curWidth = collapsedWidth + (expandedWidth - collapsedWidth) * (frac);
-            slide(curWidth);
+            sideBar.setPrefWidth(curWidth);
         }
     };
 
@@ -121,6 +122,12 @@ public class MainController implements Initializable {
         );
 
         loadView("artists");
+    }
+
+    @Override
+    public void refresh() {
+
+        subViewController.refresh();
     }
 
     @FXML
@@ -178,7 +185,7 @@ public class MainController implements Initializable {
         MusicPlayer.skip();
     }
 
-    public Initializable loadView(String viewName) {
+    public Refreshable loadView(String viewName) {
 
         try {
 
@@ -190,7 +197,8 @@ public class MainController implements Initializable {
                 loadViewAnimation.stop();
             }
             loadViewAnimation.play();
-            return loader.getController();
+            subViewController = loader.getController();
+            return subViewController;
 
         } catch (Exception ex) {
 
@@ -282,8 +290,8 @@ public class MainController implements Initializable {
         if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
             && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
 
-                setVisibility(false);
-                collapseAnimation.play();
+            setVisibility(false);
+            collapseAnimation.play();
         }
     }
 
@@ -292,21 +300,7 @@ public class MainController implements Initializable {
         if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
             && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
 
-                expandAnimation.play();
-        }
-    }
-
-    private void slide(double curWidth) {
-
-        sideBar.setPrefWidth(curWidth);
-        for (Node n : sideBar.getChildren()) {
-            if (n instanceof HBox) {
-                for (Node m : ((HBox)n).getChildren()) {
-                    if (m instanceof Label) {
-                        m.setTranslateX(-expandedWidth + curWidth);
-                    }
-                }
-            }
+            expandAnimation.play();
         }
     }
 

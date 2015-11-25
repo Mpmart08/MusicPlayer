@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
 
-public class SettingsController implements Initializable {
+public class SettingsController implements Initializable, Refreshable {
 
     public static void main(String[] args) throws Exception {
 
@@ -13,6 +13,11 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+    }
+
+    @Override
+    public void refresh() {
 
     }
 

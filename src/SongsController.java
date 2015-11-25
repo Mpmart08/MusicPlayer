@@ -11,7 +11,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
 
-public class SongsController implements Initializable {
+public class SongsController implements Initializable, Refreshable {
 
     @FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, String> titleColumn;
@@ -56,7 +56,7 @@ public class SongsController implements Initializable {
         tableView.setRowFactory(x -> {
             TableRow<Song> row = new TableRow<Song>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Song song = row.getItem();
                     MusicPlayer.setNowPlayingList(Library.getSongs());
                     MusicPlayer.setNowPlaying(song);
@@ -65,5 +65,12 @@ public class SongsController implements Initializable {
             });
             return row ;
         });
+    }
+
+    @Override
+    public void refresh() {
+
+        tableView.getColumns().get(0).setVisible(false);
+        tableView.getColumns().get(0).setVisible(true);
     }
 }

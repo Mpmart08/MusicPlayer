@@ -18,7 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.application.Platform;
 
-public class ArtistsController implements Initializable {
+public class ArtistsController implements Initializable, Refreshable {
 
     @FXML private FlowPane grid;
 
@@ -49,6 +49,11 @@ public class ArtistsController implements Initializable {
             }
 
         }).start();
+    }
+
+    @Override
+    public void refresh() {
+
     }
 
     private VBox createCell(Artist artist) {

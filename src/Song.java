@@ -10,7 +10,26 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import javax.xml.stream.XMLInputFactory;
 import java.io.FileInputStream;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPath;
 
 public final class Song implements Comparable<Song> {
 
@@ -110,6 +129,51 @@ public final class Song implements Comparable<Song> {
         }
 
         return artwork;
+    }
+
+    public void played() {
+
+        this.playCount++;
+        this.playDate = LocalDateTime.now();
+
+        Thread thread = new Thread(() -> {
+
+            try {
+
+                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                Document doc = docBuilder.parse("musicplayer/" + Resources.XML + "library.xml");
+
+                XPathFactory xPathfactory = XPathFactory.newInstance();
+                XPath xpath = xPathfactory.newXPath();
+
+                XPathExpression expr = xpath.compile("/library/songs/song/playCount[../id/text() = \"" + this.id + "\"]");
+                Node playCount = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+
+                expr = xpath.compile("/library/songs/song/playDate[../id/text() = \"" + this.id + "\"]");
+                Node playDate = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+
+                playCount.setTextContent(Integer.toString(this.playCount));
+                playDate.setTextContent(this.playDate.toString());
+
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                DOMSource source = new DOMSource(doc);
+                File xmlFile = new File("musicplayer/" + Resources.XML + "library.xml");
+                StreamResult result = new StreamResult(xmlFile);
+                transformer.transform(source, result);
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+            }
+
+        });
+
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override

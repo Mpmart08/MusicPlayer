@@ -19,7 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.application.Platform;
 
-public class AlbumsController implements Initializable {
+public class AlbumsController implements Initializable, Refreshable {
 	
 	@FXML private FlowPane flowPane;
 	
@@ -50,6 +50,11 @@ public class AlbumsController implements Initializable {
 
         }).start();
 	}
+
+    @Override
+    public void refresh() {
+
+    }
 
     private VBox createCell(Album album) {
 

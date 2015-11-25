@@ -27,6 +27,7 @@ public class MusicPlayer extends Application {
     private static int nowPlayingIndex;
     private static Timer timer;
     private static int timerCounter;
+    private static int secondsPlayed;
 
     public static void main(String[] args) {
 
@@ -39,6 +40,7 @@ public class MusicPlayer extends Application {
         LogManager.getLogManager().reset();
         timer = new Timer();
         timerCounter = 0;
+        secondsPlayed = 0;
 
         Library.getSongs();
         Library.getAlbums();
@@ -73,7 +75,7 @@ public class MusicPlayer extends Application {
 
     private static class TimeUpdater extends TimerTask {
 
-        int length = (int) getNowPlaying().getLength().getSeconds() * 4;
+        private int length = (int) getNowPlaying().getLength().getSeconds() * 4;
 
         @Override
         public void run() {
@@ -83,6 +85,7 @@ public class MusicPlayer extends Application {
                 if (timerCounter < length) {
                     if (++timerCounter % 4 == 0) {
                         mainController.updateTimeLabels();
+                        secondsPlayed++;
                     }
                     mainController.updateTimeSlider();
                 }
@@ -129,6 +132,13 @@ public class MusicPlayer extends Application {
 
         } else {
 
+            Song song = getNowPlaying();
+            int length = (int) song.getLength().getSeconds();
+            if ((100 * secondsPlayed / length) > 50) {
+                song.played();
+                mainController.refresh();
+            }
+
             timer.cancel();
             timer = new Timer();
             mediaPlayer.stop();
@@ -144,12 +154,12 @@ public class MusicPlayer extends Application {
 
     public static void back() {
 
-        if (timerCounter > 20) {
+        if (timerCounter > 20 || nowPlayingIndex == 0) {
 
             mainController.initializeTimeSlider();
             seek(0);
 
-        } else if (nowPlayingIndex > 0) {
+        } else {
 
             setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
             play();
@@ -190,6 +200,15 @@ public class MusicPlayer extends Application {
 
         if (nowPlayingList.contains(song)) {
 
+            Song nowPlaying = getNowPlaying();
+            if (nowPlaying != null) {
+                int length = (int) nowPlaying.getLength().getSeconds();
+                if ((100 * secondsPlayed / length) > 50) {
+                    nowPlaying.played();
+                    mainController.refresh();
+                }
+            }
+
             nowPlayingIndex = nowPlayingList.indexOf(song);
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
@@ -199,6 +218,7 @@ public class MusicPlayer extends Application {
             }
             timer = new Timer();
             timerCounter = 0;
+            secondsPlayed = 0;
             String path = song.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
