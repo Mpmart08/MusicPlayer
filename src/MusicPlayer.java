@@ -25,6 +25,7 @@ public class MusicPlayer extends Application {
     private static MediaPlayer mediaPlayer;
     private static ArrayList<Song> nowPlayingList;
     private static int nowPlayingIndex;
+    private static Song nowPlaying;
     private static Timer timer;
     private static int timerCounter;
     private static int secondsPlayed;
@@ -132,19 +133,16 @@ public class MusicPlayer extends Application {
 
         } else {
 
-            Song song = getNowPlaying();
-            int length = (int) song.getLength().getSeconds();
-            if ((100 * secondsPlayed / length) > 50) {
-                song.played();
-                mainController.refresh();
-            }
-
+            updatePlayCount();
             timer.cancel();
             timer = new Timer();
             mediaPlayer.stop();
             mediaPlayer = null;
             nowPlayingList = null;
             nowPlayingIndex = 0;
+            nowPlaying.setPlaying(false);
+            mainController.refresh();
+            nowPlaying = null;
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();
             mainController.updateNowPlayingButton();
@@ -193,23 +191,20 @@ public class MusicPlayer extends Application {
 
     public static Song getNowPlaying() {
 
-        return nowPlayingList == null ? null : nowPlayingList.get(nowPlayingIndex);
+        return nowPlaying;
     }
 
     public static void setNowPlaying(Song song) {
 
         if (nowPlayingList.contains(song)) {
 
-            Song nowPlaying = getNowPlaying();
-            if (nowPlaying != null) {
-                int length = (int) nowPlaying.getLength().getSeconds();
-                if ((100 * secondsPlayed / length) > 50) {
-                    nowPlaying.played();
-                    mainController.refresh();
-                }
-            }
-
+            updatePlayCount();
             nowPlayingIndex = nowPlayingList.indexOf(song);
+            if (nowPlaying != null) {
+                nowPlaying.setPlaying(false);
+            }
+            nowPlaying = song;
+            nowPlaying.setPlaying(true);
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
             }
@@ -222,8 +217,10 @@ public class MusicPlayer extends Application {
             String path = song.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setVolume(0.5);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
             Platform.runLater(() -> {
+                mainController.refresh();
                 mainController.updateNowPlayingButton();
                 mainController.initializeTimeSlider();
                 mainController.initializeTimeLabels();
@@ -252,5 +249,16 @@ public class MusicPlayer extends Application {
     public static MainController getMainController() {
 
         return mainController;
+    }
+
+    private static void updatePlayCount() {
+
+        if (nowPlaying != null) {
+            int length = (int) nowPlaying.getLength().getSeconds();
+            if ((100 * secondsPlayed / length) > 50) {
+                nowPlaying.played();
+                mainController.refresh();
+            }
+        }
     }
 }

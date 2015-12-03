@@ -10,11 +10,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
-import javafx.scene.image.ImageView;
+import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.beans.value.ChangeListener;
 
-public class SongsController implements Initializable, Refreshable {
+public class NowPlayingController implements Initializable, Refreshable {
 
     @FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -27,13 +27,13 @@ public class SongsController implements Initializable, Refreshable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        ObservableList<Song> songs = Library.getSongs();
+        ObservableList<Song> songs = FXCollections.observableArrayList(MusicPlayer.getNowPlayingList());
 
-        titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        albumColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.11));
-        playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.11));
+        titleColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        artistColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        albumColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
+        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
+        playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
@@ -81,12 +81,10 @@ public class SongsController implements Initializable, Refreshable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(Library.getSongs());
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
             });
-
             return row ;
         });
     }

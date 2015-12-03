@@ -3,7 +3,7 @@
     -fx-table-cell-border-color: transparent;
 }
 
-.table-view .column-header {
+.table-view .column-header, .table-view .column-header-background {
     -fx-background-color: white;
 }
 
@@ -15,6 +15,11 @@
 .textColumn, .numberColumn {
     -fx-alignment: CENTER-LEFT;
     -fx-padding: 0 10 0 10;
+}
+
+.playingColumn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 0 0 10;
 }
 
 .table-view .column-header .text {
@@ -32,10 +37,7 @@
     -fx-font-family: verdana;
     -fx-font-size: 12px;
     -fx-font-weight: normal;
-}
-
-.table-row-cell {
-    -fx-text-fill: black;
+    -fx-fill: black;
 }
 
 .table-row-cell:even:filled {
@@ -68,6 +70,19 @@
 
 .table-row-cell:filled:hover {
     -fx-background-color: #dadada;
+}
+
+.table-row-cell:playing .text {
+    -fx-fill: rgb(52, 109, 207);
+}
+
+.table-row-cell > .table-cell > .iconContainer > .icon {
+    -fx-fill: rgb(52, 109, 207);
+}
+
+.table-row-cell:filled:selected:focused > .table-cell > .iconContainer > .icon,
+.table-row-cell:filled:selected > .table-cell > .iconContainer > .icon {
+    -fx-fill: white;
 }
 
 .table-view *.scroll-bar:horizontal *.increment-button,

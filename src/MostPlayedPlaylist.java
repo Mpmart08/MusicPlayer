@@ -12,6 +12,7 @@ public class MostPlayedPlaylist extends Playlist {
         super(id, "Most Played");
     }
 
+    @Override
     public ObservableList<Song> getSongs() {
 
         ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());

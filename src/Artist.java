@@ -14,13 +14,13 @@ import javax.xml.stream.XMLStreamReader;
 public final class Artist implements Comparable<Artist> {
 
     private String title;
-    private ArrayList<Integer> albumIds;
+    private ArrayList<Album> albums;
     private Image artistImage;
 
-    public Artist(String title, ArrayList<Integer> albumIds) {
+    public Artist(String title, ArrayList<Album> albums) {
 
         this.title = title;
-        this.albumIds = albumIds;
+        this.albums = albums;
         getArtistImage();
     }
 
@@ -29,9 +29,9 @@ public final class Artist implements Comparable<Artist> {
         return this.title;
     }
 
-    public ArrayList<Integer> getAlbumIds() {
+    public ArrayList<Album> getAlbums() {
 
-        return new ArrayList<Integer>(this.albumIds);
+        return new ArrayList<Album>(this.albums);
     }
 
     public Image getArtistImage() {
@@ -89,12 +89,7 @@ public final class Artist implements Comparable<Artist> {
     }
 
     @Override
-    public int compareTo(Artist other) throws NullPointerException {
-
-        if (other == null) {
-
-            throw new NullPointerException();
-        }
+    public int compareTo(Artist other) {
 
         String first = removeArticle(this.title);
         String second = removeArticle(other.title);

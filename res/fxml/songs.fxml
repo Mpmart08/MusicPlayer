@@ -5,22 +5,16 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
-   <center>
-      <TableView fx:id="tableView" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
-        <columns>
-          <TableColumn fx:id="titleColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Title" />
-          <TableColumn fx:id="artistColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Artist" />
-          <TableColumn fx:id="albumColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Album" />
-          <TableColumn fx:id="lengthColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
-          <TableColumn fx:id="playsColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
-        </columns>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </TableView>
-   </center>
-</BorderPane>
+<TableView fx:id="tableView" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/SongsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicplayer.SongsController">
+  <columns>
+      <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="35.0" resizable="false" styleClass="playingColumn" />
+    <TableColumn fx:id="titleColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Title" />
+    <TableColumn fx:id="artistColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Artist" />
+    <TableColumn fx:id="albumColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Album" />
+    <TableColumn fx:id="lengthColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+    <TableColumn fx:id="playsColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
+  </columns>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</TableView>

@@ -46,6 +46,7 @@ public final class Library {
     private static final String ALBUM = "album";
     private static final String LENGTH = "length";
     private static final String TRACKNUMBER = "trackNumber";
+    private static final String DISCNUMBER = "discNumber";
     private static final String PLAYCOUNT = "playCount";
     private static final String PLAYDATE = "playDate";
     private static final String LOCATION = "location";
@@ -74,13 +75,13 @@ public final class Library {
 
             for (Map.Entry<String, List<Album>> entry : artistMap.entrySet()) {
 
-                ArrayList<Integer> albumIds = new ArrayList<Integer>();
+                ArrayList<Album> albums = new ArrayList<Album>();
 
                 for (Album album : entry.getValue()) {
-                    albumIds.add(album.getId());
+                    albums.add(album);
                 }
 
-                artists.add(new Artist(entry.getKey(), albumIds));
+                artists.add(new Artist(entry.getKey(), albums));
             }
         }
 
@@ -107,14 +108,14 @@ public final class Library {
 
             for (Map.Entry<String, List<Song>> entry : albumMap.entrySet()) {
 
-                ArrayList<Integer> songIds = new ArrayList<Integer>();
+                ArrayList<Song> songs = new ArrayList<Song>();
                 String artist = entry.getValue().get(0).getArtist();
 
                 for (Song song : entry.getValue()) {
-                    songIds.add(song.getId());
+                    songs.add(song);
                 }
 
-                albums.add(new Album(id++, entry.getKey(), artist, songIds));
+                albums.add(new Album(id++, entry.getKey(), artist, songs));
             }
         }
 
@@ -141,6 +142,7 @@ public final class Library {
                 String album = null;
                 Duration length = null;
                 int trackNumber = -1;
+                int discNumber = -1;
                 int playCount = -1;
                 LocalDateTime playDate = null;
                 String location = null;
@@ -177,6 +179,9 @@ public final class Library {
                             case TRACKNUMBER:
                                 trackNumber = Integer.parseInt(value);
                                 break;
+                            case DISCNUMBER:
+                                discNumber = Integer.parseInt(value);
+                                break;
                             case PLAYCOUNT:
                                 playCount = Integer.parseInt(value);
                                 break;
@@ -194,13 +199,14 @@ public final class Library {
 
                     } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("song")) {
 
-                        songs.add(new Song(id, title, artist, album, length, trackNumber, playCount, playDate, location));
+                        songs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));
                         id = -1;
                         title = null;
                         artist = null;
                         album = null;
                         length = null;
                         trackNumber = -1;
+                        discNumber = -1;
                         playCount = -1;
                         playDate = null;
                         location = null;
@@ -324,6 +330,33 @@ public final class Library {
         return songs.get(id);
     }
 
+    public static Artist getArtist(String title) {
+
+        if (artists == null) {
+            getArtists();
+        }
+
+        return artists.stream().filter(artist -> title.equals(artist.getTitle())).findFirst().get();
+    }
+
+    public static Album getAlbum(String title) {
+
+        if (albums == null) {
+            getAlbums();
+        }
+
+        return albums.stream().filter(album -> title.equals(album.getTitle())).findFirst().get();
+    }
+
+    public static Song getSong(String title) {
+
+        if (songs == null) {
+            getSongs();
+        }
+
+        return songs.stream().filter(song -> title.equals(song.getTitle())).findFirst().get();
+    }
+
     public static void importMusic(String path) throws Exception {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -372,6 +405,7 @@ public final class Library {
                     Element album = doc.createElement("album");
                     Element length = doc.createElement("length");
                     Element trackNumber = doc.createElement("trackNumber");
+                    Element discNumber = doc.createElement("discNumber");
                     Element playCount = doc.createElement("playCount");
                     Element playDate = doc.createElement("playDate");
                     Element location = doc.createElement("location");
@@ -383,7 +417,11 @@ public final class Library {
                     length.setTextContent(Integer.toString(header.getTrackLength()));
                     String track = tag.getFirst(FieldKey.TRACK);
                     trackNumber.setTextContent(
-                        (track == null || track.equals("")) ? "0" : tag.getFirst(FieldKey.TRACK)
+                        (track == null || track.equals("") || track.equals("null")) ? "0" : track
+                    );
+                    String disc = tag.getFirst(FieldKey.DISC_NO);
+                    discNumber.setTextContent(
+                        (disc == null || disc.equals("") || disc.equals("null")) ? "0" : disc
                     );
                     playCount.setTextContent("0");
                     playDate.setTextContent(LocalDateTime.now().toString());
@@ -395,6 +433,7 @@ public final class Library {
                     song.appendChild(album);
                     song.appendChild(length);
                     song.appendChild(trackNumber);
+                    song.appendChild(discNumber);
                     song.appendChild(playCount);
                     song.appendChild(playDate);
                     song.appendChild(location);

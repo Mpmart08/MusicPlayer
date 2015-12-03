@@ -29,6 +29,9 @@ import javafx.scene.control.ListCell;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.util.Duration;
+import javafx.css.PseudoClass;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.control.OverrunStyle;
 
 public class ArtistsMainController implements Initializable, Refreshable {
 
@@ -47,6 +50,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
             artistImage.setSmooth(true);
             artistImage.setCache(true);
             title.setMaxWidth(190);
+            title.setTextOverrun(OverrunStyle.CLIP);
             cell.getChildren().addAll(artistImage, title);
             cell.setAlignment(Pos.CENTER_LEFT);
             cell.setMargin(artistImage, new Insets(0, 10, 0, 0));
@@ -107,6 +111,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
 	@FXML private ListView<Artist> artistList;
     @FXML private ListView<Album> albumList;
     @FXML private TableView<Song> songTable;
+    @FXML private TableColumn<Song, Boolean> playingColumn;
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
@@ -153,14 +158,16 @@ public class ArtistsMainController implements Initializable, Refreshable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        titleColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.5));
-        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.25));
-        playsColumn.prefWidthProperty().bind(songTable.widthProperty().multiply(0.25));
+        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.5));
+        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.25));
+        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.25));
 
+        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
 
+        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
@@ -178,11 +185,25 @@ public class ArtistsMainController implements Initializable, Refreshable {
 
                 Thread thread = new Thread(() -> {
                     ObservableList<Song> songs = FXCollections.observableArrayList();
-                    for (int albumId : selectedArtist.getAlbumIds()) {
-                        for (int songId : Library.getAlbum(albumId).getSongIds()) {
-                            songs.add(Library.getSong(songId));
+                    ObservableList<Album> albums = FXCollections.observableArrayList();
+                    for (Album album : selectedArtist.getAlbums()) {
+                        albums.add(album);
+                        for (Song song : album.getSongs()) {
+                            songs.add(song);
                         }
                     }
+
+                    Collections.sort(songs, (first, second) -> {
+
+                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
+                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
+                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+                            return firstAlbum.compareTo(secondAlbum);
+                        } else {
+                            return first.compareTo(second);
+                        }
+                    });
+
                     Song song = songs.get(0);
                     MusicPlayer.setNowPlayingList(songs);
                     MusicPlayer.setNowPlaying(song);
@@ -257,10 +278,11 @@ public class ArtistsMainController implements Initializable, Refreshable {
                 ArrayList<Song> nowPlayingList = MusicPlayer.getNowPlayingList();
                 ArrayList<Song> songs = new ArrayList<Song>();
 
-                for (int songId : selectedAlbum.getSongIds()) {
-
-                    songs.add(Library.getSong(songId));
+                for (Song song : selectedAlbum.getSongs()) {
+                    songs.add(song);
                 }
+
+                Collections.sort(songs);
 
                 MusicPlayer.setNowPlayingList(songs);
                 MusicPlayer.setNowPlaying(songs.get(0));
@@ -289,7 +311,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
                     break;
             }
 
-            if (index >= 0 && index < selectedArtist.getAlbumIds().size()) {
+            if (index >= 0 && index < selectedArtist.getAlbums().size()) {
                 Album album = albumList.getItems().get(index);
                 selectAlbum(album);
                 if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
@@ -308,9 +330,26 @@ public class ArtistsMainController implements Initializable, Refreshable {
         );
 
         songTable.setRowFactory(x -> {
+
             TableRow<Song> row = new TableRow<Song>();
+
+            PseudoClass playing = PseudoClass.getPseudoClass("playing");
+
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(playing, newValue.booleanValue());
+            };
+
+            row.itemProperty().addListener((obs, previousSong, currentSong) -> {
+                if (currentSong != null) {
+                    currentSong.playingProperty().addListener(changeListener);
+                    row.pseudoClassStateChanged(playing, currentSong.getPlaying());
+                } else {
+                    row.pseudoClassStateChanged(playing, false);
+                }
+            });
+
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
 
                     Song song = row.getItem();
                     ArrayList<Song> songs = MusicPlayer.getNowPlayingList();
@@ -321,20 +360,17 @@ public class ArtistsMainController implements Initializable, Refreshable {
 
                         if (selectedAlbum != null) {
 
-                            for (int songId : selectedAlbum.getSongIds()) {
+                            for (Song s : selectedAlbum.getSongs()) {
 
-                                songs.add(Library.getSong(songId));
+                                songs.add(s);
                             }
 
                         } else {
 
-                            for (int albumId : selectedArtist.getAlbumIds()) {
+                            for (Album album : selectedArtist.getAlbums()) {
 
-                                Album album = Library.getAlbum(albumId);
+                                for (Song s : album.getSongs()) {
 
-                                for (int songId : album.getSongIds()) {
-
-                                    Song s = Library.getSong(songId);
                                     songs.add(s);
                                 }
                             }
@@ -347,6 +383,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
                     MusicPlayer.play();
                 }
             });
+
             return row ;
         });
     }
@@ -371,9 +408,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
             selectedAlbum = album;
             ObservableList<Song> songs = FXCollections.observableArrayList();
 
-            for (int songId : album.getSongIds()) {
-
-                Song song = Library.getSong(songId);
+            for (Song song : album.getSongs()) {
                 songs.add(song);
             }
 
@@ -390,14 +425,12 @@ public class ArtistsMainController implements Initializable, Refreshable {
         ObservableList<Album> albums = FXCollections.observableArrayList();
         ObservableList<Song> songs = FXCollections.observableArrayList();
 
-        for (int albumId : artist.getAlbumIds()) {
+        for (Album album : artist.getAlbums()) {
 
-            Album album = Library.getAlbum(albumId);
             albums.add(album);
 
-            for (int songId : album.getSongIds()) {
+            for (Song song : album.getSongs()) {
 
-                Song song = Library.getSong(songId);
                 songs.add(song);
             }
         }
@@ -412,7 +445,9 @@ public class ArtistsMainController implements Initializable, Refreshable {
                 return first.compareTo(second);
             }
         });
+
         Collections.sort(albums);
+
         selectedAlbum = null;
         albumList.getSelectionModel().clearSelection();
         albumList.setItems(albums);

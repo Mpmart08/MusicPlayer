@@ -14,20 +14,23 @@ import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.datatype.Artwork;
+import java.io.ByteArrayInputStream;
 
 public final class Album implements Comparable<Album> {
 
     private int id;
     private String title;
     private String artist;
-    private ArrayList<Integer> songIds;
+    private Image artwork;
+    private ArrayList<Song> songs;
 
-    public Album(int id, String title, String artist, ArrayList<Integer> songIds) {
+    public Album(int id, String title, String artist, ArrayList<Song> songs) {
 
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.songIds = songIds;
+        this.songs = songs;
+        getArtwork();
     }
 
     public int getId() {
@@ -45,14 +48,31 @@ public final class Album implements Comparable<Album> {
         return this.artist;
     }
 
-    public ArrayList<Integer> getSongIds() {
+    public ArrayList<Song> getSongs() {
 
-        return new ArrayList<Integer>(this.songIds);
+        return new ArrayList<Song>(this.songs);
     }
 
     public Image getArtwork() {
 
-        return Library.getSong(songIds.get(0)).getArtwork();
+        if (this.artwork == null) {
+
+            try {
+
+                String location = this.songs.get(0).getLocation();
+                AudioFile audioFile = AudioFileIO.read(new File(location));
+                Tag tag = audioFile.getTag();
+                byte[] bytes = tag.getFirstArtwork().getBinaryData();
+                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                this.artwork = new Image(in, 300, 300, true, true);
+
+            } catch (Exception ex) {
+
+                this.artwork = new Image(this.getClass().getResource(Resources.IMG + "albumsIcon.png").toString());
+            }
+        }
+
+        return this.artwork;
     }
 
     public void downloadArtwork() {
@@ -86,9 +106,9 @@ public final class Album implements Comparable<Album> {
                         File file = File.createTempFile("temp", "temp");
                         ImageIO.write(newBufferedImage, "jpg", file);
 
-                        for (int songId : songIds) {
+                        for (Song song : this.songs) {
 
-                            AudioFile audioFile = AudioFileIO.read(new File(Library.getSongs().get(songId).getLocation()));
+                            AudioFile audioFile = AudioFileIO.read(new File(song.getLocation()));
                             Tag tag = audioFile.getTag();
                             tag.deleteArtworkField();
 
@@ -109,12 +129,7 @@ public final class Album implements Comparable<Album> {
     }
 
     @Override
-    public int compareTo(Album other) throws NullPointerException {
-
-        if (other == null) {
-
-            throw new NullPointerException();
-        }
+    public int compareTo(Album other) {
 
         String first = removeArticle(this.title);
         String second = removeArticle(other.title);

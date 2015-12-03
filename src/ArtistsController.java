@@ -17,6 +17,7 @@ import javafx.scene.control.OverrunStyle;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.application.Platform;
+import java.util.ArrayList;
 
 public class ArtistsController implements Initializable, Refreshable {
 
@@ -41,12 +42,16 @@ public class ArtistsController implements Initializable, Refreshable {
 
         new Thread(() -> {
 
+            ArrayList<VBox> cells = new ArrayList<VBox>();
+
             for (int j = 25; j < artists.size(); j++) {
                 Artist artist = artists.get(j);
-                Platform.runLater(() -> {
-                    grid.getChildren().add(createCell(artist));
-                });
+                cells.add(createCell(artist));
             }
+
+            Platform.runLater(() -> {
+                grid.getChildren().addAll(cells);
+            });
 
         }).start();
     }

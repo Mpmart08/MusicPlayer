@@ -4,7 +4,7 @@ import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.tag.Tag;
 import javafx.scene.image.Image;
-import java.io.ByteArrayInputStream;
+import javafx.scene.image.ImageView;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -30,6 +30,8 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPath;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.BooleanProperty;
 
 public final class Song implements Comparable<Song> {
 
@@ -39,13 +41,15 @@ public final class Song implements Comparable<Song> {
     private String album;
     private Duration length;
     private int trackNumber;
+    private int discNumber;
     private int playCount;
     private LocalDateTime playDate;
     private String location;
     private Image artwork;
+    private SimpleBooleanProperty playing;
 
     public Song(int id, String title, String artist, String album, Duration length,
-        int trackNumber, int playCount, LocalDateTime playDate, String location) {
+        int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
         this.id = id;
         this.title = title;
@@ -53,10 +57,11 @@ public final class Song implements Comparable<Song> {
         this.album = album;
         this.length = length;
         this.trackNumber = trackNumber;
+        this.discNumber = discNumber;
         this.playCount = playCount;
         this.playDate = playDate;
         this.location = location;
-        getArtwork();
+        this.playing = new SimpleBooleanProperty(false);
     }
 
     public int getId() {
@@ -95,6 +100,11 @@ public final class Song implements Comparable<Song> {
         return this.trackNumber;
     }
 
+    public int getDiscNumber() {
+
+        return this.discNumber;
+    }
+
     public int getPlayCount() {
 
         return this.playCount;
@@ -112,23 +122,22 @@ public final class Song implements Comparable<Song> {
 
     public Image getArtwork() {
 
-        if (artwork == null) {
+        return Library.getAlbum(this.album).getArtwork();
+    }
 
-            try {
+    public boolean getPlaying() {
 
-                AudioFile audioFile = AudioFileIO.read(new File(location));
-                Tag tag = audioFile.getTag();
-                byte[] bytes = tag.getFirstArtwork().getBinaryData();
-                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-                artwork = new Image(in, 300, 300, true, true);
+        return this.playing.get();
+    }
 
-            } catch (Exception ex) {
+    public void setPlaying(boolean playing) {
 
-                artwork = new Image(this.getClass().getResource(Resources.IMG + "albumsIcon.png").toString());
-            }
-        }
+        this.playing.set(playing);
+    }
 
-        return artwork;
+    public BooleanProperty playingProperty() {
+
+        return this.playing;
     }
 
     public void played() {
@@ -179,11 +188,11 @@ public final class Song implements Comparable<Song> {
     @Override
     public int compareTo(Song other) throws NullPointerException {
 
-        if (other == null) {
-
-            throw new NullPointerException();
+        int discComparison = Integer.compare(this.discNumber, other.discNumber);
+        if (discComparison != 0) {
+            return discComparison;
+        } else {
+            return Integer.compare(this.trackNumber, other.trackNumber);
         }
-
-        return Integer.compare(this.trackNumber, other.trackNumber);
     }
 }

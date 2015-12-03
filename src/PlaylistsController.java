@@ -16,11 +16,14 @@ import javafx.animation.Transition;
 import javafx.util.Duration;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.TableRow;
+import javafx.css.PseudoClass;
+import javafx.beans.value.ChangeListener;
 
 public class PlaylistsController implements Initializable, Refreshable {
 
     @FXML private ListView<Playlist> playlistList;
     @FXML private TableView<Song> tableView;
+    @FXML private TableColumn<Song, Boolean> playingColumn;
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> artistColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
@@ -60,11 +63,13 @@ public class PlaylistsController implements Initializable, Refreshable {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
 
+        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
 
+        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
@@ -79,9 +84,26 @@ public class PlaylistsController implements Initializable, Refreshable {
         );
 
         tableView.setRowFactory(x -> {
+
             TableRow<Song> row = new TableRow<Song>();
+
+            PseudoClass playing = PseudoClass.getPseudoClass("playing");
+
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(playing, newValue.booleanValue());
+            };
+
+            row.itemProperty().addListener((obs, previousSong, currentSong) -> {
+                if (currentSong != null) {
+                    currentSong.playingProperty().addListener(changeListener);
+                    row.pseudoClassStateChanged(playing, currentSong.getPlaying());
+                } else {
+                    row.pseudoClassStateChanged(playing, false);
+                }
+            });
+
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
                     MusicPlayer.setNowPlayingList(Library.getSongs());
                     MusicPlayer.setNowPlaying(song);

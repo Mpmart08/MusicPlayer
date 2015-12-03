@@ -29,9 +29,9 @@ public class AlbumsController implements Initializable, Refreshable {
 		Collections.sort(albums);
 
         int limit = (albums.size() < 25) ? albums.size() : 25;
-		
+
 		for (int i = 0; i < limit; i++) {
-            
+
             Album album = albums.get(i);
             flowPane.getChildren().add(createCell(album));
 		}
@@ -41,12 +41,16 @@ public class AlbumsController implements Initializable, Refreshable {
 
         new Thread(() -> {
 
+            ArrayList<VBox> cells = new ArrayList<VBox>();
+
             for (int j = 25; j < albums.size(); j++) {
                 Album album = albums.get(j);
-                Platform.runLater(() -> {
-                    flowPane.getChildren().add(createCell(album));
-                });
+                cells.add(createCell(album));
             }
+
+            Platform.runLater(() -> {
+                flowPane.getChildren().addAll(cells);
+            });
 
         }).start();
 	}
