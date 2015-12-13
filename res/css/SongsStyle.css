@@ -1,5 +1,10 @@
 .table-view {
-    -fx-background-color: white;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+    -fx-focus-color: transparent;
     -fx-table-cell-border-color: transparent;
 }
 
@@ -17,9 +22,14 @@
     -fx-padding: 0 10 0 10;
 }
 
+.firstColumn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 10 0 0;
+}
+
 .playingColumn {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 0 0 0 10;
+    -fx-padding: 0 0 0 0;
 }
 
 .table-view .column-header .text {
@@ -28,7 +38,7 @@
     -fx-font-weight: normal;
 }
 
-.table-cell {
+.table-cell, .table-row-cell {
     -fx-border-color: transparent;
     -fx-border-width: 0 0 0 0;
 }
@@ -40,11 +50,11 @@
     -fx-fill: black;
 }
 
-.table-row-cell:even:filled {
+.table-row-cell:even {
     -fx-background-color: #f2f2f2;
 }
 
-.table-row-cell:odd:filled {
+.table-row-cell:odd {
     -fx-background-color: white;
 }
 
@@ -58,14 +68,6 @@
 
 .table-row-cell:filled:selected .text, .table-row-cell:filled:selected:hover .text {
     -fx-fill: white;
-}
-
-.table-row-cell:even:filled {
-    -fx-background-color: #f2f2f2;
-}
-
-.table-row-cell:odd:filled {
-    -fx-background-color: white;
 }
 
 .table-row-cell:filled:hover {

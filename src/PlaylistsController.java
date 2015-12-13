@@ -58,10 +58,10 @@ public class PlaylistsController implements Initializable, Refreshable {
         ObservableList<Song> songs = FXCollections.observableArrayList(selectedPlaylist.getSongs());
         tableView.setItems(songs);
 
-        titleColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.35));
-        artistColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.35));
-        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-        playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
+        titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
+        artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
+        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.15));
+        playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.15));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
@@ -105,7 +105,7 @@ public class PlaylistsController implements Initializable, Refreshable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    MusicPlayer.setNowPlayingList(selectedPlaylist.getSongs());
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }

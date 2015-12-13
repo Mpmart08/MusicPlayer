@@ -158,9 +158,9 @@ public class ArtistsMainController implements Initializable, Refreshable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.5));
-        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.25));
-        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(35).multiply(0.25));
+        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
+        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
+        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
@@ -276,11 +276,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
                 }
 
                 ArrayList<Song> nowPlayingList = MusicPlayer.getNowPlayingList();
-                ArrayList<Song> songs = new ArrayList<Song>();
-
-                for (Song song : selectedAlbum.getSongs()) {
-                    songs.add(song);
-                }
+                ArrayList<Song> songs = selectedAlbum.getSongs();
 
                 Collections.sort(songs);
 
@@ -361,20 +357,30 @@ public class ArtistsMainController implements Initializable, Refreshable {
                         if (selectedAlbum != null) {
 
                             for (Song s : selectedAlbum.getSongs()) {
-
                                 songs.add(s);
                             }
 
                         } else {
 
                             for (Album album : selectedArtist.getAlbums()) {
-
                                 for (Song s : album.getSongs()) {
-
                                     songs.add(s);
                                 }
                             }
                         }
+
+                        ObservableList<Album> albums = Library.getAlbums();
+
+                        Collections.sort(songs, (first, second) -> {
+
+                            Album firstAlbum = albums.stream().filter(y -> y.getTitle().equals(first.getAlbum())).findFirst().get();
+                            Album secondAlbum = albums.stream().filter(y -> y.getTitle().equals(second.getAlbum())).findFirst().get();
+                            if (firstAlbum.compareTo(secondAlbum) != 0) {
+                                return firstAlbum.compareTo(secondAlbum);
+                            } else {
+                                return first.compareTo(second);
+                            }
+                        });
 
                         MusicPlayer.setNowPlayingList(songs);
                     }

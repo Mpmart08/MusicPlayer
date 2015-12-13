@@ -29,11 +29,11 @@ public class SongsController implements Initializable, Refreshable {
 
         ObservableList<Song> songs = Library.getSongs();
 
-        titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        albumColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.26));
-        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.11));
-        playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(35).multiply(0.11));
+        titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        albumColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
+        playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());

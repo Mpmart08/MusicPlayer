@@ -109,13 +109,28 @@ public final class Library {
             for (Map.Entry<String, List<Song>> entry : albumMap.entrySet()) {
 
                 ArrayList<Song> songs = new ArrayList<Song>();
-                String artist = entry.getValue().get(0).getArtist();
 
                 for (Song song : entry.getValue()) {
                     songs.add(song);
                 }
 
-                albums.add(new Album(id++, entry.getKey(), artist, songs));
+                TreeMap<String, List<Song>> artistMap = new TreeMap<String, List<Song>>(
+                    songs.stream()
+                        .filter(song -> song.getArtist() != null)
+                        .collect(Collectors.groupingBy(Song::getArtist))
+                );
+
+                for (Map.Entry<String, List<Song>> e : artistMap.entrySet()) {
+
+                    ArrayList<Song> albumSongs = new ArrayList<Song>();
+                    String artist = e.getValue().get(0).getArtist();
+
+                    for (Song s : e.getValue()) {
+                        albumSongs.add(s);
+                    }
+
+                    albums.add(new Album(id++, entry.getKey(), artist, albumSongs));
+                }
             }
         }
 
@@ -412,7 +427,13 @@ public final class Library {
 
                     id.setTextContent(Integer.toString(i++));
                     title.setTextContent(tag.getFirst(FieldKey.TITLE));
-                    artist.setTextContent(tag.getFirst(FieldKey.ARTIST));
+                    String artistTitle = tag.getFirst(FieldKey.ALBUM_ARTIST);
+                    if (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) {
+                        artistTitle = tag.getFirst(FieldKey.ARTIST);
+                    }
+                    artist.setTextContent(
+                        (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) ? "" : artistTitle
+                    );
                     album.setTextContent(tag.getFirst(FieldKey.ALBUM));
                     length.setTextContent(Integer.toString(header.getTrackLength()));
                     String track = tag.getFirst(FieldKey.TRACK);

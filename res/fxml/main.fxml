@@ -247,7 +247,7 @@
             <Insets />
          </BorderPane.margin>
          <padding>
-            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            <Insets left="25.0" right="25.0" />
          </padding>
       </ScrollPane>
    </center>

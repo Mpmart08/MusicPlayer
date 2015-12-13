@@ -5,8 +5,12 @@
 }
 
 .list-view {
-    -fx-background-color: white;
-    -fx-table-cell-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+    -fx-focus-color: transparent;
 }
 
 .list-cell .text {
@@ -19,11 +23,13 @@
     -fx-text-fill: black;
 }
 
-.list-cell:filled:selected:focused, .list-cell:filled:selected {
+.list-cell:filled:selected:focused, .list-cell:filled:selected,
+.albumList .list-cell:filled:selected:focused, .albumList .list-cell:filled:selected {
     -fx-background-color: rgb(52, 109, 207);
 }
 
-.list-cell:filled:selected:focused:hover, .list-cell:filled:selected:hover {
+.list-cell:filled:selected:focused:hover, .list-cell:filled:selected:hover,
+.albumList .list-cell:filled:selected:focused:hover, .albumList .list-cell:filled:selected:hover {
     -fx-background-color: rgb(47, 98, 187);
 }
 
@@ -31,16 +37,20 @@
     -fx-fill: white;
 }
 
-.list-cell:even:filled {
+.list-cell:even {
     -fx-background-color: #f2f2f2;
 }
 
-.list-cell:odd:filled {
+.list-cell:odd {
     -fx-background-color: white;
 }
 
-.list-cell:filled:hover {
+.list-cell:filled:hover, .albumList .list-cell:filled:hover {
     -fx-background-color: #dadada;
+}
+
+.albumList .list-cell {
+    -fx-background-color: #f2f2f2;
 }
 
 .list-view *.scroll-bar:horizontal *.increment-button,
@@ -78,7 +88,12 @@
 }
 
 .table-view {
-    -fx-background-color: white;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+    -fx-focus-color: transparent;
     -fx-table-cell-border-color: transparent;
 }
 
@@ -96,9 +111,14 @@
     -fx-padding: 0 10 0 10;
 }
 
+.firstColumn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 10 0 0;
+}
+
 .playingColumn {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 0 0 0 10;
+    -fx-padding: 0 0 0 0;
 }
 
 .table-view .column-header .text {
@@ -119,11 +139,11 @@
     -fx-fill: black;
 }
 
-.table-row-cell:even:filled {
+.table-row-cell:even {
     -fx-background-color: #f2f2f2;
 }
 
-.table-row-cell:odd:filled {
+.table-row-cell:odd {
     -fx-background-color: white;
 }
 

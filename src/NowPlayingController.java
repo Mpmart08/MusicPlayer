@@ -29,11 +29,11 @@ public class NowPlayingController implements Initializable, Refreshable {
 
         ObservableList<Song> songs = FXCollections.observableArrayList(MusicPlayer.getNowPlayingList());
 
-        titleColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
-        artistColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
-        albumColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.26));
-        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
-        playsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.11));
+        titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        albumColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
+        lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
+        playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());

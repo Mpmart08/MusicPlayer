@@ -106,6 +106,21 @@ public class MainController implements Initializable, Refreshable {
             }
         );
 
+        timeSlider.valueProperty().addListener(
+            (slider, oldValue, newValue) -> {
+
+                double previous = oldValue.doubleValue();
+                double current = newValue.doubleValue();
+                if (!timeSlider.isValueChanging() && current != previous + 1) {
+
+                    int seconds = (int) Math.round(current / 4.0);
+                    invisibleSlider.setValue(seconds * 4);
+                    timeSlider.setValue(seconds * 4);
+                    MusicPlayer.seek(seconds);
+                }
+            }
+        );
+
         invisibleSlider.valueProperty().addListener(
             (slider, oldValue, newValue) -> {
 

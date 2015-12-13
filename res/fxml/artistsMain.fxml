@@ -28,14 +28,14 @@
                   <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
                </children>
             </HBox>
-            <ListView fx:id="albumList" fixedCellSize="150.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0">
+            <ListView fx:id="albumList" fixedCellSize="150.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0" styleClass="albumList">
                <VBox.margin>
                   <Insets />
                </VBox.margin></ListView>
             <TableView fx:id="songTable" fixedCellSize="50.0" visible="false">
               <columns>
-                  <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="35.0" resizable="false" styleClass="playingColumn" />
-                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Title" />
+                  <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
+                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
                 <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
                   <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
               </columns>
