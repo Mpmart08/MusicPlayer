@@ -118,7 +118,6 @@ public class MainController implements Initializable, Refreshable {
 
     @Override
     public void refresh() {
-
         subViewController.refresh();
     }
 

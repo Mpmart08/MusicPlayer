@@ -14,6 +14,10 @@ import javax.xml.stream.XMLStreamReader;
 import app.musicplayer.util.Resources;
 import javafx.scene.image.Image;
 
+/**
+ * Model class for an Artist
+ *
+ */
 public final class Artist implements Comparable<Artist> {
 
     private String title;
@@ -35,18 +39,30 @@ public final class Artist implements Comparable<Artist> {
 
     // GETTERS
     
+    /**
+     * Gets the artist title.
+     * @return artist title
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     * Gets array list of artist albums
+     * @return artist albums
+     */
     public ArrayList<Album> getAlbums() {
         return new ArrayList<Album>(this.albums);
     }
 
+    /**
+     * Gets images for artists
+     * @return artist image
+     */
     public Image getArtistImage() {
         if (artistImage == null) {
             try {
-                File file = new File("./musicplayer/" + Resources.IMG + this.title + ".jpg");
+            	File file = new File(Resources.IMG + this.title + ".jpg");
 
                 if (!file.exists()) {
                     file.mkdirs();
@@ -82,14 +98,14 @@ public final class Artist implements Comparable<Artist> {
                 artistImage = new Image(file.toURI().toURL().toString());
 
             } catch (Exception ex) {
-                File file = new File("./MusicPlayer/" + Resources.IMG + this.title + ".jpg");
+                File file = new File(Resources.IMG + this.title + ".jpg");
                 file.delete();
                 artistImage = new Image("file:res/img/artistsIcon.png");
             }
-        }
-
+        } // End if(artistImage == null)
+        
         return artistImage;
-    }
+    } // End getArtistImage()
 
     @Override
     public int compareTo(Artist other) {
@@ -105,9 +121,7 @@ public final class Artist implements Comparable<Artist> {
         String arr[] = title.split(" ", 2);
 
         if (arr.length < 2) {
-
             return title;
-
         } else {
 
             String firstWord = arr[0];

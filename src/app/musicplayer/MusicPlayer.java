@@ -49,7 +49,7 @@ public class MusicPlayer extends Application {
         timerCounter = 0;
         secondsPlayed = 0;
 
-        // Retrieves song, algum, artist, and playlist data from library.
+        // Retrieves song, album, artist, and playlist data from library.
         Library.getSongs();        
         Library.getAlbums();
         Library.getArtists();
