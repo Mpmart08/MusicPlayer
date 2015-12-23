@@ -12,7 +12,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainWindow" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="600.0" prefHeight="600.0" prefWidth="900.0" styleClass="mainWindow" stylesheets="@../../../../res/css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.MainController">
+<BorderPane fx:id="mainWindow" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="600.0" prefHeight="600.0" prefWidth="900.0" styleClass="mainWindow" stylesheets="@/app/musicplayer/util/css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.MainController">
    <left>
       <VBox fx:id="sideBar" maxWidth="-Infinity" minWidth="50.0" prefWidth="250.0" styleClass="sideBar" BorderPane.alignment="CENTER">
          <children>
@@ -23,7 +23,7 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </VBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/LeftArrowIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/LeftArrowIcon.png" />
                      </image>
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -199,7 +199,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/BackIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/BackIcon.png" />
                      </image>
                   </ImageView>
                   <ImageView fx:id="playPauseButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#playPause" pickOnBounds="true" preserveRatio="true">
@@ -207,7 +207,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/PlayIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/PlayIcon.png" />
                      </image>
                   </ImageView>
                   <ImageView fx:id="skipButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#skip" pickOnBounds="true" preserveRatio="true">
@@ -215,7 +215,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/ForwardIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/ForwardIcon.png" />
                      </image>
                   </ImageView>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -223,7 +223,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/LoopIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/LoopIcon.png" />
                      </image>
                   </ImageView>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -231,7 +231,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../../../../res/img/ShuffleIcon.png" />
+                        <Image url="@/app/musicplayer/util/img/ShuffleIcon.png" />
                      </image>
                   </ImageView>
                </children>

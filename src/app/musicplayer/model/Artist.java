@@ -100,7 +100,7 @@ public final class Artist implements Comparable<Artist> {
             } catch (Exception ex) {
                 File file = new File(Resources.IMG + this.title + ".jpg");
                 file.delete();
-                artistImage = new Image("file:res/img/artistsIcon.png");
+                artistImage = new Image(Resources.IMG + "artistsIcon.png");
             }
         } // End if(artistImage == null)
         

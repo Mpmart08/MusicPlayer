@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane stylesheets="@../css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsMainController">
+<BorderPane stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsMainController">
    <center>
       <VBox fx:id="subViewRoot" BorderPane.alignment="CENTER">
          <BorderPane.margin>

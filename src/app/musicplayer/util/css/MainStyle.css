@@ -1,0 +1,84 @@
+.mainWindow {
+    -fx-background-color: #ffffff;
+}
+
+.label {
+    -fx-font-family: verdana;
+    -fx-font-size: 18px;
+}
+
+.bottomBarLabel {
+    -fx-font-family: verdana;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #ffffff;
+}
+
+.sideBarItem:hover, .sideBarItemSelected:hover {
+    -fx-background-color: #dadada;
+}
+
+.sideBarItem:pressed, .sideBarItemSelected:pressed {
+    -fx-background-color: #c2c2c2;
+}
+
+.sideBarItemSelected > .label {
+    -fx-text-fill: rgb(52, 109, 207);
+}
+
+.sideBarItemSelected > .iconContainer > .icon {
+    -fx-fill: rgb(52, 109, 207);
+}
+
+.sideBar {
+    -fx-background-color: #f2f2f2;
+}
+
+.bottomBar {
+    -fx-background-color: rgb(52, 109, 207);
+}
+
+.bottomBarItem:hover {
+    -fx-background-color: rgb(47, 98, 187);
+}
+
+.separator .line {
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #c2c2c2;
+}
+
+.slider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.slider .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15px;
+}
+
+.visibleSlider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15 15 0 0;
+    -fx-background-image: url("../img/sliderIcon.png");
+}
+
+.visibleSlider .track {
+    -fx-background-color: white;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 1px;
+}
+
+.scroll-pane, .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}

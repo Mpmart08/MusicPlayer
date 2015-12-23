@@ -8,10 +8,10 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Artist;
-import app.musicplayer.model.ClippedTableCell;
 import app.musicplayer.model.Library;
-import app.musicplayer.model.PlayingTableCell;
 import app.musicplayer.model.Song;
+import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Refreshable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -282,7 +282,6 @@ public class ArtistsMainController implements Initializable, Refreshable {
                     selectAlbum(album);
                 }
 
-                ArrayList<Song> nowPlayingList = MusicPlayer.getNowPlayingList();
                 ArrayList<Song> songs = selectedAlbum.getSongs();
 
                 Collections.sort(songs);

@@ -1,4 +1,4 @@
-package app.musicplayer.model;
+package app.musicplayer.util;
 
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableCell;

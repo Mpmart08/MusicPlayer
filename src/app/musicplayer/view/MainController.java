@@ -28,8 +28,6 @@ import javafx.util.Duration;
 
 public class MainController implements Initializable, Refreshable {
 
-	private MusicPlayer musicPlayer;
-    
 	private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
@@ -106,15 +104,6 @@ public class MainController implements Initializable, Refreshable {
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()
-    
-    /**
-     * Called by the music player main application to give a reference back to itself.
-     * 
-     * @param musicPlayer
-     */
-    public void setMusicPlayer(MusicPlayer musicPlayer) {
-        this.musicPlayer = musicPlayer;
-    }
 
     @Override
     public void refresh() {
@@ -182,9 +171,6 @@ public class MainController implements Initializable, Refreshable {
         	
             String fileName = viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + ".fxml";
             
-            // TODO: DEBUG
-            System.out.println("Main Controller_214: " + fileName);
-            
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
             Node view = (Node) loader.load();
             subViewRoot.setContent(view);
@@ -208,12 +194,12 @@ public class MainController implements Initializable, Refreshable {
 
         if (MusicPlayer.isPlaying()) {
 
-            icon = new Image(this.getClass().getResource(Resources.IMG + "playIcon.png").toString());
+            icon = new Image(this.getClass().getResource(Resources.IMG + "PlayIcon.png").toString());
             playPauseButton.setImage(icon);
 
         } else {
 
-            icon = new Image(this.getClass().getResource(Resources.IMG + "pauseIcon.png").toString());
+            icon = new Image(this.getClass().getResource(Resources.IMG + "PauseIcon.png").toString());
             playPauseButton.setImage(icon);
         }
     }

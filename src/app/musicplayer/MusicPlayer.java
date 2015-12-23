@@ -13,13 +13,14 @@ import app.musicplayer.util.Resources;
 import app.musicplayer.view.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class MusicPlayer extends Application {
@@ -57,7 +58,13 @@ public class MusicPlayer extends Application {
         
         this.stage = stage;
         this.stage.setTitle("Music Player");
-        this.stage.getIcons().add(new Image("file:res/img/songsIcon.png"));
+        this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
         
         // Calls the function to initialize the main layout.
         initMain();

@@ -1,4 +1,4 @@
-package app.musicplayer.model;
+package app.musicplayer.util;
 
 import app.musicplayer.util.Resources;
 import javafx.fxml.FXMLLoader;

@@ -4,9 +4,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.model.ClippedTableCell;
-import app.musicplayer.model.PlayingTableCell;
 import app.musicplayer.model.Song;
+import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Refreshable;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
