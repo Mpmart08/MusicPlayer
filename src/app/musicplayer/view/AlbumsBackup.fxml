@@ -6,8 +6,23 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<FlowPane fx:id="grid" stylesheets="@../../../../res/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
-</FlowPane>
+<BorderPane stylesheets="@../util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
+   <bottom>
+      <TableView fx:id="songTable" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="playingColumn" prefWidth="75.0" />
+            <TableColumn fx:id="titleColumn" prefWidth="75.0" text="Title" />
+            <TableColumn fx:id="lengthColumn" prefWidth="75.0" text="Length" />
+            <TableColumn fx:id="playsColumn" prefWidth="75.0" text="Plays" />
+        </columns>
+      </TableView>
+   </bottom>
+   <top>
+      <VBox fx:id="box" BorderPane.alignment="CENTER">
+         <children>
+            <FlowPane fx:id="grid" prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </VBox>
+   </top>
+</BorderPane>
+
