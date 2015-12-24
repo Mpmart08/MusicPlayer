@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<FlowPane fx:id="grid" stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsController">
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</FlowPane>
