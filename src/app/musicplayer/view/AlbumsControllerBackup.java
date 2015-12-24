@@ -7,10 +7,7 @@ import java.util.ResourceBundle;
 
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
-import app.musicplayer.model.Song;
 import app.musicplayer.util.Refreshable;
-import javafx.animation.Animation;
-import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,55 +15,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
-/**
- * Controller for the albums view.
- *
- */
-public class AlbumsController implements Initializable, Refreshable {
+public class AlbumsControllerBackup implements Initializable, Refreshable {
 	
-	private boolean isAlbumDetailCollapsed = true;
-    private double expandedHeight = 250;
-    private double collapsedHeight = 50;
-	
-	@FXML private HBox box;
-    @FXML private FlowPane grid;
-    @FXML private TableView<Song> songTable;
-    @FXML private TableColumn<Song, Boolean> playingColumn;
-    @FXML private TableColumn<Song, String> titleColumn;
-    @FXML private TableColumn<Song, String> lengthColumn;
-    @FXML private TableColumn<Song, Integer> playsColumn;
-	
-    private Animation expandAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setOnFinished(x -> {setVisibility(true);});
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            grid.setPrefHeight(curHeight);
-        }
-    };
-	
-	private Animation collapseAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
-            grid.setPrefHeight(curHeight);
-        }
-    };
+	@FXML private FlowPane grid;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -98,10 +55,12 @@ public class AlbumsController implements Initializable, Refreshable {
             });
 
         }).start();
-	} // End initialize()
+	}
 
     @Override
-    public void refresh() {}
+    public void refresh() {
+
+    }
 
     private VBox createCell(Album album) {
 
@@ -132,46 +91,13 @@ public class AlbumsController implements Initializable, Refreshable {
         cell.getStyleClass().add("artist-cell");
         cell.setAlignment(Pos.CENTER);
         cell.setOnMouseClicked(event -> {
-        	// If the album detail is collapsed, expand it. Else collapse it.
-        	if (isAlbumDetailCollapsed) {
-        		// TODO: DEBUG
-        		System.out.println("expand");
-        		expandAlbumDetail();
-        	} else {
-        		// TODO: DEBUG
-        		System.out.println("collapse");
-        		collapseAlbumDetail();
-        	}
+
+            VBox albumCell = (VBox) event.getSource();
+            String albumTitle = ((Label) albumCell.getChildren().get(1)).getText();
+            Album a = Library.getAlbums().stream().filter(x -> albumTitle.equals(x.getTitle())).findFirst().get();
+
         });
+
         return cell;
-    } // End createCell()
-    
-    private void expandAlbumDetail() {
-        if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
-            && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
-
-            expandAnimation.play();
-        }
-    }
-    
-    private void collapseAlbumDetail() {
-        if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
-            && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
-
-            setVisibility(false);
-            collapseAnimation.play();
-        }
-    }
-    
-    private void setVisibility(boolean isVisible) {
-        for (Node n : grid.getChildren()) {
-            if (n instanceof HBox) {
-                for (Node m : ((HBox)n).getChildren()) {
-                    if (m instanceof Label) {
-                        m.setVisible(isVisible);
-                    }
-                }
-            }
-        }
     }
 }
