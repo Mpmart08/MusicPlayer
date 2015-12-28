@@ -182,7 +182,6 @@ public class MainController implements Initializable, Refreshable {
             return subViewController;
 
         } catch (Exception ex) {
-
             ex.printStackTrace();
             return null;
         }
@@ -293,13 +292,13 @@ public class MainController implements Initializable, Refreshable {
                 }
             }
         }
-    } // End setVisibility()
+    }
 
     private void setSlideDirection() {
         isSideBarExpanded = !isSideBarExpanded;        
         sideBarSlideButton.setImage(new Image("file:res/img/"
                 + (isSideBarExpanded ? "leftArrowIcon.png" : "rightArrowIcon.png")));
-    } // End setSlideDirection()
+    }
     
     // ANIMATIONS
     

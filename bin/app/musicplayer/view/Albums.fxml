@@ -6,8 +6,18 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<FlowPane fx:id="grid" stylesheets="@../../../../res/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
-</FlowPane>
+<BorderPane stylesheets="@../util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
+   <bottom>
+      <TableView fx:id="songTable" fixedCellSize="50.0" prefHeight="0.0" visible="false" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
+            <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
+            <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+            <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="bumberColumn" text="Plays" />
+        </columns>
+      </TableView>
+   </bottom>
+   <top>
+      <FlowPane fx:id="grid" BorderPane.alignment="CENTER" />
+   </top>
+</BorderPane>

@@ -7,7 +7,10 @@ import java.util.ResourceBundle;
 
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
+import app.musicplayer.model.Song;
 import app.musicplayer.util.Refreshable;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,15 +18,59 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class AlbumsController implements Initializable, Refreshable {
 	
-	@FXML private FlowPane grid;
+	private boolean isAlbumDetailCollapsed = true;
+    private double expandedHeight = 250;
+    private double collapsedHeight = 50;
+	
+    @FXML private FlowPane grid;
+    @FXML private TableView<Song> songTable;
+    @FXML private TableColumn<Song, Boolean> playingColumn;
+    @FXML private TableColumn<Song, String> titleColumn;
+    @FXML private TableColumn<Song, String> lengthColumn;
+    @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    // Creates the collapse animation for the detailed album view.
+    private Animation collapseAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setOnFinished(x -> setSlideDirection());
+        }
+        protected void interpolate(double frac) {
+        	// TODO: DEBUG
+            System.out.println("53: Collapse Animation");
+        	
+            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
+            songTable.setPrefHeight(curWidth);
+        }
+    };
+
+    // Creates the expand animation for the detailed album view.
+    private Animation expandAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setOnFinished(x -> {setVisibility(true); setSlideDirection();});
+        }
+        protected void interpolate(double frac) {
+        	// TODO: DEBUG
+            System.out.println("68: Expand Animation");
+            
+            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            songTable.setPrefHeight(curWidth);
+        }
+    };
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -55,12 +102,14 @@ public class AlbumsController implements Initializable, Refreshable {
             });
 
         }).start();
+        
+        // TODO: DEBUG
+        System.out.println("107: Grid Height: " + grid.getHeight());
+        System.out.println("108: Table Height: " + songTable.getHeight());
 	}
 
     @Override
-    public void refresh() {
-
-    }
+    public void refresh() {}
 
     private VBox createCell(Album album) {
 
@@ -91,13 +140,63 @@ public class AlbumsController implements Initializable, Refreshable {
         cell.getStyleClass().add("artist-cell");
         cell.setAlignment(Pos.CENTER);
         cell.setOnMouseClicked(event -> {
-
-            VBox albumCell = (VBox) event.getSource();
-            String albumTitle = ((Label) albumCell.getChildren().get(1)).getText();
-            Album a = Library.getAlbums().stream().filter(x -> albumTitle.equals(x.getTitle())).findFirst().get();
+        	
+        	// TODO: DEBUG
+        	System.out.println("Cell clicked!");
+        	
+        	// If the album detail is collapsed, expand it. Else collapse it.
+        	if (isAlbumDetailCollapsed) {
+        		// TODO: DEBUG
+        		System.out.println("150: Expand detailed view!");
+        		expandAlbumDetail();
+        	} else {
+        		// TODO: DEBUG
+        		System.out.println("154: Collapse detailed view!");
+        		collapseAlbumDetail();
+        	}
 
         });
-
         return cell;
+    }
+    
+    private void expandAlbumDetail() {
+    	
+    	// TODO: DEBUG
+    	System.out.println("165: In expandAlbumDetail()");
+    	
+        if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
+            && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
+
+            expandAnimation.play();
+        }
+    }
+    
+    private void collapseAlbumDetail() {
+    	
+    	// TODO: DEBUG
+    	System.out.println("177: In collapseAlbumDetail()");
+    	
+        if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
+            && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
+
+            setVisibility(false);
+            collapseAnimation.play();
+        }
+    }
+    
+    private void setVisibility(boolean isVisible) {
+        for (Node n : grid.getChildren()) {
+            if (n instanceof FlowPane) {
+                for (Node m : ((FlowPane)n).getChildren()) {
+                    if (m instanceof Label) {
+                        m.setVisible(isVisible);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setSlideDirection() {
+        isAlbumDetailCollapsed = !isAlbumDetailCollapsed;        
     }
 }
