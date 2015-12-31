@@ -417,7 +417,6 @@ public class ArtistsMainController implements Initializable, Refreshable {
             showAllSongs(artistList.getSelectionModel().getSelectedItem());
 
         } else {
-
             selectedAlbum = album;
             ObservableList<Song> songs = FXCollections.observableArrayList();
 

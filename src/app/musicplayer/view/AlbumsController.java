@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
+import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
+import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Refreshable;
+import javafx.animation.Animation;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
@@ -112,15 +117,17 @@ public class AlbumsController implements Initializable, Refreshable {
         	
         	// If the album detail is collapsed, expand it. Else collapse it.
         	if (isAlbumDetailCollapsed) {
-        		// TODO: DEBUG
-        		System.out.println("114: Expand detailed view!");
         		expandAlbumDetail(cell);
+        		populateSongTable(cell, album);
         	} else {
-        		// TODO: DEBUG
-        		System.out.println("118: Collapse detailed view!");
         		collapseAlbumDetail(cell);
         	}
         });
+        
+        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
+        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
+        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
+        
         return cell;
     }
     
@@ -132,7 +139,7 @@ public class AlbumsController implements Initializable, Refreshable {
     	System.out.println(cell.getBoundsInParent().getMaxX());
     	System.out.println(cell.getBoundsInParent().getMaxY());
     	
-    	songBox.setTranslateY(cell.getBoundsInParent().getMaxY());
+    	songBox.setTranslateY(cell.getBoundsInParent().getMaxY()-20);
     	
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
@@ -144,5 +151,31 @@ public class AlbumsController implements Initializable, Refreshable {
     	System.out.println("135: Collapse Album Detail");
     	isAlbumDetailCollapsed = true;
     	songBox.setVisible(false);
+    }
+    
+    private void populateSongTable(VBox cell, Album selectedAlbum) {
+    	// TODO: DEBUG
+    	System.out.println("Populate Song Table");
+    	
+    	System.out.println("Album Title: " + selectedAlbum.getTitle());
+    	
+    	ArrayList<Song> albumSongsAL = selectedAlbum.getSongs();
+    	ObservableList<Song> albumSongs = FXCollections.observableArrayList(albumSongsAL);
+    	
+    	System.out.println("Album First Song (AL): " + albumSongsAL.get(0).getTitle());
+    	System.out.println("Album First Song (OL): " + albumSongs.get(0).getTitle());
+    	
+        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
+        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+
+        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
+        playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        
+        songTable.setItems(albumSongs);
+    	
     }
 }
