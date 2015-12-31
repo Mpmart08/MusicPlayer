@@ -73,8 +73,15 @@ public class AlbumsController implements Initializable, Refreshable {
                 grid.getChildren().addAll(cells);
             });
         }).start();
-		// Sets song box margins so that it only covers a third of the flowpane when expanded.
-//        songBox.setMargin(songTable, new Insets(grid.getPrefHeight()/3, 15, 10, 10));
+        
+        // Sets preferred column width.
+        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
+        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
+        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
+        
+		// Sets song box margins so that they are in line with the album cover cells.
+        songBox.setMargin(songTable, new Insets(0, 10, 0, 5));
+        
 		// Sets the song table to be invisible when the view is initialized.
         songBox.setVisible(false);
 	}
@@ -123,11 +130,6 @@ public class AlbumsController implements Initializable, Refreshable {
         		collapseAlbumDetail(cell);
         	}
         });
-        
-        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
-        lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
-        playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
-        
         return cell;
     }
     
@@ -159,10 +161,9 @@ public class AlbumsController implements Initializable, Refreshable {
     	
     	System.out.println("Album Title: " + selectedAlbum.getTitle());
     	
-    	ArrayList<Song> albumSongsAL = selectedAlbum.getSongs();
-    	ObservableList<Song> albumSongs = FXCollections.observableArrayList(albumSongsAL);
+    	// Retrieves albums songs and stores them as an observable list.
+    	ObservableList<Song> albumSongs = FXCollections.observableArrayList(selectedAlbum.getSongs());
     	
-    	System.out.println("Album First Song (AL): " + albumSongsAL.get(0).getTitle());
     	System.out.println("Album First Song (OL): " + albumSongs.get(0).getTitle());
     	
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
@@ -170,11 +171,13 @@ public class AlbumsController implements Initializable, Refreshable {
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
 
+        // Sets each column item.
         playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
         
+        // Adds songs to table.
         songTable.setItems(albumSongs);
     	
     }
