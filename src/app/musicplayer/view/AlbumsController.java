@@ -16,12 +16,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class AlbumsController implements Initializable, Refreshable {
@@ -67,7 +69,7 @@ public class AlbumsController implements Initializable, Refreshable {
             });
         }).start();
 		// Sets song box margins so that it only covers a third of the flowpane when expanded.
-		songBox.setMargin(songTable, new Insets(grid.getPrefHeight()/3, 15, 10, 10));
+//        songBox.setMargin(songTable, new Insets(grid.getPrefHeight()/3, 15, 10, 10));
 		// Sets the song table to be invisible when the view is initialized.
         songBox.setVisible(false);
 	}
@@ -112,24 +114,32 @@ public class AlbumsController implements Initializable, Refreshable {
         	if (isAlbumDetailCollapsed) {
         		// TODO: DEBUG
         		System.out.println("114: Expand detailed view!");
-        		expandAlbumDetail();
+        		expandAlbumDetail(cell);
         	} else {
         		// TODO: DEBUG
         		System.out.println("118: Collapse detailed view!");
-        		collapseAlbumDetail();
+        		collapseAlbumDetail(cell);
         	}
         });
         return cell;
     }
     
-    private void expandAlbumDetail() {
+    private void expandAlbumDetail(VBox cell) {
     	// TODO: DEBUG
     	System.out.println("128: Expand Album Detail");
+    	
+    	// TODO: DEBUG
+    	System.out.println(cell.getBoundsInParent().getMaxX());
+    	System.out.println(cell.getBoundsInParent().getMaxY());
+    	
+    	songBox.setTranslateY(cell.getBoundsInParent().getMaxY());
+    	
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
+    	
     }
     
-    private void collapseAlbumDetail() {
+    private void collapseAlbumDetail(VBox cell) {
     	// TODO: DEBUG
     	System.out.println("135: Collapse Album Detail");
     	isAlbumDetailCollapsed = true;
