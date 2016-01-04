@@ -11,6 +11,8 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Refreshable;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +28,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
+/**
+ * 
+ * @version 0.9
+ *
+ */
 public class AlbumsController implements Initializable, Refreshable {
 	
 	private boolean isAlbumDetailCollapsed = true;
@@ -38,6 +46,24 @@ public class AlbumsController implements Initializable, Refreshable {
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    private double expandedHeight = 50;
+    private double collapsedHeight = 0;
+    
+    private Animation songTableLoadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            if (frac < 0.25) {
+                songTable.setTranslateY(expandedHeight - curHeight * 4);
+            } else {
+                songTable.setTranslateY(collapsedHeight);
+            }
+            songTable.setOpacity(frac);
+        }
+    };
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -157,6 +183,7 @@ public class AlbumsController implements Initializable, Refreshable {
     	grid.getChildren().add(insertIndex, songBox);
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
+    	songTableLoadAnimation.play();
     	
     }
     
