@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
-import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Refreshable;
-import javafx.animation.Animation;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableColumn;
@@ -28,7 +25,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class AlbumsController implements Initializable, Refreshable {
@@ -54,7 +50,7 @@ public class AlbumsController implements Initializable, Refreshable {
 		for (int i = 0; i < limit; i++) {
 
             Album album = albums.get(i);
-            grid.getChildren().add(createCell(album));
+            grid.getChildren().add(createCell(album, i));
 		}
 
         int rows = (albums.size() % 5 == 0) ? albums.size() / 5 : albums.size() / 5 + 1;
@@ -66,7 +62,7 @@ public class AlbumsController implements Initializable, Refreshable {
 
             for (int j = 25; j < albums.size(); j++) {
                 Album album = albums.get(j);
-                cells.add(createCell(album));
+                cells.add(createCell(album, j));
             }
 
             Platform.runLater(() -> {
@@ -89,7 +85,7 @@ public class AlbumsController implements Initializable, Refreshable {
     @Override
     public void refresh() {}
 
-    private VBox createCell(Album album) {
+    private VBox createCell(Album album, int index) {
 
         VBox cell = new VBox();
         Label title = new Label(album.getTitle());
@@ -124,7 +120,7 @@ public class AlbumsController implements Initializable, Refreshable {
         	
         	// If the album detail is collapsed, expand it. Else collapse it.
         	if (isAlbumDetailCollapsed) {
-        		expandAlbumDetail(cell);
+        		expandAlbumDetail(cell, index);
         		populateSongTable(cell, album);
         	} else {
         		collapseAlbumDetail(cell);
@@ -133,16 +129,33 @@ public class AlbumsController implements Initializable, Refreshable {
         return cell;
     }
     
-    private void expandAlbumDetail(VBox cell) {
+    private void expandAlbumDetail(VBox cell, int index) {
     	// TODO: DEBUG
     	System.out.println("128: Expand Album Detail");
+    	System.out.println("Index: " + index);
     	
-    	// TODO: DEBUG
-    	System.out.println(cell.getBoundsInParent().getMaxX());
-    	System.out.println(cell.getBoundsInParent().getMaxY());
+    	// Converts the index integer to a string.
+    	String indexString = Integer.toString(index);
     	
-    	songBox.setTranslateY(cell.getBoundsInParent().getMaxY()-20);
+    	// Initializes index used to insert song table into flowpane.
+    	int insertIndex = 0;
     	
+    	// Defines insertIndex based on the clicked cell index so that the song table
+    	// is inserted in the row after the clicked row.
+    	if (indexString.endsWith("0") || indexString.endsWith("5")) {
+    		insertIndex = index + 5;
+    	} else if (indexString.endsWith("1") || indexString.endsWith("6"))  {
+    		insertIndex = index + 4;
+    	} else if (indexString.endsWith("2") || indexString.endsWith("7"))  {
+    		insertIndex = index + 3;
+    	} else if (indexString.endsWith("3") || indexString.endsWith("8"))  {
+    		insertIndex = index + 2;
+    	} else if (indexString.endsWith("4") || indexString.endsWith("9"))  {
+    		insertIndex = index + 1;
+    	}
+    	
+    	// Adds the song box to the flow pane.
+    	grid.getChildren().add(insertIndex, songBox);
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
     	
@@ -151,6 +164,9 @@ public class AlbumsController implements Initializable, Refreshable {
     private void collapseAlbumDetail(VBox cell) {
     	// TODO: DEBUG
     	System.out.println("135: Collapse Album Detail");
+    	
+    	// Removes the songBox from the flow pane.
+    	grid.getChildren().remove(songBox);
     	isAlbumDetailCollapsed = true;
     	songBox.setVisible(false);
     }
