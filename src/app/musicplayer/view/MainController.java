@@ -295,9 +295,9 @@ public class MainController implements Initializable, Refreshable {
     }
 
     private void setSlideDirection() {
-        isSideBarExpanded = !isSideBarExpanded;        
-        sideBarSlideButton.setImage(new Image("file:res/img/"
-                + (isSideBarExpanded ? "leftArrowIcon.png" : "rightArrowIcon.png")));
+        isSideBarExpanded = !isSideBarExpanded;
+        sideBarSlideButton.setImage(new Image(this.getClass().getResource(Resources.IMG
+                + (isSideBarExpanded ? "leftArrowIcon.png" : "rightArrowIcon.png")).toString()));
     }
     
     // ANIMATIONS
