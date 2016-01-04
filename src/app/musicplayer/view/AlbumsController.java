@@ -75,9 +75,6 @@ public class AlbumsController implements Initializable, Refreshable {
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         
-		// Sets song box margins so that they are in line with the album cover cells.
-        songBox.setMargin(songTable, new Insets(0, 10, 0, 5));
-        
 		// Sets the song table to be invisible when the view is initialized.
         songBox.setVisible(false);
 	}
@@ -132,7 +129,6 @@ public class AlbumsController implements Initializable, Refreshable {
     private void expandAlbumDetail(VBox cell, int index) {
     	// TODO: DEBUG
     	System.out.println("128: Expand Album Detail");
-    	System.out.println("Index: " + index);
     	
     	// Converts the index integer to a string.
     	String indexString = Integer.toString(index);
@@ -153,6 +149,9 @@ public class AlbumsController implements Initializable, Refreshable {
     	} else if (indexString.endsWith("4") || indexString.endsWith("9"))  {
     		insertIndex = index + 1;
     	}
+    	
+    	// Obtains the flowpane width and sets the song box width to that value.
+    	songBox.setPrefWidth(grid.getWidth());;
     	
     	// Adds the song box to the flow pane.
     	grid.getChildren().add(insertIndex, songBox);
