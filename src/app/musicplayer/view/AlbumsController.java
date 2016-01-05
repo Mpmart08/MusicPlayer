@@ -35,9 +35,13 @@ import javafx.util.Duration;
  * @version 0.9
  *
  */
+
+//TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
+//TODO: clicking another album while the songtable is open reloads the songtable with the new albums songs,
+//		 if the current album is selected again it closes the songtable.
+//TODO: ANIMATION CHANGE WHEN OPENING SONG TABLE.
+
 public class AlbumsController implements Initializable, Refreshable {
-	
-	private boolean isAlbumDetailCollapsed = true;
 	
     @FXML private FlowPane grid;
     @FXML private VBox songBox;
@@ -47,10 +51,14 @@ public class AlbumsController implements Initializable, Refreshable {
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
     
+    private boolean isAlbumDetailCollapsed = true;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
     
-    private Animation songTableLoadAnimation = new Transition() {
+    // Initializes the index for the currently selected cell.
+    private int currentCell;
+    
+    private Animation songTableReloadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(1000));
         }
@@ -134,16 +142,37 @@ public class AlbumsController implements Initializable, Refreshable {
 
         cell.getChildren().addAll(imageBox, title);
         cell.setPadding(new Insets(10, 10, 10, 10));
-        cell.getStyleClass().add("artist-cell");
+        cell.getStyleClass().add("album-cell");
         cell.setAlignment(Pos.CENTER);
         cell.setOnMouseClicked(event -> {
-        	
-        	// TODO: DEBUG
-        	System.out.println("Cell clicked!");
-        	
-        	// If the album detail is collapsed, expand it. Else collapse it.
+        	// If the album detail is collapsed, expand it and populate song table.
         	if (isAlbumDetailCollapsed) {
+            	// Updates the index of the currently selected cell.
+            	currentCell = index;
+            	
+            	// TODO: DEBUG
+            	System.out.println("Current cell: " + currentCell);
+            	
+        		// Shows song table, plays load animation and populates song table with album songs.
         		expandAlbumDetail(cell, index);
+            	songTableReloadAnimation.play();
+        		populateSongTable(cell, album);
+        		
+        		// Else if album detail is expanded and opened album is reselected.
+        	} else if (!isAlbumDetailCollapsed && index == currentCell) {
+        		// Hides song table.
+        		collapseAlbumDetail(cell);
+        		
+        		// Else if album detail is expanded and a different album is selected.
+        	} else if (!isAlbumDetailCollapsed && !(index == currentCell)) {
+            	// Updates the index of the currently selected cell.
+            	currentCell = index;
+            	
+            	// TODO: DEBUG
+            	System.out.println("Current cell: " + currentCell);
+            	
+            	// Plays load animation and populates song table with songs of newly selected album.
+            	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
         	} else {
         		collapseAlbumDetail(cell);
@@ -183,8 +212,6 @@ public class AlbumsController implements Initializable, Refreshable {
     	grid.getChildren().add(insertIndex, songBox);
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
-    	songTableLoadAnimation.play();
-    	
     }
     
     private void collapseAlbumDetail(VBox cell) {
@@ -197,16 +224,9 @@ public class AlbumsController implements Initializable, Refreshable {
     	songBox.setVisible(false);
     }
     
-    private void populateSongTable(VBox cell, Album selectedAlbum) {
-    	// TODO: DEBUG
-    	System.out.println("Populate Song Table");
-    	
-    	System.out.println("Album Title: " + selectedAlbum.getTitle());
-    	
+    private void populateSongTable(VBox cell, Album selectedAlbum) {    	
     	// Retrieves albums songs and stores them as an observable list.
     	ObservableList<Song> albumSongs = FXCollections.observableArrayList(selectedAlbum.getSongs());
-    	
-    	System.out.println("Album First Song (OL): " + albumSongs.get(0).getTitle());
     	
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
         titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
