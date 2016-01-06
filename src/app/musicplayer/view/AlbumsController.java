@@ -37,7 +37,8 @@ import javafx.util.Duration;
  */
 
 //TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
-//TODO: ANIMATION CHANGE WHEN OPENING SONG TABLE.
+//TODO: ANIMATION CHANGE WHEN OPENING SONG TABLE
+//TODO: ADD ALBUM IMAGE TO SONG TABLE WHEN OPENED
 
 public class AlbumsController implements Initializable, Refreshable {
 	
@@ -50,8 +51,11 @@ public class AlbumsController implements Initializable, Refreshable {
     @FXML private TableColumn<Song, Integer> playsColumn;
     
     private boolean isAlbumDetailCollapsed = true;
-    private double expandedHeight = 50;
-    private double collapsedHeight = 0;
+    private double expandedHeightReload = 50;
+    private double collapsedHeightReload = 0;
+    
+    private double expandedHeight = 400;
+    private double collapsedHeight = 50;
     
     // Initializes the index for the currently selected cell.
     private int currentCell;
@@ -59,16 +63,38 @@ public class AlbumsController implements Initializable, Refreshable {
     // Initializes the value of the x-coordinate for the currently selected cell.
     private double currentCellYCoordinate;
     
+    // ANIMIATIONS
+    
+    private Animation collapseAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(500));
+        }
+        protected void interpolate(double frac) {
+            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
+            songBox.setPrefHeight(curWidth);
+        }
+    };
+
+    private Animation expandAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(500));
+        }
+        protected void interpolate(double frac) {
+            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            songBox.setPrefHeight(curWidth);
+        }
+    };
+    
     private Animation songTableReloadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(1000));
         }
         protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            double curHeight = collapsedHeightReload + (expandedHeightReload - collapsedHeightReload) * (frac);
             if (frac < 0.25) {
-                songTable.setTranslateY(expandedHeight - curHeight * 4);
+                songTable.setTranslateY(expandedHeightReload - curHeight * 4);
             } else {
-                songTable.setTranslateY(collapsedHeight);
+                songTable.setTranslateY(collapsedHeightReload);
             }
             songTable.setOpacity(frac);
         }
@@ -156,13 +182,14 @@ public class AlbumsController implements Initializable, Refreshable {
             	
         		// Shows song table, plays load animation and populates song table with album songs.
         		expandAlbumDetail(cell, index);
-            	songTableReloadAnimation.play();
+        		expandAnimation.play();
         		populateSongTable(cell, album);
         		
         		// Else if album detail is expanded and opened album is reselected.
         	} else if (!isAlbumDetailCollapsed && index == currentCell) {
         		// Hides song table.
         		collapseAlbumDetail(cell);
+        		collapseAnimation.play();
         		
         		// Else if album detail is expanded and a different album is selected on the same row.
         	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
@@ -176,6 +203,8 @@ public class AlbumsController implements Initializable, Refreshable {
             	// Plays load animation and populates song table with songs of newly selected album.
             	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
+        		
+        		// Else if album detail is expanded and a different album is selected on a different row.
         	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
         			&& !(currentCellYCoordinate == cell.getBoundsInParent().getMaxY())) {
             	// Updates the index of the currently selected cell.
@@ -191,6 +220,7 @@ public class AlbumsController implements Initializable, Refreshable {
         		populateSongTable(cell, album);
         	} else {
         		collapseAlbumDetail(cell);
+        		collapseAnimation.play();
         	}
         	// Sets the cells max x value as the current cell x coordinate.
         	currentCellYCoordinate = cell.getBoundsInParent().getMaxY();
