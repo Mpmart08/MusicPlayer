@@ -37,8 +37,6 @@ import javafx.util.Duration;
  */
 
 //TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
-//TODO: clicking another album while the songtable is open reloads the songtable with the new albums songs,
-//		 if the current album is selected again it closes the songtable.
 //TODO: ANIMATION CHANGE WHEN OPENING SONG TABLE.
 
 public class AlbumsController implements Initializable, Refreshable {
@@ -57,6 +55,9 @@ public class AlbumsController implements Initializable, Refreshable {
     
     // Initializes the index for the currently selected cell.
     private int currentCell;
+    
+    // Initializes the value of the x-coordinate for the currently selected cell.
+    private double currentCellYCoordinate;
     
     private Animation songTableReloadAnimation = new Transition() {
         {
@@ -144,7 +145,7 @@ public class AlbumsController implements Initializable, Refreshable {
         cell.setPadding(new Insets(10, 10, 10, 10));
         cell.getStyleClass().add("album-cell");
         cell.setAlignment(Pos.CENTER);
-        cell.setOnMouseClicked(event -> {
+        cell.setOnMouseClicked(event -> {        	
         	// If the album detail is collapsed, expand it and populate song table.
         	if (isAlbumDetailCollapsed) {
             	// Updates the index of the currently selected cell.
@@ -163,8 +164,9 @@ public class AlbumsController implements Initializable, Refreshable {
         		// Hides song table.
         		collapseAlbumDetail(cell);
         		
-        		// Else if album detail is expanded and a different album is selected.
-        	} else if (!isAlbumDetailCollapsed && !(index == currentCell)) {
+        		// Else if album detail is expanded and a different album is selected on the same row.
+        	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
+        			&& currentCellYCoordinate == cell.getBoundsInParent().getMaxY()) {
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
@@ -174,9 +176,27 @@ public class AlbumsController implements Initializable, Refreshable {
             	// Plays load animation and populates song table with songs of newly selected album.
             	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
+        	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
+        			&& !(currentCellYCoordinate == cell.getBoundsInParent().getMaxY())) {
+            	// Updates the index of the currently selected cell.
+            	currentCell = index;
+            	
+            	// TODO: DEBUG
+            	System.out.println("Current cell: " + currentCell);
+            	
+            	// Collapses the song table and then expands it in the appropriate row with songs on new album.
+            	collapseAlbumDetail(cell);
+        		expandAlbumDetail(cell, index);
+            	songTableReloadAnimation.play();
+        		populateSongTable(cell, album);
         	} else {
         		collapseAlbumDetail(cell);
         	}
+        	// Sets the cells max x value as the current cell x coordinate.
+        	currentCellYCoordinate = cell.getBoundsInParent().getMaxY();
+        	
+        	// TODO: DEBUG
+        	System.out.println("Current Cell Y Coordinate: " + currentCellYCoordinate);
         });
         return cell;
     }
