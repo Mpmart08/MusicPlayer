@@ -121,9 +121,17 @@ public class AlbumsController implements Initializable, Refreshable {
 
             ArrayList<VBox> cells = new ArrayList<VBox>();
 
-            for (int j = 25; j < albums.size(); j++) {
-                Album album = albums.get(j);
-                cells.add(createCell(album, j));
+            for (int j = 25; j < albums.size() + 10; j++) {
+            	// If all the albums have been added, add an extra 10 empty vboxes to the flow pane.
+            	// This prevents errors when expanding the song table in the last row. 
+            	if (j >= albums.size()) {
+            		cells.add(new VBox());
+            		
+            		// Else (the albums in the library are still being added), add the album to the flow pane.
+            	} else {
+            		Album album = albums.get(j);
+                    cells.add(createCell(album, j));
+            	}
             }
 
             Platform.runLater(() -> {
