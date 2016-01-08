@@ -37,7 +37,6 @@ import javafx.util.Duration;
  */
 
 //TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
-//TODO: ANIMATION CHANGE WHEN OPENING SONG TABLE
 //TODO: ADD ALBUM IMAGE TO SONG TABLE WHEN OPENED
 
 public class AlbumsController implements Initializable, Refreshable {
@@ -51,9 +50,10 @@ public class AlbumsController implements Initializable, Refreshable {
     @FXML private TableColumn<Song, Integer> playsColumn;
     
     private boolean isAlbumDetailCollapsed = true;
+    
+    // Initializes values used for animations.
     private double expandedHeightReload = 50;
     private double collapsedHeightReload = 0;
-    
     private double expandedHeight = 400;
     private double collapsedHeight = 50;
     
@@ -68,6 +68,7 @@ public class AlbumsController implements Initializable, Refreshable {
     private Animation collapseAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(500));
+            setOnFinished(x -> collapseAlbumDetail());
         }
         protected void interpolate(double frac) {
             double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
@@ -195,8 +196,7 @@ public class AlbumsController implements Initializable, Refreshable {
         		
         		// Else if album detail is expanded and opened album is reselected.
         	} else if (!isAlbumDetailCollapsed && index == currentCell) {
-        		// Hides song table.
-        		collapseAlbumDetail(cell);
+        		// Plays the collapse animation to remove the song table.
         		collapseAnimation.play();
         		
         		// Else if album detail is expanded and a different album is selected on the same row.
@@ -222,12 +222,12 @@ public class AlbumsController implements Initializable, Refreshable {
             	System.out.println("Current cell: " + currentCell);
             	
             	// Collapses the song table and then expands it in the appropriate row with songs on new album.
-            	collapseAlbumDetail(cell);
+            	collapseAlbumDetail();
         		expandAlbumDetail(cell, index);
             	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
         	} else {
-        		collapseAlbumDetail(cell);
+        		// Plays the collapse animation to remove the song table.
         		collapseAnimation.play();
         	}
         	// Sets the cells max x value as the current cell x coordinate.
@@ -272,7 +272,7 @@ public class AlbumsController implements Initializable, Refreshable {
     	songBox.setVisible(true);
     }
     
-    private void collapseAlbumDetail(VBox cell) {
+    private void collapseAlbumDetail() {
     	// TODO: DEBUG
     	System.out.println("135: Collapse Album Detail");
     	
