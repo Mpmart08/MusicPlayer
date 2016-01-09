@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
-import app.musicplayer.util.Refreshable;
 import app.musicplayer.util.Resources;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -26,14 +25,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class MainController implements Initializable, Refreshable {
+public class MainController implements Initializable {
 
 	private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
     private double collapsedWidth = 50;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
-    private Refreshable subViewController;
+    private Initializable subViewController;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -105,11 +104,6 @@ public class MainController implements Initializable, Refreshable {
         loadView("artists");
     } // End initialize()
 
-    @Override
-    public void refresh() {
-        subViewController.refresh();
-    }
-
     @FXML
     private void selectView(Event e) {
 
@@ -165,7 +159,7 @@ public class MainController implements Initializable, Refreshable {
         MusicPlayer.skip();
     }
 
-    public Refreshable loadView(String viewName) {
+    public Initializable loadView(String viewName) {
 
         try {
         	
@@ -222,11 +216,11 @@ public class MainController implements Initializable, Refreshable {
         Song song = MusicPlayer.getNowPlaying();
         if (song != null) {
             timeSlider.setMin(0);
-            timeSlider.setMax(song.getLength().getSeconds() * 4);
+            timeSlider.setMax(song.getLengthInSeconds() * 4);
             timeSlider.setValue(0);
             timeSlider.setBlockIncrement(1);
             invisibleSlider.setMin(0);
-            invisibleSlider.setMax(song.getLength().getSeconds() * 4);
+            invisibleSlider.setMax(song.getLengthInSeconds() * 4);
             invisibleSlider.setValue(0);
             invisibleSlider.setBlockIncrement(1);
         } else {
@@ -252,7 +246,7 @@ public class MainController implements Initializable, Refreshable {
         Song song = MusicPlayer.getNowPlaying();
         if (song != null) {
             timePassed.setText("0:00");
-            timeRemaining.setText(song.getLengthAsString());
+            timeRemaining.setText(song.getLength());
         } else {
             timePassed.setText("");
             timeRemaining.setText("");

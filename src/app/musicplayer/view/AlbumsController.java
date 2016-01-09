@@ -10,7 +10,6 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Refreshable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
@@ -39,7 +38,7 @@ import javafx.util.Duration;
 //TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
 //TODO: ADD ALBUM IMAGE TO SONG TABLE WHEN OPENED
 
-public class AlbumsController implements Initializable, Refreshable {
+public class AlbumsController implements Initializable {
 	
     @FXML private FlowPane grid;
     @FXML private VBox songBox;
@@ -120,6 +119,12 @@ public class AlbumsController implements Initializable, Refreshable {
 
         new Thread(() -> {
 
+        	try {
+        		Thread.sleep(1000);
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+        	
             ArrayList<VBox> cells = new ArrayList<VBox>();
 
             for (int j = 25; j < albums.size() + 10; j++) {
@@ -148,9 +153,6 @@ public class AlbumsController implements Initializable, Refreshable {
 		// Sets the song table to be invisible when the view is initialized.
         songBox.setVisible(false);
 	}
-
-    @Override
-    public void refresh() {}
 
     private VBox createCell(Album album, int index) {
 
@@ -294,7 +296,7 @@ public class AlbumsController implements Initializable, Refreshable {
         // Sets each column item.
         playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
         
         // Adds songs to table.

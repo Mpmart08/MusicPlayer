@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
-import app.musicplayer.util.Refreshable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
@@ -33,7 +32,7 @@ import javafx.util.Duration;
  * Controller for the albums view.
  *
  */
-public class AlbumsControllerBackup implements Initializable, Refreshable {
+public class AlbumsControllerBackup implements Initializable {
 	
 	private boolean isAlbumDetailCollapsed = true;
     private double expandedHeight = 250;
@@ -99,9 +98,6 @@ public class AlbumsControllerBackup implements Initializable, Refreshable {
 
         }).start();
 	} // End initialize()
-
-    @Override
-    public void refresh() {}
 
     private VBox createCell(Album album) {
 
