@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
+import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
@@ -13,6 +14,7 @@ import app.musicplayer.util.PlayingTableCell;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -20,25 +22,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.scene.Node;
-
-/**
- * 
- * @version 0.9
- *
- */
-
-//TODO: CHANGE BACKGROUND COLOR OF SELECTED CELL
-//TODO: ADD ALBUM IMAGE TO SONG TABLE WHEN OPENED
 
 public class AlbumsController implements Initializable {
 	
@@ -153,6 +147,7 @@ public class AlbumsController implements Initializable {
             });
         }).start();
         
+        // Sets songbox width to scene width.
         songBox.prefWidthProperty().bind(grid.widthProperty());
         
         // Sets preferred column width.
@@ -162,6 +157,40 @@ public class AlbumsController implements Initializable {
         
 		// Sets the song table to be invisible when the view is initialized.
         songBox.setVisible(false);
+        
+        // Sets the playing properties for the songs in the song table.
+        songTable.setRowFactory(x -> {
+            TableRow<Song> row = new TableRow<Song>();
+
+            PseudoClass playing = PseudoClass.getPseudoClass("playing");
+
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(playing, newValue.booleanValue());
+            };
+
+            row.itemProperty().addListener((obs, previousSong, currentSong) -> {
+            	if (previousSong != null) {
+            		previousSong.playingProperty().removeListener(changeListener);
+            	}
+            	if (currentSong != null) {
+                    currentSong.playingProperty().addListener(changeListener);
+                    row.pseudoClassStateChanged(playing, currentSong.getPlaying());
+                } else {
+                    row.pseudoClassStateChanged(playing, false);
+                }
+            });
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Song song = row.getItem();
+                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    MusicPlayer.setNowPlaying(song);
+                    MusicPlayer.play();
+                }
+            });
+
+            return row ;
+        });
 	}
 
     private VBox createCell(Album album, int index) {
