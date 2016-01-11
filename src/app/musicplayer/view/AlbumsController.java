@@ -15,6 +15,7 @@ import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -28,6 +29,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.scene.Node;
 
 /**
  * 
@@ -66,22 +68,28 @@ public class AlbumsController implements Initializable {
     
     private Animation collapseAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(500));
+            setCycleDuration(Duration.millis(250));
             setOnFinished(x -> collapseAlbumDetail());
         }
         protected void interpolate(double frac) {
-            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
-            songBox.setPrefHeight(curWidth);
+        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
+            songBox.setPrefHeight(curHeight);
+            songBox.setOpacity(1.0 - frac);
         }
     };
 
     private Animation expandAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(500));
+            setCycleDuration(Duration.millis(1000));
         }
         protected void interpolate(double frac) {
-            double curWidth = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            songBox.setPrefHeight(curWidth);
+        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            if (frac < 0.25) {
+            	songBox.setPrefHeight(curHeight * 4);
+            } else {
+            	songBox.setPrefHeight(expandedHeight);
+            }
+            songBox.setOpacity(frac);
         }
     };
     
@@ -145,6 +153,8 @@ public class AlbumsController implements Initializable {
             });
         }).start();
         
+        songBox.prefWidthProperty().bind(grid.widthProperty());
+        
         // Sets preferred column width.
         titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
@@ -182,9 +192,15 @@ public class AlbumsController implements Initializable {
         cell.setPadding(new Insets(10, 10, 10, 10));
         cell.getStyleClass().add("album-cell");
         cell.setAlignment(Pos.CENTER);
-        cell.setOnMouseClicked(event -> {        	
+        cell.setOnMouseClicked(event -> {
+        	
+        	PseudoClass selected = PseudoClass.getPseudoClass("selected");
+        	
         	// If the album detail is collapsed, expand it and populate song table.
         	if (isAlbumDetailCollapsed) {
+        		
+        		cell.pseudoClassStateChanged(selected, true);
+        		
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
@@ -198,12 +214,21 @@ public class AlbumsController implements Initializable {
         		
         		// Else if album detail is expanded and opened album is reselected.
         	} else if (!isAlbumDetailCollapsed && index == currentCell) {
+        		
+        		cell.pseudoClassStateChanged(selected, false);
+        		
         		// Plays the collapse animation to remove the song table.
         		collapseAnimation.play();
         		
         		// Else if album detail is expanded and a different album is selected on the same row.
         	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
         			&& currentCellYCoordinate == cell.getBoundsInParent().getMaxY()) {
+        		
+        		for (Node child : grid.getChildren()) {
+        			child.pseudoClassStateChanged(selected, false);
+        		}
+        		cell.pseudoClassStateChanged(selected, true);
+        		
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
@@ -217,6 +242,12 @@ public class AlbumsController implements Initializable {
         		// Else if album detail is expanded and a different album is selected on a different row.
         	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
         			&& !(currentCellYCoordinate == cell.getBoundsInParent().getMaxY())) {
+        		
+        		for (Node child : grid.getChildren()) {
+        			child.pseudoClassStateChanged(selected, false);
+        		}
+        		cell.pseudoClassStateChanged(selected, true);
+        		
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
@@ -229,6 +260,11 @@ public class AlbumsController implements Initializable {
             	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
         	} else {
+        		
+        		for (Node child : grid.getChildren()) {
+        			child.pseudoClassStateChanged(selected, false);
+        		}
+        		
         		// Plays the collapse animation to remove the song table.
         		collapseAnimation.play();
         	}
@@ -264,9 +300,6 @@ public class AlbumsController implements Initializable {
     	} else if (indexString.endsWith("4") || indexString.endsWith("9"))  {
     		insertIndex = index + 1;
     	}
-    	
-    	// Obtains the flowpane width and sets the song box width to that value.
-    	songBox.setPrefWidth(grid.getWidth());;
     	
     	// Adds the song box to the flow pane.
     	grid.getChildren().add(insertIndex, songBox);
