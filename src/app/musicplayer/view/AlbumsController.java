@@ -34,6 +34,11 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+/**
+ * 
+ * @version 1.0
+ *
+ */
 public class AlbumsController implements Initializable {
 	
     @FXML private FlowPane grid;
@@ -147,7 +152,7 @@ public class AlbumsController implements Initializable {
             });
         }).start();
         
-        // Sets songbox width to scene width.
+        // Sets song box width to scene width.
         songBox.prefWidthProperty().bind(grid.widthProperty());
         
         // Sets preferred column width.
@@ -233,9 +238,6 @@ public class AlbumsController implements Initializable {
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
-            	// TODO: DEBUG
-            	System.out.println("Current cell: " + currentCell);
-            	
         		// Shows song table, plays load animation and populates song table with album songs.
         		expandAlbumDetail(cell, index);
         		expandAnimation.play();
@@ -261,9 +263,6 @@ public class AlbumsController implements Initializable {
             	// Updates the index of the currently selected cell.
             	currentCell = index;
             	
-            	// TODO: DEBUG
-            	System.out.println("Current cell: " + currentCell);
-            	
             	// Plays load animation and populates song table with songs of newly selected album.
             	songTableReloadAnimation.play();
         		populateSongTable(cell, album);
@@ -279,9 +278,6 @@ public class AlbumsController implements Initializable {
         		
             	// Updates the index of the currently selected cell.
             	currentCell = index;
-            	
-            	// TODO: DEBUG
-            	System.out.println("Current cell: " + currentCell);
             	
             	// Collapses the song table and then expands it in the appropriate row with songs on new album.
             	collapseAlbumDetail();
@@ -299,17 +295,11 @@ public class AlbumsController implements Initializable {
         	}
         	// Sets the cells max x value as the current cell x coordinate.
         	currentCellYCoordinate = cell.getBoundsInParent().getMaxY();
-        	
-        	// TODO: DEBUG
-        	System.out.println("Current Cell Y Coordinate: " + currentCellYCoordinate);
         });
         return cell;
     }
     
     private void expandAlbumDetail(VBox cell, int index) {
-    	// TODO: DEBUG
-    	System.out.println("128: Expand Album Detail");
-    	
     	// Converts the index integer to a string.
     	String indexString = Integer.toString(index);
     	
@@ -337,9 +327,6 @@ public class AlbumsController implements Initializable {
     }
     
     private void collapseAlbumDetail() {
-    	// TODO: DEBUG
-    	System.out.println("135: Collapse Album Detail");
-    	
     	// Removes the songBox from the flow pane.
     	grid.getChildren().remove(songBox);
     	isAlbumDetailCollapsed = true;
@@ -363,6 +350,5 @@ public class AlbumsController implements Initializable {
         
         // Adds songs to table.
         songTable.setItems(albumSongs);
-    	
     }
 }
