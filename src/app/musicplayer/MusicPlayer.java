@@ -100,7 +100,7 @@ public class MusicPlayer extends Application {
     }
 
     private static class TimeUpdater extends TimerTask {
-        private int length = (int) getNowPlaying().getLength().getSeconds() * 4;
+        private int length = (int) getNowPlaying().getLengthInSeconds() * 4;
 
         @Override
         public void run() {
@@ -169,7 +169,6 @@ public class MusicPlayer extends Application {
             nowPlayingList = null;
             nowPlayingIndex = 0;
             nowPlaying.setPlaying(false);
-            mainController.refresh();
             nowPlaying = null;
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();
@@ -259,7 +258,6 @@ public class MusicPlayer extends Application {
             mediaPlayer.setVolume(0.5);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
             Platform.runLater(() -> {
-                mainController.refresh();
                 mainController.updateNowPlayingButton();
                 mainController.initializeTimeSlider();
                 mainController.initializeTimeLabels();
@@ -276,7 +274,7 @@ public class MusicPlayer extends Application {
 
     public static String getTimeRemaining() {
         long secondsPassed = timerCounter / 4;
-        long totalSeconds = getNowPlaying().getLength().getSeconds();
+        long totalSeconds = getNowPlaying().getLengthInSeconds();
         long secondsRemaining = totalSeconds - secondsPassed;
         long minutes = secondsRemaining / 60;
         long seconds = secondsRemaining % 60;
@@ -293,10 +291,9 @@ public class MusicPlayer extends Application {
 
     private static void updatePlayCount() {
         if (nowPlaying != null) {
-            int length = (int) nowPlaying.getLength().getSeconds();
+            int length = (int) nowPlaying.getLengthInSeconds();
             if ((100 * secondsPlayed / length) > 50) {
                 nowPlaying.played();
-                mainController.refresh();
             }
         }
     }

@@ -12,7 +12,6 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Refreshable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -38,7 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable, Refreshable {
+public class ArtistsMainController implements Initializable {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -174,7 +173,7 @@ public class ArtistsMainController implements Initializable, Refreshable {
 
         playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
         albumList.setCellFactory(listView -> new AlbumCell());
@@ -344,6 +343,9 @@ public class ArtistsMainController implements Initializable, Refreshable {
             };
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
+            	if (previousSong != null) {
+            		previousSong.playingProperty().removeListener(changeListener);
+            	}
                 if (currentSong != null) {
                     currentSong.playingProperty().addListener(changeListener);
                     row.pseudoClassStateChanged(playing, currentSong.getPlaying());
@@ -402,13 +404,6 @@ public class ArtistsMainController implements Initializable, Refreshable {
         });
     }
 
-
-    @Override
-    public void refresh() {
-        songTable.getColumns().get(0).setVisible(false);
-        songTable.getColumns().get(0).setVisible(true);
-    }
-
     private void selectAlbum(Album album) {
 
         if (selectedAlbum == album) {
@@ -417,7 +412,6 @@ public class ArtistsMainController implements Initializable, Refreshable {
             showAllSongs(artistList.getSelectionModel().getSelectedItem());
 
         } else {
-
             selectedAlbum = album;
             ObservableList<Song> songs = FXCollections.observableArrayList();
 

@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
-import app.musicplayer.util.Refreshable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,7 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
-public class ArtistsController implements Initializable, Refreshable {
+public class ArtistsController implements Initializable {
 
     @FXML private FlowPane grid;
 
@@ -45,6 +44,12 @@ public class ArtistsController implements Initializable, Refreshable {
 
         new Thread(() -> {
 
+        	try {
+        		Thread.sleep(1000);
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+        	
             ArrayList<VBox> cells = new ArrayList<VBox>();
 
             for (int j = 25; j < artists.size(); j++) {
@@ -57,11 +62,6 @@ public class ArtistsController implements Initializable, Refreshable {
             });
 
         }).start();
-    }
-
-    @Override
-    public void refresh() {
-
     }
 
     private VBox createCell(Artist artist) {

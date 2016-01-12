@@ -22,19 +22,24 @@ import org.w3c.dom.NodeList;
 
 import app.musicplayer.util.Resources;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 public final class Song implements Comparable<Song> {
 
     private int id;
-    private String title;
-    private String artist;
-    private String album;
-    private Duration length;
+    private SimpleStringProperty title;
+    private SimpleStringProperty artist;
+    private SimpleStringProperty album;
+    private SimpleStringProperty length;
+    private long lengthInSeconds;
     private int trackNumber;
     private int discNumber;
-    private int playCount;
+    private SimpleIntegerProperty playCount;
     private LocalDateTime playDate;
     private String location;
     private SimpleBooleanProperty playing;
@@ -43,13 +48,15 @@ public final class Song implements Comparable<Song> {
         int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
         this.id = id;
-        this.title = title;
-        this.artist = artist;
-        this.album = album;
-        this.length = length;
+        this.title = new SimpleStringProperty(title);
+        this.artist = new SimpleStringProperty(artist);
+        this.album = new SimpleStringProperty(album);
+        this.lengthInSeconds = length.getSeconds();
+        long seconds = length.getSeconds() % 60;
+        this.length = new SimpleStringProperty(length.toMinutes() + ":" + (seconds < 10 ? "0" + seconds : seconds));
         this.trackNumber = trackNumber;
         this.discNumber = discNumber;
-        this.playCount = playCount;
+        this.playCount = new SimpleIntegerProperty(playCount);
         this.playDate = playDate;
         this.location = location;
         this.playing = new SimpleBooleanProperty(false);
@@ -62,28 +69,47 @@ public final class Song implements Comparable<Song> {
 
     public String getTitle() {
 
-        return this.title;
+        return this.title.get();
+    }
+    
+    public StringProperty titleProperty() {
+    	
+    	return this.title;
     }
 
     public String getArtist() {
 
-        return this.artist;
+        return this.artist.get();
+    }
+    
+    public StringProperty artistProperty() {
+    	
+    	return this.artist;
     }
 
     public String getAlbum() {
 
-        return this.album;
+        return this.album.get();
+    }
+    
+    public StringProperty albumProperty() {
+    	
+    	return this.album;
     }
 
-    public Duration getLength() {
+    public String getLength() {
+
+        return this.length.get();
+    }
+
+    public StringProperty lengthProperty() {
 
         return this.length;
     }
-
-    public String getLengthAsString() {
-
-        long seconds = length.getSeconds() % 60;
-        return length.toMinutes() + ":" + (seconds < 10 ? "0" + seconds : seconds);
+    
+    public long getLengthInSeconds() {
+    	
+    	return this.lengthInSeconds;
     }
 
     public int getTrackNumber() {
@@ -98,7 +124,12 @@ public final class Song implements Comparable<Song> {
 
     public int getPlayCount() {
 
-        return this.playCount;
+        return this.playCount.get();
+    }
+    
+    public IntegerProperty playCountProperty() {
+    	
+    	return this.playCount;
     }
 
     public LocalDateTime getPlayDate() {
@@ -113,7 +144,7 @@ public final class Song implements Comparable<Song> {
 
     public Image getArtwork() {
 
-        return Library.getAlbum(this.album).getArtwork();
+        return Library.getAlbum(this.album.get()).getArtwork();
     }
 
     public boolean getPlaying() {
@@ -133,7 +164,7 @@ public final class Song implements Comparable<Song> {
 
     public void played() {
 
-        this.playCount++;
+        this.playCount.set(this.playCount.get() + 1);
         this.playDate = LocalDateTime.now();
 
         Thread thread = new Thread(() -> {
@@ -153,7 +184,7 @@ public final class Song implements Comparable<Song> {
                 expr = xpath.compile("/library/songs/song/playDate[../id/text() = \"" + this.id + "\"]");
                 Node playDate = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 
-                playCount.setTextContent(Integer.toString(this.playCount));
+                playCount.setTextContent(Integer.toString(this.playCount.get()));
                 playDate.setTextContent(this.playDate.toString());
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();

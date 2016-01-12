@@ -7,7 +7,6 @@ import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Refreshable;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +18,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class NowPlayingController implements Initializable, Refreshable {
+public class NowPlayingController implements Initializable {
 
     @FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -51,7 +50,7 @@ public class NowPlayingController implements Initializable, Refreshable {
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
         tableView.setItems(songs);
@@ -75,7 +74,10 @@ public class NowPlayingController implements Initializable, Refreshable {
             };
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
-                if (currentSong != null) {
+            	if (previousSong != null) {
+            		previousSong.playingProperty().removeListener(changeListener);
+            	}
+            	if (currentSong != null) {
                     currentSong.playingProperty().addListener(changeListener);
                     row.pseudoClassStateChanged(playing, currentSong.getPlaying());
                 } else {
@@ -92,12 +94,5 @@ public class NowPlayingController implements Initializable, Refreshable {
             });
             return row ;
         });
-    }
-
-    @Override
-    public void refresh() {
-
-        tableView.getColumns().get(0).setVisible(false);
-        tableView.getColumns().get(0).setVisible(true);
     }
 }

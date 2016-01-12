@@ -9,11 +9,9 @@ import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Refreshable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -26,7 +24,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
-public class PlaylistsController implements Initializable, Refreshable {
+public class PlaylistsController implements Initializable {
 
     @FXML private ListView<Playlist> playlistList;
     @FXML private TableView<Song> tableView;
@@ -62,8 +60,7 @@ public class PlaylistsController implements Initializable, Refreshable {
         playlistList.setItems(playlists);
 
         selectedPlaylist = playlists.get(0);
-        ObservableList<Song> songs = FXCollections.observableArrayList(selectedPlaylist.getSongs());
-        tableView.setItems(songs);
+        selectPlaylist(selectedPlaylist);
 
         titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
         artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
@@ -79,7 +76,7 @@ public class PlaylistsController implements Initializable, Refreshable {
         playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("lengthAsString"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
         tableView.getSelectionModel().selectedItemProperty().addListener(
@@ -101,7 +98,10 @@ public class PlaylistsController implements Initializable, Refreshable {
             };
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
-                if (currentSong != null) {
+            	if (previousSong != null) {
+            		previousSong.playingProperty().removeListener(changeListener);
+            	}
+            	if (currentSong != null) {
                     currentSong.playingProperty().addListener(changeListener);
                     row.pseudoClassStateChanged(playing, currentSong.getPlaying());
                 } else {
@@ -173,16 +173,11 @@ public class PlaylistsController implements Initializable, Refreshable {
         });
     }
 
-    @Override
-    public void refresh() {
-
-        tableView.getColumns().get(0).setVisible(false);
-        tableView.getColumns().get(0).setVisible(true);
-    }
-
     private void selectPlaylist(Playlist playlist) {
 
         selectedPlaylist = playlist;
+        playlistList.getSelectionModel().select(playlist);
+        playlistList.scrollTo(playlistList.getSelectionModel().getSelectedIndex());
         ObservableList<Song> songs = playlist.getSongs();
         tableView.getSelectionModel().clearSelection();
         tableView.setItems(songs);
