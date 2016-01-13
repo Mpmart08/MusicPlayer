@@ -1,8 +1,10 @@
 package app.musicplayer;
 
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.LogManager;
@@ -16,9 +18,13 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -44,6 +50,16 @@ public class MusicPlayer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+    	
+    	InputStream libXMLFile = MusicPlayer.class.getResourceAsStream(Resources.XML + "library.xml");
+    	
+    	// Tests if the library.xml file exists. If it doesn't, the file is created.
+    	if (libXMLFile != null) {
+    		System.out.println("File exists!");
+    	} else {
+    		System.out.println("File DOESNT exist!");
+    		createLibraryXML();
+    	}
 
         LogManager.getLogManager().reset();
         timer = new Timer();
@@ -287,6 +303,41 @@ public class MusicPlayer extends Application {
      */
     public static MainController getMainController() {
         return mainController;
+    }
+    
+    private void createLibraryXML() {
+    	// TODO: DEBUG
+    	System.out.println("In alert box!");
+    	
+		// Creates alert box.
+		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
+		initialSetupAlert.setTitle("Welcome!");
+		initialSetupAlert.setHeaderText(null);
+		initialSetupAlert.setContentText("Use the button below to navigate to the music folder in your computer.");
+		
+		// Creates a button and adds it to the alert box.
+		ButtonType importMusicButton = new ButtonType("Import Music Library");
+		initialSetupAlert.getButtonTypes().setAll(importMusicButton);
+		
+		// Opens a file explorer to select music location.
+		Optional<ButtonType> result = initialSetupAlert.showAndWait();
+		try {
+			// If user clicks the import music button.
+			if (result.get() == importMusicButton){
+				DirectoryChooser directoryChooser = new DirectoryChooser();
+			    // Show file explorer.
+			    String musicDirectory = directoryChooser.showDialog(stage).getPath();
+			    
+			    // TODO: DEBUG
+			    System.out.println(musicDirectory);
+			    
+			    // Creates library.xml file from user music library.
+			    Library.importMusic(musicDirectory);
+			}
+		} catch (Exception e) {
+			// If the user closes the alert box.
+			initialSetupAlert.close();
+		}
     }
 
     private static void updatePlayCount() {
