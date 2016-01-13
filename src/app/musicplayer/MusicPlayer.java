@@ -1,6 +1,7 @@
 package app.musicplayer;
 
-import java.io.InputStream;
+import java.io.File;
+import java.net.URLDecoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +52,18 @@ public class MusicPlayer extends Application {
     @Override
     public void start(Stage stage) throws Exception {
     	
-    	InputStream libXMLFile = MusicPlayer.class.getResourceAsStream(Resources.XML + "library.xml");
+    	// Finds the jar file and the path of its parent folder.
+    	File musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+    	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
     	
-    	// Tests if the library.xml file exists. If it doesn't, the file is created.
-    	if (libXMLFile != null) {
-    		System.out.println("File exists!");
+    	// Specifies library.xml file and its location.
+    	File libraryXML = new File(jarFilePath + "/library.xml");
+    	
+    	if (libraryXML.exists()) {
+    		System.out.println("File exists.");
     	} else {
-    		System.out.println("File DOESNT exist!");
-    		createLibraryXML();
+    		System.out.println("File doesn't exist.");
+    		createLibraryXML(jarFilePath);
     	}
 
         LogManager.getLogManager().reset();
@@ -305,14 +310,17 @@ public class MusicPlayer extends Application {
         return mainController;
     }
     
-    private void createLibraryXML() {
+    private void createLibraryXML(String filePath) {
     	// TODO: DEBUG
     	System.out.println("In alert box!");
     	
 		// Creates alert box.
 		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
 		initialSetupAlert.setTitle("Welcome!");
-		initialSetupAlert.setHeaderText(null);
+		
+//		initialSetupAlert.setHeaderText(null);
+		initialSetupAlert.setHeaderText(filePath);
+		
 		initialSetupAlert.setContentText("Use the button below to navigate to the music folder in your computer.");
 		
 		// Creates a button and adds it to the alert box.
@@ -332,7 +340,7 @@ public class MusicPlayer extends Application {
 			    System.out.println(musicDirectory);
 			    
 			    // Creates library.xml file from user music library.
-			    Library.importMusic(musicDirectory);
+//			    Library.importMusic(musicDirectory);
 			}
 		} catch (Exception e) {
 			// If the user closes the alert box.
