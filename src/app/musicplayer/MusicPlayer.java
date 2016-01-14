@@ -51,6 +51,11 @@ public class MusicPlayer extends Application {
     @Override
     public void start(Stage stage) throws Exception {
     	
+        LogManager.getLogManager().reset();
+        timer = new Timer();
+        timerCounter = 0;
+        secondsPlayed = 0;
+    	
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
@@ -62,16 +67,11 @@ public class MusicPlayer extends Application {
     	File libraryXML = new File(Resources.XML + "/library.xml");
     	
     	if (libraryXML.exists()) {
-    		System.out.println("File exists.");
+    		System.out.println("MusicPlayer_65: File exists.");
     	} else {
-    		System.out.println("File doesn't exist.");
+    		System.out.println("MusicPlayer_67: File doesn't exist.");
     		createLibraryXML(jarFilePath);
     	}
-
-        LogManager.getLogManager().reset();
-        timer = new Timer();
-        timerCounter = 0;
-        secondsPlayed = 0;
 
         // Retrieves song, album, artist, and playlist data from library.
         Library.getSongs();        
@@ -314,7 +314,7 @@ public class MusicPlayer extends Application {
     
     private void createLibraryXML(String filePath) {
     	// TODO: DEBUG
-    	System.out.println("In alert box!");
+    	System.out.println("MusicPlayer_317: In alert box!");
     	
 		// Creates alert box.
 		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
@@ -339,10 +339,10 @@ public class MusicPlayer extends Application {
 			    String musicDirectory = directoryChooser.showDialog(stage).getPath();
 			    
 			    // TODO: DEBUG
-			    System.out.println(musicDirectory);
+			    System.out.println("MusicPlayer_342: " + musicDirectory);
 			    
 			    // Creates library.xml file from user music library.
-//			    Library.importMusic(musicDirectory);
+			    Library.importMusic(musicDirectory);
 			}
 		} catch (Exception e) {
 			// If the user closes the alert box.
