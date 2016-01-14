@@ -345,8 +345,9 @@ public class MusicPlayer extends Application {
 			    Library.importMusic(musicDirectory);
 			}
 		} catch (Exception e) {
-			// If the user closes the alert box.
+			// If the user closes the alert box, the program exits.
 			initialSetupAlert.close();
+			System.exit(0);
 		}
     }
 
