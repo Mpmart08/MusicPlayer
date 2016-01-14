@@ -1,6 +1,7 @@
 package app.musicplayer.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -65,7 +66,7 @@ public final class Library {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 factory.setProperty("javax.xml.stream.isCoalescing", true);
-                InputStream is = Library.class.getResourceAsStream(Resources.XML + "library.xml");
+                FileInputStream is = new FileInputStream(new File(Resources.XML + "/library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -251,7 +252,7 @@ public final class Library {
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                InputStream is = Library.class.getResourceAsStream(Resources.XML + "library.xml");
+                FileInputStream is = new FileInputStream(new File(Resources.XML + "/library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -387,7 +388,7 @@ public final class Library {
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         DOMSource source = new DOMSource(doc);
-        File xmlFile = new File(Resources.XML + "library.xml");
+        File xmlFile = new File(Resources.XML + "/library.xml");
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
     }

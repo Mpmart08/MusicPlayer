@@ -1,7 +1,6 @@
 package app.musicplayer;
 
 import java.io.File;
-import java.net.URLDecoder;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +55,11 @@ public class MusicPlayer extends Application {
     	File musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
     	
+    	// Assigns the filepath to the XML filepath set in Resources.java
+    	Resources.XML = jarFilePath;
+    	
     	// Specifies library.xml file and its location.
-    	File libraryXML = new File(jarFilePath + "/library.xml");
+    	File libraryXML = new File(Resources.XML + "/library.xml");
     	
     	if (libraryXML.exists()) {
     		System.out.println("File exists.");
