@@ -65,7 +65,7 @@ public final class Library {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 factory.setProperty("javax.xml.stream.isCoalescing", true);
-                FileInputStream is = new FileInputStream(new File(Resources.XML + "/library.xml"));
+                FileInputStream is = new FileInputStream(new File(Resources.XML + "library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -251,7 +251,7 @@ public final class Library {
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                FileInputStream is = new FileInputStream(new File(Resources.XML + "/library.xml"));
+                FileInputStream is = new FileInputStream(new File(Resources.XML + "library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -366,10 +366,6 @@ public final class Library {
     }
 
     public static void importMusic(String path) throws Exception {
-    	
-    	//TODO: DEBUG
-    	System.out.println("Begining of importMusic");
-
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
@@ -391,13 +387,10 @@ public final class Library {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         DOMSource source = new DOMSource(doc);
         
-        File xmlFile = new File(Resources.XML + "/library.xml");
+        File xmlFile = new File(Resources.XML + "library.xml");
         
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
-        
-    	//TODO: DEBUG
-    	System.out.println("Ending of importMusic");
     }
 
     private static int writeXML(File directory, Document doc, Element songs, int i) {

@@ -311,10 +311,10 @@ public class MusicPlayer extends Application {
     	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
     	
     	// Assigns the filepath to the XML filepath set in Resources.java
-    	Resources.XML = jarFilePath;
+    	Resources.XML = jarFilePath + "/";
     	
     	// Specifies library.xml file and its location.
-    	File libraryXML = new File(Resources.XML + "/library.xml");
+    	File libraryXML = new File(Resources.XML + "library.xml");
     	
     	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	if (!libraryXML.exists()) {
