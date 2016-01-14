@@ -97,6 +97,12 @@ public final class Artist implements Comparable<Artist> {
 
                 artistImage = new Image(file.toURI().toURL().toString());
 
+                if (artistImage.isError()) {
+                	
+                	file.delete();
+                    artistImage = new Image(Resources.IMG + "artistsIcon.png");
+                }
+
             } catch (Exception ex) {
                 File file = new File(Resources.IMG + this.title + ".jpg");
                 file.delete();

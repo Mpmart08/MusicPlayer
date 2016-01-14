@@ -238,3 +238,27 @@
 .artist-cell:pressed {
     -fx-background-color: #c2c2c2;
 }
+
+.album-cell:hover {
+    -fx-background-color: #dadada;
+}
+
+.album-cell:pressed {
+    -fx-background-color: #c2c2c2;
+}
+
+.album-cell:selected {
+    -fx-background-color: rgb(52, 109, 207);
+}
+
+.album-cell:selected:hover {
+    -fx-background-color: rgb(47, 98, 187);
+}
+
+.album-cell:selected .text {
+    -fx-fill: white;
+}
+
+.album-cell:selected:hover .text {
+    -fx-fill: white;
+}

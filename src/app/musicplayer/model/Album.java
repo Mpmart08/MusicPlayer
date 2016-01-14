@@ -74,15 +74,25 @@ public final class Album implements Comparable<Album> {
     }
 
     public Image getArtwork() {
+    	
         if (this.artwork == null) {
+        	
             try {
+            	
                 String location = this.songs.get(0).getLocation();
                 AudioFile audioFile = AudioFileIO.read(new File(location));
                 Tag tag = audioFile.getTag();
                 byte[] bytes = tag.getFirstArtwork().getBinaryData();
                 ByteArrayInputStream in = new ByteArrayInputStream(bytes);
                 this.artwork = new Image(in, 300, 300, true, true);
+                
+                if (this.artwork.isError()) {
+                	
+                	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
+                }
+                
             } catch (Exception ex) {
+            	
             	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
             } 
         }

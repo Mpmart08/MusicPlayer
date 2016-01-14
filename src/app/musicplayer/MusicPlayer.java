@@ -22,7 +22,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
@@ -61,14 +63,9 @@ public class MusicPlayer extends Application {
         // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
         checkLibraryXML();
 
-        // Retrieves song, album, artist, and playlist data from library.
-        Library.getSongs();        
-        Library.getAlbums();
-        Library.getArtists();
-        Library.getPlaylists();
-        
         this.stage = stage;
         this.stage.setTitle("Music Player");
+        this.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Logo.png").toString()));
         this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
@@ -76,9 +73,36 @@ public class MusicPlayer extends Application {
                 System.exit(0);
             }
         });
+
+        try {
+    		// Load main layout from fxml file.
+    		FXMLLoader loader = new FXMLLoader( this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
+    		VBox view = (VBox) loader.load();
+    		
+    		// Shows the scene containing the layout.
+    		Scene scene = new Scene(view);
+    		stage.setScene(scene);
+    		stage.setMaximized(true);
+    		stage.show();
+    		
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
         
-        // Calls the function to initialize the main layout.
-        initMain();
+        Thread thread = new Thread(() -> {
+        	// Retrieves song, album, artist, and playlist data from library.
+            Library.getSongs();        
+            Library.getAlbums();
+            Library.getArtists();
+            Library.getPlaylists();
+
+            // Calls the function to initialize the main layout.
+            Platform.runLater(() -> {
+            	initMain();
+            });
+        });
+        
+        thread.start();
     }
     
     /**
@@ -91,13 +115,18 @@ public class MusicPlayer extends Application {
     		view = (BorderPane) loader.load();
     		
     		// Shows the scene containing the layout.
+    		double width = stage.getScene().getWidth();
+    		double height = stage.getScene().getHeight();
+
+    		view.setPrefWidth(width);
+    		view.setPrefHeight(height);
+    		
     		Scene scene = new Scene(view);
     		stage.setScene(scene);
     		
     		// Gives the controller access to the music player main application.
     		mainController = loader.getController();
     		
-    		stage.show();
     	} catch (Exception ex) {
     		ex.printStackTrace();
     	}
