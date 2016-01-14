@@ -391,7 +391,7 @@ public final class Library {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         DOMSource source = new DOMSource(doc);
         
-        File xmlFile = new File("C:/Users/gerar/Documents/Java/MusicPlayer/library.xml");
+        File xmlFile = new File(Resources.XML + "/library.xml");
         
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
