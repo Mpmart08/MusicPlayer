@@ -1,8 +1,11 @@
 package app.musicplayer;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.LogManager;
@@ -16,9 +19,13 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -44,11 +51,15 @@ public class MusicPlayer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
+    	
+    	// Suppresses warning caused by converting music library data into xml file. 
         LogManager.getLogManager().reset();
         timer = new Timer();
         timerCounter = 0;
         secondsPlayed = 0;
+        
+        // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
+        checkLibraryXML();
 
         // Retrieves song, album, artist, and playlist data from library.
         Library.getSongs();        
@@ -287,6 +298,59 @@ public class MusicPlayer extends Application {
      */
     public static MainController getMainController() {
         return mainController;
+    }
+    
+    private void checkLibraryXML() {
+    	// Finds the jar file and the path of its parent folder.
+    	File musicPlayerJAR = null;
+		try {
+			musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+    	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
+    	
+    	// Assigns the filepath to the XML filepath set in Resources.java
+    	Resources.XML = jarFilePath + "/";
+    	
+    	// Specifies library.xml file and its location.
+    	File libraryXML = new File(Resources.XML + "library.xml");
+    	
+    	// If the library.xml file does not exist, the file is created from the user specified music library location.
+    	if (!libraryXML.exists()) {
+    		createLibraryXML();
+    	}
+    }
+    
+    private void createLibraryXML() {    	
+		// Creates alert box.
+		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
+		initialSetupAlert.setTitle("Welcome!");
+		
+		initialSetupAlert.setHeaderText(null);
+		
+		initialSetupAlert.setContentText("Use the button below to navigate to the music folder in your computer.");
+		
+		// Creates a button and adds it to the alert box.
+		ButtonType importMusicButton = new ButtonType("Import Music Library");
+		initialSetupAlert.getButtonTypes().setAll(importMusicButton);
+		
+		// Opens a file explorer to select music location.
+		Optional<ButtonType> result = initialSetupAlert.showAndWait();
+		try {
+			// If user clicks the import music button.
+			if (result.get() == importMusicButton){
+				DirectoryChooser directoryChooser = new DirectoryChooser();
+			    // Show file explorer.
+			    String musicDirectory = directoryChooser.showDialog(stage).getPath();
+			    // Creates library.xml file from user music library.
+			    Library.importMusic(musicDirectory);
+			}
+		} catch (Exception e) {
+			// If the user closes the alert box, the program exits.
+			initialSetupAlert.close();
+			System.exit(0);
+		}
     }
 
     private static void updatePlayCount() {
