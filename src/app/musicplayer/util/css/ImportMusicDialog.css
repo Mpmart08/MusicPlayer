@@ -2,15 +2,19 @@
 	-fx-background-color: #ffffff;
 }
 
-.ImportMusicDialog > *.label.content {
+.label.content {
 	-fx-font-family: verdana;
     -fx-font-size: 14px;
 }
 
-.ImportMusicDialog > *.button-bar > *.container {
+.button-bar, .container {
     -fx-background-color: #f2f2f2;
 }
 
-.ImportMusicDialog > *.button-bar > *.container:hover {
+.button-bar, .container:hover {
     -fx-background-color: #dadada;
+}
+
+.button {
+	-fx-alignment: center-left;
 }
