@@ -13,6 +13,6 @@
             <Image url="@/app/musicplayer/util/img/Logo.png" />
          </image>
       </ImageView>
-      <Label text="M U S I C   P L A Y E R" />
+      <Label text="M   U   S   I   C      P   L   A   Y   E   R" />
    </children>
 </VBox>
