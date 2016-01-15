@@ -60,9 +60,6 @@ public class MusicPlayer extends Application {
         timer = new Timer();
         timerCounter = 0;
         secondsPlayed = 0;
-        
-        // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
-        checkLibraryXML();
 
         this.stage = stage;
         this.stage.setTitle("Music Player");
@@ -85,6 +82,9 @@ public class MusicPlayer extends Application {
     		stage.setScene(scene);
     		stage.setMaximized(true);
     		stage.show();
+    		
+            // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
+            checkLibraryXML();
     		
         } catch (Exception ex) {
         	ex.printStackTrace();
