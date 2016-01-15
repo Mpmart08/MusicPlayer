@@ -24,6 +24,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -83,7 +84,7 @@ public class MusicPlayer extends Application {
     		stage.setMaximized(true);
     		stage.show();
     		
-            // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
+            // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
     		
         } catch (Exception ex) {
@@ -354,22 +355,24 @@ public class MusicPlayer extends Application {
     
     private void createLibraryXML() {    	
 		// Creates alert box.
-		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
-		initialSetupAlert.setTitle("MusicPlayer Configuration");
-		initialSetupAlert.setHeaderText(null);
-		initialSetupAlert.setContentText("Navigate to the music folder in you computer to import your music library.");
+		Alert initialSetupDialog = new Alert(AlertType.INFORMATION);
+		initialSetupDialog.initOwner(stage);
+		initialSetupDialog.setTitle("MusicPlayer Configuration");
+		initialSetupDialog.setHeaderText(null);
+		initialSetupDialog.setContentText("Navigate to the music folder in you computer to import your music library.");
+		initialSetupDialog.setGraphic(new ImageView(Resources.IMG + "Logo_Small.png"));
 		
 		// Sets style sheet for alert.
-		DialogPane dialogPane = initialSetupAlert.getDialogPane();
+		DialogPane dialogPane = initialSetupDialog.getDialogPane();
 		dialogPane.getStylesheets().add(getClass().getResource(Resources.CSS + "ImportMusicDialog.css").toExternalForm());
 		dialogPane.getStyleClass().add("ImportMusicDialog");
 		
 		// Creates a button and adds it to the alert box.
 		ButtonType importMusicButton = new ButtonType("Import Music Library");
-		initialSetupAlert.getButtonTypes().setAll(importMusicButton);
+		initialSetupDialog.getButtonTypes().setAll(importMusicButton);
 		
 		// Opens a file explorer to select music location.
-		Optional<ButtonType> result = initialSetupAlert.showAndWait();
+		Optional<ButtonType> result = initialSetupDialog.showAndWait();
 		try {
 			// If user clicks the import music button.
 			if (result.get() == importMusicButton){
@@ -381,7 +384,7 @@ public class MusicPlayer extends Application {
 			}
 		} catch (Exception e) {
 			// If the user closes the alert box, the program exits.
-			initialSetupAlert.close();
+			initialSetupDialog.close();
 			System.exit(0);
 		}
     }

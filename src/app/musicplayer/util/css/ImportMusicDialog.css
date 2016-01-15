@@ -1,16 +1,16 @@
-.ImportMusicDialog{}
-
-.ImportMusicDialog > *.button-bar > *.container{
-    -fx-background-color: rgb(52, 109, 207);
+.ImportMusicDialog{
+	-fx-background-color: #ffffff;
 }
 
-.ImportMusicDialog > *.label.content{
+.ImportMusicDialog > *.label.content {
 	-fx-font-family: verdana;
     -fx-font-size: 14px;
 }
 
-.ImportMusicDialog:header *.header-panel *.label{
-    -fx-font-size: 18px;
-    -fx-font-style: italic;
-    -fx-fill: #292929;
+.ImportMusicDialog > *.button-bar > *.container {
+    -fx-background-color: #f2f2f2;
+}
+
+.ImportMusicDialog > *.button-bar > *.container:hover {
+    -fx-background-color: #dadada;
 }
