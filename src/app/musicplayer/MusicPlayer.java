@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -354,11 +355,14 @@ public class MusicPlayer extends Application {
     private void createLibraryXML() {    	
 		// Creates alert box.
 		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
-		initialSetupAlert.setTitle("Welcome!");
-		
+		initialSetupAlert.setTitle("MusicPlayer Configuration");
 		initialSetupAlert.setHeaderText(null);
+		initialSetupAlert.setContentText("Navigate to the music folder in you computer to import your music library.");
 		
-		initialSetupAlert.setContentText("Use the button below to navigate to the music folder in your computer.");
+		// Sets style sheet for alert.
+		DialogPane dialogPane = initialSetupAlert.getDialogPane();
+		dialogPane.getStylesheets().add(getClass().getResource(Resources.CSS + "ImportMusicDialog.css").toExternalForm());
+		dialogPane.getStyleClass().add("ImportMusicDialog");
 		
 		// Creates a button and adds it to the alert box.
 		ButtonType importMusicButton = new ButtonType("Import Music Library");
