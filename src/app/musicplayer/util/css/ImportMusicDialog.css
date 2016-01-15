@@ -1,0 +1,16 @@
+.ImportMusicDialog{}
+
+.ImportMusicDialog > *.button-bar > *.container{
+    -fx-background-color: rgb(52, 109, 207);
+}
+
+.ImportMusicDialog > *.label.content{
+	-fx-font-family: verdana;
+    -fx-font-size: 14px;
+}
+
+.ImportMusicDialog:header *.header-panel *.label{
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-fill: #292929;
+}
