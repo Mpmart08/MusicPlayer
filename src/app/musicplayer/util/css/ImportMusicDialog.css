@@ -7,14 +7,16 @@
     -fx-font-size: 14px;
 }
 
-.button-bar, .container {
+.button-bar .container {
     -fx-background-color: #f2f2f2;
 }
 
-.button-bar, .container:hover {
-    -fx-background-color: #dadada;
+.button {
+	-fx-background-color: #f2f2f2;
+	-fx-font-family: verdana;
+    -fx-font-size: 12px;
 }
 
-.button {
-	-fx-alignment: center-left;
+.button:hover {
+	-fx-background-color: #dadada;	
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" stylesheets="@../util/css/ImportMusicDialog.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ImportMusicDialogController">
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="importMusicButton" mnemonicParsing="false" onMouseClicked="#handleImport" prefHeight="25.0" prefWidth="403.0" styleClass="button-bar" text="Button" />
+         </children></VBox>
+   </bottom>
+   <center>
+      <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="200.0" text="Navigate to the music folder in your computer to import your music library." wrapText="true" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Verdana" size="12.0" />
+         </font>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </TextArea>
+   </center>
+</BorderPane>
