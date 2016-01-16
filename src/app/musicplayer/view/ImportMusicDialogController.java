@@ -3,12 +3,12 @@ package app.musicplayer.view;
 import app.musicplayer.model.Library;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 public class ImportMusicDialogController {
-	@FXML private TextArea textArea;
+	@FXML private Label label;
 	@FXML private Button importMusicButton;
 	
 	private Stage dialogStage;
@@ -46,7 +46,7 @@ public class ImportMusicDialogController {
 		    String musicDirectory = directoryChooser.showDialog(dialogStage).getPath();
 		    // Creates library.xml file from user music library.
 		    Library.importMusic(musicDirectory);
-		    // Sets the music as imported succesfully and closes the dialog.
+		    // Sets the music as imported successfully and closes the dialog.
 		    musicImported = true;
 		    dialogStage.close();
 		} catch (Exception e) {

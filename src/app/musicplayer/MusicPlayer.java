@@ -27,6 +27,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
@@ -84,6 +85,7 @@ public class MusicPlayer extends Application {
             checkLibraryXML();
     		
         } catch (Exception ex) {
+        	System.exit(0);
         	ex.printStackTrace();
         }
         
@@ -356,8 +358,11 @@ public class MusicPlayer extends Application {
 			
 			// Create the dialog Stage.
 			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Edit Person");
+			dialogStage.setTitle("Music Player Configuration");
+			// Forces user to focus on dialog.
 			dialogStage.initModality(Modality.WINDOW_MODAL);
+			// Sets minimal decorations for dialog.
+			dialogStage.initStyle(StageStyle.UTILITY);
 			dialogStage.initOwner(stage);
 			
 			// Sets the scene of the newly created stage.
@@ -377,6 +382,7 @@ public class MusicPlayer extends Application {
 	        	System.exit(0);
 	        }
 		} catch (IOException e) {
+			System.out.println("Error here");
 			e.printStackTrace();
 		}
     }

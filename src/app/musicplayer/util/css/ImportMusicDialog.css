@@ -2,19 +2,12 @@
 	-fx-background-color: #ffffff;
 }
 
-.label.content {
-	-fx-font-family: verdana;
-    -fx-font-size: 14px;
-}
-
-.button-bar .container {
-    -fx-background-color: #f2f2f2;
-}
-
 .button {
 	-fx-background-color: #f2f2f2;
+	-fx-background-radius: 0.0px, 0.0px, 0.0px, 0.0px;
 	-fx-font-family: verdana;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
 .button:hover {
