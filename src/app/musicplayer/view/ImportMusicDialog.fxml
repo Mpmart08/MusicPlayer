@@ -10,10 +10,12 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" styleClass="ImportMusicDialog" stylesheets="@../util/css/ImportMusicDialog.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ImportMusicDialogController">
    <bottom>
-      <VBox BorderPane.alignment="CENTER">
+      <StackPane>
          <children>
             <Button fx:id="importMusicButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleImport" prefHeight="45.0" prefWidth="400.0" text="Import Music Library" />
-         </children></VBox>
+            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" visible="false" />
+         </children>
+      </StackPane>
    </bottom>
    <center>
       <VBox BorderPane.alignment="CENTER">
