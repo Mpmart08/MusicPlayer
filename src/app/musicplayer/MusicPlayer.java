@@ -363,20 +363,21 @@ public class MusicPlayer extends Application {
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			// Sets minimal decorations for dialog.
 			dialogStage.initStyle(StageStyle.UTILITY);
+			// Prevents the alert from being re-sizable.
+			dialogStage.setResizable(false);
 			dialogStage.initOwner(stage);
 			
-			// Sets the scene of the newly created stage.
-			Scene scene = new Scene(importView);
-			dialogStage.setScene(scene);
+			// Sets the import music dialog scene in the stage.
+			dialogStage.setScene(new Scene(importView));
 
-			// Set the person into the controller.
+			// Set the dialog into the controller.
 			ImportMusicDialogController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
 			
 	        // Show the dialog and wait until the user closes it.
 	        dialogStage.showAndWait();
 	        
-	        // Checks if the music was imported successfully. Closes the application othwerwise.
+	        // Checks if the music was imported successfully. Closes the application otherwise.
 	        boolean musicImported = controller.isMusicImported();
 	        if (!musicImported) {
 	        	System.exit(0);

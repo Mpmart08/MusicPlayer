@@ -12,10 +12,7 @@
    <bottom>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="importMusicButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleImport" prefHeight="50.0" prefWidth="400.0" text="Import Music Library">
-               <padding>
-                  <Insets bottom="10.0" />
-               </padding></Button>
+            <Button fx:id="importMusicButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleImport" prefHeight="45.0" prefWidth="400.0" text="Import Music Library" />
          </children></VBox>
    </bottom>
    <center>
