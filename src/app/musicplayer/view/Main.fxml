@@ -138,7 +138,7 @@
    <bottom>
       <BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" styleClass="bottomBar" BorderPane.alignment="CENTER">
          <left>
-            <HBox id="nowplaying" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
+            <HBox id="nowPlaying" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="bottomBarItem" BorderPane.alignment="CENTER">
                <children>
                   <ImageView fx:id="nowPlayingArtwork" cache="true" fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
                      <HBox.margin>

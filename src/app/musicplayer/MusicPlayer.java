@@ -63,7 +63,7 @@ public class MusicPlayer extends Application {
 
         this.stage = stage;
         this.stage.setTitle("Music Player");
-        this.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Logo.png").toString()));
+        this.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Icon.png").toString()));
         this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {

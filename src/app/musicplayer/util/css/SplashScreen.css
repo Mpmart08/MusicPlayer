@@ -1,13 +1,13 @@
 .vbox {
-    -fx-background-color: rgb(52, 109, 207);
+    -fx-background-color: white;
 }
 
 .label {
-    -fx-text-fill: white;
+    -fx-text-fill: rgb(52, 109, 207);
     -fx-font-size: 14px;
     -fx-font-family: verdana;
 }
 
 .progress-indicator {
-    -fx-progress-color: white;
+    -fx-progress-color: rgb(52, 109, 207);
 }
