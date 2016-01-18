@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="400.0" styleClass="ImportMusicDialog" stylesheets="@../util/css/ImportMusicDialog.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ImportMusicDialogController">
+   <bottom>
+      <StackPane>
+         <children>
+            <Button fx:id="importMusicButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleImport" prefHeight="45.0" prefWidth="400.0" text="Import Music Library" />
+            <ProgressBar fx:id="progressBar" prefHeight="45.0" prefWidth="400.0" progress="0.0" visible="false" StackPane.alignment="CENTER" />
+         </children>
+      </StackPane>
+   </bottom>
+   <center>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="label" alignment="CENTER" text="Select your music folder to import your music library." textAlignment="CENTER">
+               <font>
+                  <Font name="Verdana" size="14.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="10.0" top="15.0" />
+               </padding>
+            </Label>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
