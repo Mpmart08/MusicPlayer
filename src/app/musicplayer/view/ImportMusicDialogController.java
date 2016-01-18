@@ -80,6 +80,7 @@ public class ImportMusicDialogController {
 	        Thread thread = new Thread(task);
 	        thread.start();
         	
+	        label.setText("Importing music library...");
 	        // Makes the import music button invisible and the progress bar visible.
 	        // This happens as soon as the music import task is started.
         	importMusicButton.setVisible(false);
