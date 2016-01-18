@@ -1,11 +1,11 @@
 package app.musicplayer;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.LogManager;
@@ -13,23 +13,21 @@ import java.util.logging.LogManager;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
+import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
@@ -74,7 +72,7 @@ public class MusicPlayer extends Application {
 
         try {
     		// Load main layout from fxml file.
-    		FXMLLoader loader = new FXMLLoader( this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
+    		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
     		VBox view = (VBox) loader.load();
     		
     		// Shows the scene containing the layout.
@@ -83,10 +81,11 @@ public class MusicPlayer extends Application {
     		stage.setMaximized(true);
     		stage.show();
     		
-            // Calls the function to check in the library.xml file exists. If it doesn not, the file is created.
+            // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
     		
         } catch (Exception ex) {
+        	System.exit(0);
         	ex.printStackTrace();
         }
         
@@ -353,36 +352,38 @@ public class MusicPlayer extends Application {
     }
     
     private void createLibraryXML() {    	
-		// Creates alert box.
-		Alert initialSetupAlert = new Alert(AlertType.INFORMATION);
-		initialSetupAlert.setTitle("MusicPlayer Configuration");
-		initialSetupAlert.setHeaderText(null);
-		initialSetupAlert.setContentText("Navigate to the music folder in you computer to import your music library.");
-		
-		// Sets style sheet for alert.
-		DialogPane dialogPane = initialSetupAlert.getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource(Resources.CSS + "ImportMusicDialog.css").toExternalForm());
-		dialogPane.getStyleClass().add("ImportMusicDialog");
-		
-		// Creates a button and adds it to the alert box.
-		ButtonType importMusicButton = new ButtonType("Import Music Library");
-		initialSetupAlert.getButtonTypes().setAll(importMusicButton);
-		
-		// Opens a file explorer to select music location.
-		Optional<ButtonType> result = initialSetupAlert.showAndWait();
-		try {
-			// If user clicks the import music button.
-			if (result.get() == importMusicButton){
-				DirectoryChooser directoryChooser = new DirectoryChooser();
-			    // Show file explorer.
-			    String musicDirectory = directoryChooser.showDialog(stage).getPath();
-			    // Creates library.xml file from user music library.
-			    Library.importMusic(musicDirectory);
-			}
-		} catch (Exception e) {
-			// If the user closes the alert box, the program exits.
-			initialSetupAlert.close();
-			System.exit(0);
+    	try {
+			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "ImportMusicDialog.fxml"));
+			BorderPane importView = (BorderPane) loader.load();
+			
+			// Create the dialog Stage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Music Player Configuration");
+			// Forces user to focus on dialog.
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			// Sets minimal decorations for dialog.
+			dialogStage.initStyle(StageStyle.UTILITY);
+			// Prevents the alert from being re-sizable.
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(stage);
+			
+			// Sets the import music dialog scene in the stage.
+			dialogStage.setScene(new Scene(importView));
+
+			// Set the dialog into the controller.
+			ImportMusicDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			
+	        // Show the dialog and wait until the user closes it.
+	        dialogStage.showAndWait();
+	        
+	        // Checks if the music was imported successfully. Closes the application otherwise.
+	        boolean musicImported = controller.isMusicImported();
+	        if (!musicImported) {
+	        	System.exit(0);
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
     }
 
