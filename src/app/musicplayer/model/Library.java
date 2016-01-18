@@ -29,6 +29,7 @@ import org.jaudiotagger.tag.Tag;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import app.musicplayer.util.ImportMusicTask;
 import app.musicplayer.util.Resources;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -365,7 +366,7 @@ public final class Library {
         return songs.stream().filter(song -> title.equals(song.getTitle())).findFirst().get();
     }
 
-    public static void importMusic(String path) throws Exception {
+    public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
@@ -378,8 +379,9 @@ public final class Library {
         library.appendChild(playlists);
 
         File directory = new File(Paths.get(path).toUri());
+        int maxProgress = getMaxProgress(directory, 0);
 
-        writeXML(directory, doc, songs, 0);
+        writeXML(directory, doc, songs, 0, maxProgress, task);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -392,8 +394,23 @@ public final class Library {
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
     }
+    
+    private static int getMaxProgress(File directory, int maxProgress) {
+    	
+    	File[] files = directory.listFiles();
 
-    private static int writeXML(File directory, Document doc, Element songs, int i) {
+        for (File file : files) {
+            if (file.isFile()) {
+            	maxProgress++;
+            } else if (file.isDirectory()) {
+            	maxProgress += getMaxProgress(file, 0);
+            }
+        }
+        
+        return maxProgress;
+    }
+
+    private static int writeXML(File directory, Document doc, Element songs, int i, int maxProgress, ImportMusicTask<Boolean> task) {
 
         File[] files = directory.listFiles();
 
@@ -452,6 +469,8 @@ public final class Library {
                     song.appendChild(playCount);
                     song.appendChild(playDate);
                     song.appendChild(location);
+                    
+                    task.updateProgress(i, maxProgress);
 
                 } catch (Exception ex) {
                     
@@ -460,7 +479,7 @@ public final class Library {
 
             } else if (file.isDirectory()) {
 
-                i = writeXML(file, doc, songs, i);
+                i = writeXML(file, doc, songs, i, maxProgress, task);
             }
         }
 

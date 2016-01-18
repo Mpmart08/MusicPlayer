@@ -1,8 +1,9 @@
 package app.musicplayer.view;
 
 import app.musicplayer.model.Library;
-import javafx.concurrent.Task;
+import app.musicplayer.util.ImportMusicTask;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -53,11 +54,11 @@ public class ImportMusicDialogController {
 		    String musicDirectory = directoryChooser.showDialog(dialogStage).getPath();
 		    
 		    // Creates a task that is used to import the music library.
-	        Task<Boolean> task = new Task<Boolean>() {
+	        ImportMusicTask<Boolean> task = new ImportMusicTask<Boolean>() {
 	        	@Override protected Boolean call() throws Exception {
 			        // Creates library.xml file from user music library.
 				    try {
-						Library.importMusic(musicDirectory);
+						Library.importMusic(musicDirectory, this);
 						return true;
 					} catch (Exception e) {
 						e.printStackTrace();
