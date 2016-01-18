@@ -291,7 +291,7 @@ public class MainController implements Initializable {
     private void setSlideDirection() {
         isSideBarExpanded = !isSideBarExpanded;
         sideBarSlideButton.setImage(new Image(this.getClass().getResource(Resources.IMG
-                + (isSideBarExpanded ? "leftArrowIcon.png" : "rightArrowIcon.png")).toString()));
+                + (isSideBarExpanded ? "LeftArrowIcon.png" : "RightArrowIcon.png")).toString()));
     }
     
     // ANIMATIONS
