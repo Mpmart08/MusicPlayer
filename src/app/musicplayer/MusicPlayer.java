@@ -383,7 +383,6 @@ public class MusicPlayer extends Application {
 	        	System.exit(0);
 	        }
 		} catch (IOException e) {
-			System.out.println("Error here");
 			e.printStackTrace();
 		}
     }

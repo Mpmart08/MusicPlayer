@@ -1,7 +1,7 @@
 package app.musicplayer.view;
 
 import app.musicplayer.model.Library;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,39 +47,39 @@ public class ImportMusicDialogController {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 		    // Show file explorer.
 		    String musicDirectory = directoryChooser.showDialog(dialogStage).getPath();
-
-		    System.out.println("Before thread");		    
-	    
-	        Thread thread = new Thread() {
-	        	public void run() {
-				    // Creates library.xml file from user music library.
+		    
+		    // Creates a task that is used to import the music library.
+	        Task<Boolean> task = new Task<Boolean>() {
+	        	@Override protected Boolean call() throws Exception {
+			        // Creates library.xml file from user music library.
 				    try {
 						Library.importMusic(musicDirectory);
+						return true;
 					} catch (Exception e) {
 						e.printStackTrace();
+						return false;
 					}
-				    
-				    Platform.runLater(new Runnable() {
-				    	public void run() {
-				        	System.out.println("Before change visibility");
-				        	
-				        	importMusicButton.setVisible(false);
-						    progressBar.setVisible(true);
-						    
-						    System.out.println("After change visibility");
-				    	}
-				    });
 	        	}
 	        };
 	        
-	        thread.start();
-	        thread.join();
+	        // When the task (music importing) ends, the dialog is closed.
+	        task.setOnSucceeded((x) -> {
+			    // Sets the music as imported successfully and closes the dialog.
+			    musicImported = true;
+			    dialogStage.close();
+	        });
 	        
-		    System.out.println("After thread");
-		    
-		    // Sets the music as imported successfully and closes the dialog.
-		    musicImported = true;
-		    dialogStage.close();
+	        // Retrieves the task progress and adds that to the progress bar.
+	        progressBar.progressProperty().bind(task.progressProperty());
+	        
+	        // Creates a new thread with the import music task and runs it.
+	        Thread thread = new Thread(task);
+	        thread.start();
+        	
+	        // Makes the import music button invisible and the progress bar visible.
+	        // This happens as soon as the music import task is started.
+        	importMusicButton.setVisible(false);
+		    progressBar.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
