@@ -52,6 +52,8 @@ public final class Library {
     private static ObservableList<Artist> artists;
     private static ObservableList<Album> albums;
     private static ObservableList<Playlist> playlists;
+    private static int maxProgress;
+    private static ImportMusicTask<Boolean> task;
 
     /**
      * Gets a list of songs.
@@ -367,6 +369,10 @@ public final class Library {
     }
 
     public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {
+    	
+    	Library.maxProgress = 0;
+    	Library.task = task;
+    	
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
@@ -378,10 +384,12 @@ public final class Library {
         library.appendChild(songs);
         library.appendChild(playlists);
 
+        int id = 0;
         File directory = new File(Paths.get(path).toUri());
-        int maxProgress = getMaxProgress(directory, 0);
+        getMaxProgress(directory);
+        Library.task.updateProgress(id, Library.maxProgress);
 
-        writeXML(directory, doc, songs, 0, maxProgress, task);
+        writeXML(directory, doc, songs, id);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -393,24 +401,65 @@ public final class Library {
         
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
+        
+        Library.maxProgress = 0;
+    	Library.task = null;
     }
     
-    private static int getMaxProgress(File directory, int maxProgress) {
+    private static void getMaxProgress(File directory) {
     	
     	File[] files = directory.listFiles();
-
+    	
         for (File file : files) {
-            if (file.isFile()) {
-            	maxProgress++;
+            if (file.isFile() && isSupportedFileType(file.getName())) {
+            	Library.maxProgress++;
             } else if (file.isDirectory()) {
-            	maxProgress += getMaxProgress(file, 0);
+            	getMaxProgress(file);
             }
         }
-        
-        return maxProgress;
     }
 
-    private static int writeXML(File directory, Document doc, Element songs, int i, int maxProgress, ImportMusicTask<Boolean> task) {
+	private static boolean isSupportedFileType(String fileName) {
+		
+		String extension = "";
+    	int i = fileName.lastIndexOf('.');
+    	if (i > 0) {
+    	    extension = fileName.substring(i+1);
+    	}
+    	switch (extension) {
+    	// MP3
+    	case "mp3":
+    	// MP4
+    	case "mp4":
+    	case "m4a":
+    	case "m4p":
+    	case "m4b":
+    	case "m4r":
+    	case "m4v":
+    	// OGG VORBIS
+    	case "ogg":
+    	case "oga":
+    	case "ogx":
+    	case "ogm":
+    	case "spx":
+    	case "opus":
+    	// FLAC
+    	case "flac":
+    	// WAV
+    	case "wav":
+    	case "wave":
+    	// WMA
+    	case "wma":
+    	// REAL
+    	case "ra":
+    	case "ram":
+    		return true;
+    	default:
+    		return false;
+    	}
+	}
+
+    private static int writeXML(File directory, Document doc, Element songs, int i) {
 
         File[] files = directory.listFiles();
 
@@ -470,7 +519,7 @@ public final class Library {
                     song.appendChild(playDate);
                     song.appendChild(location);
                     
-                    task.updateProgress(i, maxProgress);
+                    task.updateProgress(i, Library.maxProgress);
 
                 } catch (Exception ex) {
                     
@@ -479,7 +528,7 @@ public final class Library {
 
             } else if (file.isDirectory()) {
 
-                i = writeXML(file, doc, songs, i, maxProgress, task);
+                i = writeXML(file, doc, songs, i);
             }
         }
 

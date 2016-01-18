@@ -3,7 +3,6 @@ package app.musicplayer.view;
 import app.musicplayer.model.Library;
 import app.musicplayer.util.ImportMusicTask;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
