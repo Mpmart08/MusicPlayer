@@ -9,6 +9,10 @@ import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+/**
+ * Dialog to import music library.
+ *
+ */
 public class ImportMusicDialogController {
 	@FXML private Label label;
 	@FXML private Button importMusicButton;

@@ -13,3 +13,11 @@
 .button:hover {
 	-fx-background-color: #dadada;	
 }
+
+.progress-bar > .track {
+	-fx-background-radius: 0.0px, 0.0px, 0.0px, 0.0px;
+}
+
+.progress-bar > .bar {
+	-fx-background-color: rgb(52, 109, 207);
+}
