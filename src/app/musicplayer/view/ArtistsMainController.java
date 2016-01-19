@@ -12,6 +12,7 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
+import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -37,7 +38,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable {
+public class ArtistsMainController implements Initializable, Scrollable {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -158,6 +159,11 @@ public class ArtistsMainController implements Initializable {
             songTable.setOpacity(frac);
         }
     };
+    
+    @Override
+    public void scroll(char letter) {
+    	
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

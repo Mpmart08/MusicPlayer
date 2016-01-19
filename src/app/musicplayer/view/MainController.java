@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
+import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.collections.ObservableList;
@@ -32,7 +33,7 @@ public class MainController implements Initializable {
     private double collapsedWidth = 50;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
-    private Initializable subViewController;
+    private Scrollable subViewController;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -48,6 +49,7 @@ public class MainController implements Initializable {
     @FXML private Label timeRemaining;
     @FXML private ImageView backButton;
     @FXML private ImageView skipButton;
+    @FXML private HBox letterBox;
     
     /**
      * Creates a MainController Object.
@@ -100,6 +102,12 @@ public class MainController implements Initializable {
                 }
             }
         );
+        
+        for (Node node : letterBox.getChildren()) {
+        	Label label = (Label)node;
+        	label.prefWidthProperty().bind(letterBox.widthProperty().subtract(50).divide(26).subtract(1));
+        }
+        
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()
@@ -158,8 +166,21 @@ public class MainController implements Initializable {
 
         MusicPlayer.skip();
     }
+    
+    @FXML
+    private void letterClicked(Event e) {
+    	
+    	Label eventSource = ((Label)e.getSource());
+    	char letter = eventSource.getText().charAt(0);
+    	subViewController.scroll(letter);
+    }
+    
+    public ScrollPane getScrollPane() {
+    	
+    	return subViewRoot;
+    }
 
-    public Initializable loadView(String viewName) {
+    public Scrollable loadView(String viewName) {
 
         try {
         	

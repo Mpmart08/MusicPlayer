@@ -243,13 +243,49 @@
       </BorderPane>
    </bottom>
    <center>
-      <ScrollPane fx:id="subViewRoot" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets left="25.0" right="25.0" />
-         </padding>
-      </ScrollPane>
+      <BorderPane>
+         <top>
+            <HBox fx:id="letterBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="A" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="B" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="C" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="D" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="E" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="F" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="G" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="H" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="I" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="J" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="K" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="L" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="M" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="N" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="O" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="P" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="Q" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="R" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="S" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="T" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="U" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="V" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="W" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="X" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="Y" textOverrun="CLIP" />
+                  <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="Z" textOverrun="CLIP" />
+               </children>
+            </HBox>
+         </top>
+         <center>
+            <ScrollPane fx:id="subViewRoot" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+               <padding>
+                  <Insets left="25.0" right="25.0" />
+               </padding>
+            </ScrollPane>
+         </center>
+      </BorderPane>
    </center>
 </BorderPane>

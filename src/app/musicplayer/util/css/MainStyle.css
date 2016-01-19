@@ -2,9 +2,13 @@
     -fx-background-color: #ffffff;
 }
 
-.label {
+.label, .letter {
     -fx-font-family: verdana;
     -fx-font-size: 18px;
+}
+
+.letter:hover {
+    -fx-text-fill: #c2c2c2;
 }
 
 .bottomBarLabel {

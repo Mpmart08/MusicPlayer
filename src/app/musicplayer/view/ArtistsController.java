@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
+import app.musicplayer.util.Scrollable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,15 +16,43 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
-public class ArtistsController implements Initializable {
+public class ArtistsController implements Initializable, Scrollable {
 
     @FXML private FlowPane grid;
+    
+    @Override
+    public void scroll(char letter) {
+    	
+    	int index = 0;
+    	double cellHeight = 0;
+    	ObservableList<Node> children = grid.getChildren();
+    	
+    	for (int i = 0; i < children.size(); i++) {
+    		
+    		VBox cell = (VBox) children.get(i);
+    		cellHeight = cell.getHeight();
+    		Label label = (Label) cell.getChildren().get(1);
+    		char firstLetter = removeArticle(label.getText()).charAt(0);
+    		if (firstLetter < letter) {
+    			index++;
+    		}
+    	}
+    	
+    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
+    	
+    	double row = (index / 5) * cellHeight;
+    	double vValue = row / (grid.getHeight() - scrollpane.getHeight());
+    	
+    	scrollpane.setVvalue(vValue);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,15 +105,15 @@ public class ArtistsController implements Initializable {
         title.setPadding(new Insets(10, 0, 10, 0));
         title.setAlignment(Pos.TOP_LEFT);
         title.setPrefHeight(66);
-        title.prefWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        title.prefWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
 
-        image.fitWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
-        image.fitHeightProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        image.fitWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
+        image.fitHeightProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
         image.setPreserveRatio(true);
         image.setSmooth(true);
 
-        imageBox.prefWidthProperty().bind(grid.widthProperty().divide(5).subtract(21));
-        imageBox.prefHeightProperty().bind(grid.widthProperty().divide(5).subtract(21));
+        imageBox.prefWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
+        imageBox.prefHeightProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
         imageBox.setAlignment(Pos.CENTER);
         imageBox.getChildren().add(image);
 
@@ -104,5 +133,27 @@ public class ArtistsController implements Initializable {
         });
 
         return cell;
+    }
+    
+    private String removeArticle(String title) {
+
+        String arr[] = title.split(" ", 2);
+
+        if (arr.length < 2) {
+            return title;
+        } else {
+
+            String firstWord = arr[0];
+            String theRest = arr[1];
+
+            switch (firstWord) {
+                case "A":
+                case "An":
+                case "The":
+                    return theRest;
+                default:
+                    return title;
+            }
+        }
     }
 }
