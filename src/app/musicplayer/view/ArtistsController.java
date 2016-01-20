@@ -128,7 +128,7 @@ public class ArtistsController implements Initializable, Scrollable {
 
             VBox artistCell = (VBox) event.getSource();
             String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
-            Artist a = Library.getArtists().stream().filter(x -> artistTitle.equals(x.getTitle())).findFirst().get();
+            Artist a = Library.getArtist(artistTitle);
             artistsMainController.selectArtist(a);
         });
 

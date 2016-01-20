@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
+import app.musicplayer.model.Album;
+import app.musicplayer.model.Artist;
+import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
 import app.musicplayer.util.Scrollable;
@@ -133,6 +136,28 @@ public class MainController implements Initializable {
         } else if (styles.get(0).equals("bottomBarItem")) {
             loadView(eventSource.getId());
         }
+    }
+    
+    @FXML
+    private void navigateToCurrentSong() {
+    	
+    	Optional<Node> previous = sideBar.getChildren().stream()
+                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+
+        if (previous.isPresent()) {
+            HBox previousItem = (HBox)previous.get();
+            previousItem.getStyleClass().setAll("sideBarItem");
+        }
+        
+        sideBar.getChildren().get(2).getStyleClass().setAll("sideBarItemSelected");
+            
+        ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
+        Song song = MusicPlayer.getNowPlaying();
+        Artist artist = Library.getArtist(song.getArtist());
+        Album album = Library.getAlbum(song.getAlbum());
+        artistsMainController.selectArtist(artist);
+        artistsMainController.selectAlbum(album);
+        artistsMainController.selectSong(song);
     }
 
     @FXML

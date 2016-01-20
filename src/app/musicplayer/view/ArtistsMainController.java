@@ -330,14 +330,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             }
         });
 
-        songTable.getSelectionModel().selectedItemProperty().addListener(
-
-            (list, oldSelection, newSelection) -> {
-
-                MusicPlayer.setSelectedSong(newSelection);
-            }
-        );
-
         songTable.setRowFactory(x -> {
 
             TableRow<Song> row = new TableRow<Song>();
@@ -364,42 +356,31 @@ public class ArtistsMainController implements Initializable, Scrollable {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
 
                     Song song = row.getItem();
-                    ArrayList<Song> songs = MusicPlayer.getNowPlayingList();
+                    ArrayList<Song> songs = new ArrayList<Song>();
 
-                    if (!songs.contains(song)) {
+                    if (selectedAlbum != null) {
 
-                        songs.clear();
+                        songs.addAll(selectedAlbum.getSongs());
 
-                        if (selectedAlbum != null) {
+                    } else {
 
-                            for (Song s : selectedAlbum.getSongs()) {
-                                songs.add(s);
-                            }
-
-                        } else {
-
-                            for (Album album : selectedArtist.getAlbums()) {
-                                for (Song s : album.getSongs()) {
-                                    songs.add(s);
-                                }
-                            }
+                        for (Album album : selectedArtist.getAlbums()) {
+                        	songs.addAll(album.getSongs());
                         }
-
-                        ObservableList<Album> albums = Library.getAlbums();
-
-                        Collections.sort(songs, (first, second) -> {
-
-                            Album firstAlbum = albums.stream().filter(y -> y.getTitle().equals(first.getAlbum())).findFirst().get();
-                            Album secondAlbum = albums.stream().filter(y -> y.getTitle().equals(second.getAlbum())).findFirst().get();
-                            if (firstAlbum.compareTo(secondAlbum) != 0) {
-                                return firstAlbum.compareTo(secondAlbum);
-                            } else {
-                                return first.compareTo(second);
-                            }
-                        });
-
-                        MusicPlayer.setNowPlayingList(songs);
                     }
+
+                    Collections.sort(songs, (first, second) -> {
+
+                        Album firstAlbum = Library.getAlbum(first.getAlbum());
+                        Album secondAlbum = Library.getAlbum(second.getAlbum());
+                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+                            return firstAlbum.compareTo(secondAlbum);
+                        } else {
+                            return first.compareTo(second);
+                        }
+                    });
+
+                    MusicPlayer.setNowPlayingList(songs);
 
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
@@ -410,7 +391,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
         });
     }
 
-    private void selectAlbum(Album album) {
+    public void selectAlbum(Album album) {
 
         if (selectedAlbum == album) {
 
@@ -418,13 +399,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
             showAllSongs(artistList.getSelectionModel().getSelectedItem());
 
         } else {
+        	
             selectedAlbum = album;
+            albumList.getSelectionModel().select(selectedAlbum);
             ObservableList<Song> songs = FXCollections.observableArrayList();
-
-            for (Song song : album.getSongs()) {
-                songs.add(song);
-            }
-
+            songs.addAll(album.getSongs());
             Collections.sort(songs);
             songTable.getSelectionModel().clearSelection();
             songTable.setItems(songs);
@@ -480,5 +459,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
         albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
         artistLabel.setText(artist.getTitle());
         separator.setVisible(true);
+    }
+    
+    public void selectSong(Song song) {
+    	
+    	songTable.getSelectionModel().select(song);
+    	songTable.scrollTo(song);
     }
 }

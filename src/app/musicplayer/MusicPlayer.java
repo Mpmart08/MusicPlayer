@@ -34,7 +34,6 @@ import javafx.util.Duration;
 public class MusicPlayer extends Application {
 
     private static MainController mainController;
-    private static Song selectedSong;
     private static MediaPlayer mediaPlayer;
     private static ArrayList<Song> nowPlayingList;
     private static int nowPlayingIndex;
@@ -239,22 +238,6 @@ public class MusicPlayer extends Application {
     }
     
     // GETTERS AND SETTERS
-
-    /**
-     * Gets currently selected song.
-     * @return selected song
-     */
-    public static Song getSelectedSong() {
-        return selectedSong;
-    }
-    
-    /**
-     * Sets currently selected song.
-     * @param song selected song
-     */
-    public static void setSelectedSong(Song song) {
-        selectedSong = song;
-    }
 
     /**
      * Gets currently playing song list.
