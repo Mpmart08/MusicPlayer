@@ -21,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,6 +54,7 @@ public class MainController implements Initializable {
     @FXML private ImageView backButton;
     @FXML private ImageView skipButton;
     @FXML private HBox letterBox;
+    @FXML private Separator letterSeparator;
     
     /**
      * Creates a MainController Object.
@@ -208,6 +210,24 @@ public class MainController implements Initializable {
     public Scrollable loadView(String viewName) {
 
         try {
+        	
+        	switch (viewName.toLowerCase()) {
+        	case "artists":
+        	case "artistsmain":
+        	case "albums":
+        	case "songs":
+        		if (!(subViewController instanceof ArtistsController
+        			|| subViewController instanceof ArtistsMainController
+        			|| subViewController instanceof AlbumsController
+        			|| subViewController instanceof SongsController)) {
+        			loadLettersAnimation.play();	
+        		}
+        		break;
+        	default:
+        		letterBox.setPrefHeight(0);
+        		letterBox.setOpacity(0);
+        		letterSeparator.setOpacity(0);
+        	}
         	
             String fileName = viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + ".fxml";
             
@@ -377,6 +397,17 @@ public class MainController implements Initializable {
                 subViewRoot.getContent().setTranslateY(collapsedHeight);
             }
             subViewRoot.getContent().setOpacity(frac);
+        }
+    };
+    
+    private Animation loadLettersAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+        	letterBox.setPrefHeight(50);
+    		letterBox.setOpacity(frac);
+    		letterSeparator.setOpacity(frac);
         }
     };
 }

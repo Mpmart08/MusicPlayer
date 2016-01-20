@@ -277,7 +277,7 @@
                         <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="Z" textOverrun="CLIP" />
                      </children>
                   </HBox>
-                  <Separator maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
+                  <Separator fx:id="letterSeparator" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
                      <VBox.margin>
                         <Insets left="25.0" right="25.0" />
                      </VBox.margin>
