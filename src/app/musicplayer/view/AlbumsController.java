@@ -144,9 +144,20 @@ public class AlbumsController implements Initializable, Scrollable {
     	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
     	
     	double row = (index / 5) * cellHeight;
-    	double vValue = row / (grid.getHeight() - scrollpane.getHeight());
+    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
+    	double startVvalue = scrollpane.getVvalue();
     	
-    	scrollpane.setVvalue(vValue);
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollpane.setVvalue(vValue);
+            }
+        };
+        
+        scrollAnimation.play();
     }
 	
 	@Override

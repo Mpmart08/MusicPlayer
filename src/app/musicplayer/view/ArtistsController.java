@@ -9,6 +9,8 @@ import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.util.Scrollable;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +25,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class ArtistsController implements Initializable, Scrollable {
 
@@ -49,9 +52,20 @@ public class ArtistsController implements Initializable, Scrollable {
     	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
     	
     	double row = (index / 5) * cellHeight;
-    	double vValue = row / (grid.getHeight() - scrollpane.getHeight());
+    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
+    	double startVvalue = scrollpane.getVvalue();
     	
-    	scrollpane.setVvalue(vValue);
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollpane.setVvalue(vValue);
+            }
+        };
+        
+        scrollAnimation.play();
     }
 
     @Override
