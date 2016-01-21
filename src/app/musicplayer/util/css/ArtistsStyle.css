@@ -238,6 +238,10 @@
     -fx-background-color: #c2c2c2;
 }
 
+.artist-cell:scrollSelected {
+	-fx-background-color: #dadada; 
+}
+
 .album-cell:hover {
     -fx-background-color: #dadada;
 }
