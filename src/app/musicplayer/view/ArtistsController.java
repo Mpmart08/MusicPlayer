@@ -14,7 +14,6 @@ import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -38,20 +37,15 @@ public class ArtistsController implements Initializable, Scrollable {
     	int index = 0;
     	double cellHeight = 0;
     	ObservableList<Node> children = grid.getChildren();
-		PseudoClass scrollSelected = PseudoClass.getPseudoClass("scrollSelected");
     	
     	for (int i = 0; i < children.size(); i++) {
+    		
     		VBox cell = (VBox) children.get(i);
     		cellHeight = cell.getHeight();
     		Label label = (Label) cell.getChildren().get(1);
     		char firstLetter = removeArticle(label.getText()).charAt(0);
-    		if (firstLetter == letter) {
-    			cell.pseudoClassStateChanged(scrollSelected, true);
-    		} else if (firstLetter < letter) {
+    		if (firstLetter < letter) {
     			index++;
-        		cell.pseudoClassStateChanged(scrollSelected, false);
-    		} else {
-    			cell.pseudoClassStateChanged(scrollSelected, false);
     		}
     	}
     	
