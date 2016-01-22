@@ -162,7 +162,41 @@ public class ArtistsMainController implements Initializable, Scrollable {
     
     @Override
     public void scroll(char letter) {
+//    	int index = 0;
     	
+    	// Obtains artists in artist list and loops through them.
+    	ObservableList<Artist> artistListItems = artistList.getItems();
+    	
+    	for (int i = 0; i < artistListItems.size(); i++) {
+    		// Removes article from artist title and compares it to selected letter.
+    		String artistTitle = artistListItems.get(i).getTitle();
+    		char firstLetter = removeArticle(artistTitle).charAt(0);
+    		if (firstLetter == letter) {
+        		// TODO: DEBUG
+        		System.out.println(artistTitle);
+        		// Scrolls to first artist that starts with the selected letter.
+    			artistList.scrollTo(i);
+    			break;
+    		}
+    	}
+    	
+//    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
+//    	
+//    	double row = (index / 5) * cellHeight;
+//    	double finalVvalue = row / (artistList.getHeight() - scrollpane.getHeight());
+//    	double startVvalue = scrollpane.getVvalue();
+//    	
+//    	Animation scrollAnimation = new Transition() {
+//            {
+//                setCycleDuration(Duration.millis(500));
+//            }
+//            protected void interpolate(double frac) {
+//                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+//                scrollpane.setVvalue(vValue);
+//            }
+//        };
+//        
+//        scrollAnimation.play();
     }
 
     @Override
@@ -448,6 +482,28 @@ public class ArtistsMainController implements Initializable, Scrollable {
         songTable.scrollTo(0);
         songTable.setVisible(true);
         albumLabel.setText("All Songs");
+    }
+    
+    private String removeArticle(String title) {
+
+        String arr[] = title.split(" ", 2);
+
+        if (arr.length < 2) {
+            return title;
+        } else {
+
+            String firstWord = arr[0];
+            String theRest = arr[1];
+
+            switch (firstWord) {
+                case "A":
+                case "An":
+                case "The":
+                    return theRest;
+                default:
+                    return title;
+            }
+        }
     }
 
     public void selectArtist(Artist artist) {
