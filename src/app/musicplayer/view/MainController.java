@@ -158,6 +158,11 @@ public class MainController implements Initializable {
 
         MusicPlayer.skip();
     }
+    
+    public ScrollPane getScrollPane() {
+    	
+    	return this.subViewRoot;
+    }
 
     public Initializable loadView(String viewName) {
 

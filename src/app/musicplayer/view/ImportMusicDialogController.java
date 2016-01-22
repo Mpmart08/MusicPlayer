@@ -73,6 +73,8 @@ public class ImportMusicDialogController {
 			    dialogStage.close();
 	        });
 	        
+	        task.updateProgress(0, 1);
+	        
 	        // Retrieves the task progress and adds that to the progress bar.
 	        progressBar.progressProperty().bind(task.progressProperty());
 	        

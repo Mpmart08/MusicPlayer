@@ -55,14 +55,6 @@ public class NowPlayingController implements Initializable {
 
         tableView.setItems(songs);
 
-        tableView.getSelectionModel().selectedItemProperty().addListener(
-
-            (list, oldSelection, newSelection) -> {
-
-                MusicPlayer.setSelectedSong(newSelection);
-            }
-        );
-
         tableView.setRowFactory(x -> {
 
             TableRow<Song> row = new TableRow<Song>();

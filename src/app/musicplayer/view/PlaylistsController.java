@@ -79,14 +79,6 @@ public class PlaylistsController implements Initializable {
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
 
-        tableView.getSelectionModel().selectedItemProperty().addListener(
-
-            (list, oldSelection, newSelection) -> {
-
-                MusicPlayer.setSelectedSong(newSelection);
-            }
-        );
-
         tableView.setRowFactory(x -> {
 
             TableRow<Song> row = new TableRow<Song>();

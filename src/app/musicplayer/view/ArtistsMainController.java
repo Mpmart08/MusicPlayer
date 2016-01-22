@@ -324,14 +324,6 @@ public class ArtistsMainController implements Initializable {
             }
         });
 
-        songTable.getSelectionModel().selectedItemProperty().addListener(
-
-            (list, oldSelection, newSelection) -> {
-
-                MusicPlayer.setSelectedSong(newSelection);
-            }
-        );
-
         songTable.setRowFactory(x -> {
 
             TableRow<Song> row = new TableRow<Song>();
