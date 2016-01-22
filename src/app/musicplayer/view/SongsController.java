@@ -87,5 +87,13 @@ public class SongsController implements Initializable {
 
             return row ;
         });
+        
+        artistColumn.setComparator((first, second) -> {
+        	return Library.getArtist(first).compareTo(Library.getArtist(second));
+        });
+        
+        albumColumn.setComparator((first, second) -> {
+        	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
+        });
     }
 }

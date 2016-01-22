@@ -47,6 +47,14 @@ public final class Song implements Comparable<Song> {
     public Song(int id, String title, String artist, String album, Duration length,
         int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
+    	if (album == null) {
+    		album = "Unknown Album";
+    	}
+    	
+    	if (artist == null) {
+    		artist = "Unknown Artist";
+    	}
+    	
         this.id = id;
         this.title = new SimpleStringProperty(title);
         this.artist = new SimpleStringProperty(artist);
