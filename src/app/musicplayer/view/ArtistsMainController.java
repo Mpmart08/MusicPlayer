@@ -160,43 +160,80 @@ public class ArtistsMainController implements Initializable, Scrollable {
         }
     };
     
+    // Initializes counter variable for for loop in scroll.
+    int i;
+    int currentScroll;
+    
+	private Animation upScrollAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+        	// TODO: DEBUG
+        	System.out.println("Current Scroll: " + currentScroll);
+        	System.out.println("i Value: " + i);
+        	
+        	// Stops the animation of the selected item has been reached.
+        	if (currentScroll == i) {
+        		upScrollAnimation.stop();
+        	} else if (currentScroll < i) {
+        		artistList.scrollTo(i);
+        		upScrollAnimation.stop();
+        	} else {
+        		artistList.scrollTo(currentScroll);
+        	}
+        	currentScroll = currentScroll - 5;
+        }
+    };
+    
+	private Animation downScrollAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(1000));
+        }
+        protected void interpolate(double frac) {
+        	// TODO: DEBUG
+        	System.out.println("Current Scroll: " + currentScroll);
+        	System.out.println("i Value: " + i);
+        	
+        	// Stops the animation of the selected item has been reached.
+        	if (currentScroll == i) {
+        		downScrollAnimation.stop();
+        	} else if (currentScroll > i) {
+        		artistList.scrollTo(i);
+        		downScrollAnimation.stop();
+        	} else {
+        		artistList.scrollTo(currentScroll);
+        	}
+        	currentScroll = currentScroll + 5;
+        }
+    };
+    
     @Override
     public void scroll(char letter) {
-//    	int index = 0;
-    	
     	// Obtains artists in artist list and loops through them.
-    	ObservableList<Artist> artistListItems = artistList.getItems();
-    	
-    	for (int i = 0; i < artistListItems.size(); i++) {
+    	ObservableList<Artist> artistListItems = artistList.getItems();	
+
+    	for (i = 0; i < artistListItems.size(); i++) {
     		// Removes article from artist title and compares it to selected letter.
     		String artistTitle = artistListItems.get(i).getTitle();
     		char firstLetter = removeArticle(artistTitle).charAt(0);
     		if (firstLetter == letter) {
         		// TODO: DEBUG
         		System.out.println(artistTitle);
-        		// Scrolls to first artist that starts with the selected letter.
-    			artistList.scrollTo(i);
-    			break;
+        		
+        		if (currentScroll < i) {
+        			System.out.println("Down Scroll " + currentScroll + " " + i);
+        			downScrollAnimation.play();
+        			break;
+        		} else if (currentScroll > i) {
+        			System.out.println("Up Scroll " + currentScroll + " " + i);
+        			upScrollAnimation.play();
+        			break;
+        		} else {
+        			System.out.println("____NO SCROLL____ " + currentScroll + " " + i);
+        		}
     		}
     	}
-    	
-//    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
-//    	
-//    	double row = (index / 5) * cellHeight;
-//    	double finalVvalue = row / (artistList.getHeight() - scrollpane.getHeight());
-//    	double startVvalue = scrollpane.getVvalue();
-//    	
-//    	Animation scrollAnimation = new Transition() {
-//            {
-//                setCycleDuration(Duration.millis(500));
-//            }
-//            protected void interpolate(double frac) {
-//                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-//                scrollpane.setVvalue(vValue);
-//            }
-//        };
-//        
-//        scrollAnimation.play();
     }
 
     @Override
