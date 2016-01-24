@@ -27,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -113,7 +114,8 @@ public class ArtistsMainController implements Initializable, Scrollable {
         }
     }
 
-	@FXML private ListView<Artist> artistList;
+    @FXML private ScrollPane scrollPane;
+    @FXML private ListView<Artist> artistList;
     @FXML private ListView<Album> albumList;
     @FXML private TableView<Song> songTable;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -160,80 +162,37 @@ public class ArtistsMainController implements Initializable, Scrollable {
         }
     };
     
-    // Initializes counter variable for for loop in scroll.
-    int i;
-    int currentScroll;
-    
-	private Animation upScrollAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(1000));
-        }
-        protected void interpolate(double frac) {
-        	// TODO: DEBUG
-        	System.out.println("Current Scroll: " + currentScroll);
-        	System.out.println("i Value: " + i);
-        	
-        	// Stops the animation of the selected item has been reached.
-        	if (currentScroll == i) {
-        		upScrollAnimation.stop();
-        	} else if (currentScroll < i) {
-        		artistList.scrollTo(i);
-        		upScrollAnimation.stop();
-        	} else {
-        		artistList.scrollTo(currentScroll);
-        	}
-        	currentScroll = currentScroll - 5;
-        }
-    };
-    
-	private Animation downScrollAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(1000));
-        }
-        protected void interpolate(double frac) {
-        	// TODO: DEBUG
-        	System.out.println("Current Scroll: " + currentScroll);
-        	System.out.println("i Value: " + i);
-        	
-        	// Stops the animation of the selected item has been reached.
-        	if (currentScroll == i) {
-        		downScrollAnimation.stop();
-        	} else if (currentScroll > i) {
-        		artistList.scrollTo(i);
-        		downScrollAnimation.stop();
-        	} else {
-        		artistList.scrollTo(currentScroll);
-        	}
-        	currentScroll = currentScroll + 5;
-        }
-    };
-    
     @Override
     public void scroll(char letter) {
-    	// Obtains artists in artist list and loops through them.
-    	ObservableList<Artist> artistListItems = artistList.getItems();	
+    	ObservableList<Artist> artistListItems = artistList.getItems();
+    	int selectedCell = 0;
 
-    	for (i = 0; i < artistListItems.size(); i++) {
+    	for (int i = 0; i < artistListItems.size(); i++) {
     		// Removes article from artist title and compares it to selected letter.
     		String artistTitle = artistListItems.get(i).getTitle();
     		char firstLetter = removeArticle(artistTitle).charAt(0);
     		if (firstLetter == letter) {
-        		// TODO: DEBUG
-        		System.out.println(artistTitle);
-        		
-        		if (currentScroll < i) {
-        			System.out.println("Down Scroll " + currentScroll + " " + i);
-        			downScrollAnimation.play();
-        			break;
-        		} else if (currentScroll > i) {
-        			System.out.println("Up Scroll " + currentScroll + " " + i);
-        			upScrollAnimation.play();
-        			break;
-        		} else {
-        			System.out.println("____NO SCROLL____ " + currentScroll + " " + i);
-        		}
+        		selectedCell = i;
+        		break;
     		}
     	}
+    	
+    	double startVvalue = scrollPane.getVvalue();
+    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getHeight() - scrollPane.getHeight());
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollPane.setVvalue(vValue);
+                
+                // TODO: DEBUG
+                System.out.println("V value: " + vValue);
+            }
+        };
+        scrollAnimation.play();
     }
 
     @Override
@@ -258,6 +217,12 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
         Collections.sort(artists);
+        
+        // Sets the artist list height to the height required to fit the list view with all the artists.
+        // This is important so that the scrolling is done in the scroll pane which is important for the scroll animation.
+        artistList.setPrefHeight(50*artists.size());
+        artistList.setMinHeight(artistList.getPrefHeight());
+        
         artistList.setItems(artists);
 
         artistList.setOnMouseClicked(event -> {
