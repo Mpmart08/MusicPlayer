@@ -171,9 +171,8 @@ public class ArtistsMainController implements Initializable, Scrollable {
     		// Removes article from artist title and compares it to selected letter.
     		String artistTitle = artistListItems.get(i).getTitle();
     		char firstLetter = removeArticle(artistTitle).charAt(0);
-    		if (firstLetter == letter) {
-        		selectedCell = i;
-        		break;
+    		if (firstLetter < letter) {
+        		selectedCell++;
     		}
     	}
     	
