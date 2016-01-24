@@ -8,7 +8,7 @@
 
 <BorderPane stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsMainController">
    <center>
-      <VBox fx:id="subViewRoot" BorderPane.alignment="CENTER">
+      <VBox fx:id="subViewRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="25.0" />
          </BorderPane.margin>
@@ -32,7 +32,7 @@
                <VBox.margin>
                   <Insets />
                </VBox.margin></ListView>
-            <TableView fx:id="songTable" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" visible="false">
+            <TableView fx:id="songTable" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false">
               <columns>
                   <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
                 <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
