@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
+import app.musicplayer.util.SliderSkin;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
@@ -63,7 +64,10 @@ public class MainController implements Initializable {
     	controlBox.getChildren().remove(2);
     	
     	sliderTrack.prefWidthProperty().bind(timeSlider.widthProperty().multiply(timeSlider.valueProperty().divide(timeSlider.maxProperty())));
-
+    	
+    	SliderSkin skin = new SliderSkin(timeSlider);
+    	timeSlider.setSkin(skin);
+    	
         timeSlider.valueChangingProperty().addListener(
             (slider, wasChanging, isChanging) -> {
 

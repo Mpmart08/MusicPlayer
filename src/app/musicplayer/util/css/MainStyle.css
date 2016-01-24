@@ -93,7 +93,6 @@
 
 .slider .thumb:pressed {
     -fx-border-color: white;
-    -fx-padding: 15;
 }
 
 .slider .track {
