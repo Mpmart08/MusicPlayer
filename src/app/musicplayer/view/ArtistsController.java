@@ -33,13 +33,11 @@ public class ArtistsController implements Initializable, Scrollable {
     
     @Override
     public void scroll(char letter) {
-    	
     	int index = 0;
     	double cellHeight = 0;
     	ObservableList<Node> children = grid.getChildren();
     	
     	for (int i = 0; i < children.size(); i++) {
-    		
     		VBox cell = (VBox) children.get(i);
     		cellHeight = cell.getHeight();
     		Label label = (Label) cell.getChildren().get(1);

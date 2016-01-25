@@ -242,13 +242,7 @@ public class AlbumsController implements Initializable, Scrollable {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
                     Album album = Library.getAlbum(song.getAlbum());
-                    ArrayList<Song> songs = album.getSongs();
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    	songs.remove(song);
-                    	songs.add(0, song);
-                    }
-                    MusicPlayer.setNowPlayingList(songs);
+                    MusicPlayer.setNowPlayingList(album.getSongs());
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }

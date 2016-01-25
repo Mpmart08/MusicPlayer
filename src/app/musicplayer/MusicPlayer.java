@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,7 +17,6 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
 import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
-import app.musicplayer.view.NowPlayingController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -45,8 +43,6 @@ public class MusicPlayer extends Application {
     private static Timer timer;
     private static int timerCounter;
     private static int secondsPlayed;
-    private static boolean isLoopActive = false;
-    private static boolean isShuffleActive = false;
     
     private Stage stage;
     private BorderPane view;
@@ -178,50 +174,7 @@ public class MusicPlayer extends Application {
                 } // End if
             });
         } // End run()
-    }// End TimeUpdater
-    
-    public static void toggleLoop() {
-    	
-    	isLoopActive = !isLoopActive;
-    }
-    
-    public static void toggleShuffle() {
-    	
-    	isShuffleActive = !isShuffleActive;
-    	
-    	if (isShuffleActive) {
-    		Collections.shuffle(nowPlayingList);
-    	} else {
-    		Collections.sort(nowPlayingList, (first, second) -> {
-    			int result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = first.compareTo(second);
-    			return result;
-    		});
-    	}
-    	
-    	nowPlayingIndex = nowPlayingList.indexOf(nowPlaying);
-    	
-    	if (mainController.getSubViewController() instanceof NowPlayingController) {
-    		mainController.loadView("nowPlaying");
-    	}
-    }
-    
-    public static boolean isLoopActive() {
-    	
-    	return isLoopActive;
-    }
-    
-    public static boolean isShuffleActive() {
-    	
-    	return isShuffleActive;
-    }
+     }// End TimeUpdater
 
     /**
      * Plays selected song.

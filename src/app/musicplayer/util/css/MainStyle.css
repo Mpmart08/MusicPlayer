@@ -2,9 +2,13 @@
     -fx-background-color: #ffffff;
 }
 
-.label {
+.label, .letter {
     -fx-font-family: verdana;
     -fx-font-size: 18px;
+}
+
+.letter:hover {
+    -fx-text-fill: #c2c2c2;
 }
 
 .bottomBarLabel {
@@ -30,32 +34,12 @@
     -fx-fill: rgb(52, 109, 207);
 }
 
-.controlPane:hover > .control,
-.toggleControlPane:hover > .control {
+.controlPane:hover > .control {
     -fx-opacity: 0.5;
 }
 
-.controlPane:pressed > .control,
-.toggleControlPane:pressed > .control {
+.controlPane:pressed > .control {
     -fx-opacity: 0.25;
-}
-
-.toggleControlPane:active {
-    -fx-background-color: rgb(153, 181, 230);
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 10;
-    -fx-scale-shape: true;
-    -fx-shape: "
-        M 100, 100
-        m -75, 0
-        a 75,75 0 1,0 150,0
-        a 75,75 0 1,0 -150,0
-        ";
-}
-
-.toggleControlPane:active > .control {
-    -fx-fill: white;
 }
 
 .sideBar {
@@ -74,6 +58,23 @@
     -fx-border-width: 1 0 0 0;
     -fx-border-color: #c2c2c2;
 }
+
+/*.slider .thumb {
+    -fx-background-color: rgb(52, 109, 207);
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15 15 0 0;
+    -fx-background-image: url("/app/musicplayer/util/img/sliderIcon.png");
+}
+
+.slider .thumb:hover {
+    -fx-background-image: url("/app/musicplayer/util/img/sliderIconHover.png");
+}
+
+.slider .thumb:pressed {
+    -fx-background-image: url("/app/musicplayer/util/img/sliderIconPressed.png");
+    -fx-padding: 20 20 0 0;
+}*/
 
 .slider .thumb {
     -fx-background-color: rgb(52, 109, 207);
