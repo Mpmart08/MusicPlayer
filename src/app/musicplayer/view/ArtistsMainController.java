@@ -55,11 +55,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
             artistImage.setPreserveRatio(true);
             artistImage.setSmooth(true);
             artistImage.setCache(true);
+            title.setMaxWidth(190);
             title.setTextOverrun(OverrunStyle.CLIP);
             cell.getChildren().addAll(artistImage, title);
             cell.setAlignment(Pos.CENTER_LEFT);
             HBox.setMargin(artistImage, new Insets(0, 10, 0, 0));
-            this.setPrefWidth(248);
         }
 
         @Override
@@ -186,9 +186,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
                 scrollPane.setVvalue(vValue);
-                
-                // TODO: DEBUG
-                System.out.println("V value: " + vValue);
             }
         };
         scrollAnimation.play();

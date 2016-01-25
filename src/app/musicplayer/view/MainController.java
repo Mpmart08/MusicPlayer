@@ -11,10 +11,8 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
 import app.musicplayer.util.Scrollable;
-import app.musicplayer.util.SliderSkin;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -29,8 +27,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -46,26 +42,19 @@ public class MainController implements Initializable {
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
     @FXML private VBox sideBar;
-    @FXML private ImageView sideBarSlideButton;    
+    @FXML private ImageView sideBarSlideButton;
+    @FXML private ImageView playPauseButton;
     @FXML private ImageView nowPlayingArtwork;
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
     @FXML private Slider timeSlider;
-    @FXML private Region sliderTrack;
+    @FXML private Slider invisibleSlider;
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
-
+    @FXML private ImageView backButton;
+    @FXML private ImageView skipButton;
     @FXML private HBox letterBox;
     @FXML private Separator letterSeparator;
-    
-    @FXML private Pane backButton;
-    @FXML private Pane playButton;
-    @FXML private Pane pauseButton;
-    @FXML private Pane skipButton;
-    @FXML private Pane loopButton;
-    @FXML private Pane shuffleButton;
-    @FXML private Pane volumeButton;
-    @FXML private HBox controlBox;
     
     /**
      * Creates a MainController Object.
@@ -75,14 +64,7 @@ public class MainController implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    	
-    	controlBox.getChildren().remove(2);
-    	
-    	sliderTrack.prefWidthProperty().bind(timeSlider.widthProperty().multiply(timeSlider.valueProperty().divide(timeSlider.maxProperty())));
-    	
-    	SliderSkin skin = new SliderSkin(timeSlider);
-    	timeSlider.setSkin(skin);
-    	
+
         timeSlider.valueChangingProperty().addListener(
             (slider, wasChanging, isChanging) -> {
 
@@ -90,6 +72,7 @@ public class MainController implements Initializable {
 
                     int seconds = (int) Math.round(timeSlider.getValue() / 4.0);
                     timeSlider.setValue(seconds * 4);
+                    invisibleSlider.setValue(seconds * 4);
                     MusicPlayer.seek(seconds);
                 }
             }
@@ -103,11 +86,33 @@ public class MainController implements Initializable {
                 if (!timeSlider.isValueChanging() && current != previous + 1) {
 
                     int seconds = (int) Math.round(current / 4.0);
+                    invisibleSlider.setValue(seconds * 4);
                     timeSlider.setValue(seconds * 4);
                     MusicPlayer.seek(seconds);
                 }
             }
         );
+
+        invisibleSlider.valueProperty().addListener(
+            (slider, oldValue, newValue) -> {
+
+                double previous = oldValue.doubleValue();
+                double current = newValue.doubleValue();
+                if (!invisibleSlider.isValueChanging() && current != previous + 1) {
+
+                    int seconds = (int) Math.round(current / 4.0);
+                    invisibleSlider.setValue(seconds * 4);
+                    timeSlider.setValue(seconds * 4);
+                    MusicPlayer.seek(seconds);
+                }
+            }
+        );
+        
+        for (Node node : letterBox.getChildren()) {
+        	Label label = (Label)node;
+        	label.prefWidthProperty().bind(letterBox.widthProperty().subtract(50).divide(26).subtract(1));
+        }
+        
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()
@@ -197,23 +202,9 @@ public class MainController implements Initializable {
     	subViewController.scroll(letter);
     }
     
-    @FXML
-    private void loopToggle() {
-    	
-    }
-    
-    @FXML
-    private void shuffleToggle() {
-    	
-    }
-    
-    @FXML
-    private void volumeClick() {
-    	
-    }
-    
     public ScrollPane getScrollPane() {
-    	return this.subViewRoot;
+    	
+    	return subViewRoot;
     }
 
     public Scrollable loadView(String viewName) {
@@ -258,14 +249,18 @@ public class MainController implements Initializable {
 
     public void updatePlayPauseIcon() {
 
-    	Platform.runLater(() -> {
-    		controlBox.getChildren().remove(1);
-    		if (MusicPlayer.isPlaying()) {
-            	controlBox.getChildren().add(1, playButton);
-            } else {
-            	controlBox.getChildren().add(1, pauseButton);
-            }
-    	});
+        Image icon;
+
+        if (MusicPlayer.isPlaying()) {
+
+            icon = new Image(this.getClass().getResource(Resources.IMG + "PlayIcon.png").toString());
+            playPauseButton.setImage(icon);
+
+        } else {
+
+            icon = new Image(this.getClass().getResource(Resources.IMG + "PauseIcon.png").toString());
+            playPauseButton.setImage(icon);
+        }
     }
 
     public void updateNowPlayingButton() {
@@ -290,16 +285,25 @@ public class MainController implements Initializable {
             timeSlider.setMax(song.getLengthInSeconds() * 4);
             timeSlider.setValue(0);
             timeSlider.setBlockIncrement(1);
+            invisibleSlider.setMin(0);
+            invisibleSlider.setMax(song.getLengthInSeconds() * 4);
+            invisibleSlider.setValue(0);
+            invisibleSlider.setBlockIncrement(1);
         } else {
             timeSlider.setMin(0);
             timeSlider.setMax(1);
             timeSlider.setValue(0);
             timeSlider.setBlockIncrement(1);
+            invisibleSlider.setMin(0);
+            invisibleSlider.setMax(1);
+            invisibleSlider.setValue(0);
+            invisibleSlider.setBlockIncrement(1);
         }
     }
 
     public void updateTimeSlider() {
 
+        invisibleSlider.increment();
         timeSlider.increment();
     }
 

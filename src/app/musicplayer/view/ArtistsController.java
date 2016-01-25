@@ -110,7 +110,6 @@ public class ArtistsController implements Initializable, Scrollable {
         VBox cell = new VBox();
         Label title = new Label(artist.getTitle());
         ImageView image = new ImageView(artist.getArtistImage());
-        image.imageProperty().bind(artist.artistImageProperty());
         VBox imageBox = new VBox();
 
         title.setTextOverrun(OverrunStyle.CLIP);
