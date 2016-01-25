@@ -249,7 +249,6 @@
                <children>
                   <HBox fx:id="letterBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="#" textOverrun="CLIP" />
                         <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="A" textOverrun="CLIP" />
                         <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="B" textOverrun="CLIP" />
                         <Label alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" onMouseClicked="#letterClicked" prefHeight="50.0" styleClass="letter" text="C" textOverrun="CLIP" />
