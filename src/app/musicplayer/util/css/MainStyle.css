@@ -76,9 +76,26 @@
 }
 
 .slider .thumb {
-    -fx-background-color: transparent;
+    -fx-background-color: rgb(52, 109, 207);
     -fx-background-radius: 0;
     -fx-background-insets: 0;
+    -fx-border-width: 2;
+    -fx-border-color: white;
+    -fx-padding: 10;
+    -fx-shape: "
+        M 100, 100
+        m -75, 0
+        a 75,75 0 1,0 150,0
+        a 75,75 0 1,0 -150,0
+        ";
+}
+
+.slider .thumb:hover {
+    -fx-border-color: rgb(153, 181, 230);
+}
+
+.slider .thumb:pressed {
+    -fx-border-color: white;
 }
 
 .slider .track {
@@ -88,19 +105,13 @@
     -fx-padding: 15px;
 }
 
-.visibleSlider .thumb {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 15 15 0 0;
-    -fx-background-image: url("../img/sliderIcon.png");
+.backSliderTrack {
+    -fx-background-color: white;
+    -fx-opacity: 0.5;
 }
 
-.visibleSlider .track {
+.frontSliderTrack {
     -fx-background-color: white;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 1px;
 }
 
 .scroll-pane, .scroll-pane > .viewport {

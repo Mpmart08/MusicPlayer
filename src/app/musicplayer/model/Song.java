@@ -47,6 +47,14 @@ public final class Song implements Comparable<Song> {
     public Song(int id, String title, String artist, String album, Duration length,
         int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
+    	if (album == null) {
+    		album = "Unknown Album";
+    	}
+    	
+    	if (artist == null) {
+    		artist = "Unknown Artist";
+    	}
+    	
         this.id = id;
         this.title = new SimpleStringProperty(title);
         this.artist = new SimpleStringProperty(artist);
@@ -173,7 +181,7 @@ public final class Song implements Comparable<Song> {
 
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                Document doc = docBuilder.parse(Resources.XML + "library.xml");
+                Document doc = docBuilder.parse(Resources.JAR + "library.xml");
 
                 XPathFactory xPathfactory = XPathFactory.newInstance();
                 XPath xpath = xPathfactory.newXPath();
@@ -192,7 +200,7 @@ public final class Song implements Comparable<Song> {
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 DOMSource source = new DOMSource(doc);
-                File xmlFile = new File(Resources.XML + "library.xml");
+                File xmlFile = new File(Resources.JAR + "library.xml");
                 StreamResult result = new StreamResult(xmlFile);
                 transformer.transform(source, result);
 

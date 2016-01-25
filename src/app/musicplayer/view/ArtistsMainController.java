@@ -12,7 +12,6 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -38,7 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable, Scrollable {
+public class ArtistsMainController implements Initializable {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -54,11 +53,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
             artistImage.setPreserveRatio(true);
             artistImage.setSmooth(true);
             artistImage.setCache(true);
-            title.setMaxWidth(190);
             title.setTextOverrun(OverrunStyle.CLIP);
             cell.getChildren().addAll(artistImage, title);
             cell.setAlignment(Pos.CENTER_LEFT);
             HBox.setMargin(artistImage, new Insets(0, 10, 0, 0));
+            this.setPrefWidth(248);
         }
 
         @Override
@@ -159,35 +158,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             songTable.setOpacity(frac);
         }
     };
-    
-    @Override
-    public void scroll(char letter) {
-    	ObservableList<Artist> artistListItems = artistList.getItems();
-    	int selectedCell = 0;
-
-    	for (int i = 0; i < artistListItems.size(); i++) {
-    		// Removes article from artist title and compares it to selected letter.
-    		String artistTitle = artistListItems.get(i).getTitle();
-    		char firstLetter = removeArticle(artistTitle).charAt(0);
-    		if (firstLetter < letter) {
-        		selectedCell++;
-    		}
-    	}
-    	
-    	double startVvalue = scrollPane.getVvalue();
-    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getHeight() - scrollPane.getHeight());
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollPane.setVvalue(vValue);
-            }
-        };
-        scrollAnimation.play();
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
