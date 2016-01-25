@@ -19,8 +19,6 @@ import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 
 import app.musicplayer.util.Resources;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 public final class Album implements Comparable<Album> {
@@ -30,7 +28,6 @@ public final class Album implements Comparable<Album> {
     private String artist;
     private Image artwork;
     private ArrayList<Song> songs;
-    private SimpleObjectProperty<Image> artworkProperty;
 
     /**
      * Creates an album object and obtains it's artwork.
@@ -45,7 +42,7 @@ public final class Album implements Comparable<Album> {
         this.title = title;
         this.artist = artist;
         this.songs = songs;
-        this.artworkProperty = new SimpleObjectProperty<Image>(getArtwork());
+        getArtwork();
     }
 
     // GETTERS
@@ -74,10 +71,6 @@ public final class Album implements Comparable<Album> {
 
     public ArrayList<Song> getSongs() {
         return new ArrayList<Song>(this.songs);
-    }
-    
-    public ObjectProperty<Image> artworkProperty() {
-    	return this.artworkProperty;
     }
 
     public Image getArtwork() {
@@ -150,20 +143,7 @@ public final class Album implements Comparable<Album> {
                     }
                 }
             }
-            String location = this.songs.get(0).getLocation();
-            AudioFile audioFile = AudioFileIO.read(new File(location));
-            Tag tag = audioFile.getTag();
-            byte[] bytes = tag.getFirstArtwork().getBinaryData();
-            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-            this.artwork = new Image(in, 300, 300, true, true);
-            
-            if (this.artwork.isError()) {
-            	
-            	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
-            }
-            
-            this.artworkProperty.setValue(artwork);
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

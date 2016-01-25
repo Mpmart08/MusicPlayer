@@ -263,7 +263,6 @@ public class AlbumsController implements Initializable, Scrollable {
         VBox cell = new VBox();
         Label title = new Label(album.getTitle());
         ImageView image = new ImageView(album.getArtwork());
-        image.imageProperty().bind(album.artworkProperty());
         VBox imageBox = new VBox();
 
         title.setTextOverrun(OverrunStyle.CLIP);

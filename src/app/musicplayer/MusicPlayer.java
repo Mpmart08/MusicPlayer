@@ -11,8 +11,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.LogManager;
 
-import app.musicplayer.model.Album;
-import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
@@ -100,25 +98,6 @@ public class MusicPlayer extends Application {
             Library.getAlbums();
             Library.getArtists();
             Library.getPlaylists();
-            
-            File imgFolder = new File(Resources.JAR + "/img");
-        	if (!imgFolder.exists()) {
-        		
-        		Thread thread1 = new Thread(() -> {
-        			for (Artist artist : Library.getArtists()) {
-            			artist.downloadArtistImage();
-            		}
-        		});
-        		
-        		Thread thread2 = new Thread(() -> {
-        			for (Album album : Library.getAlbums()) {
-            			album.downloadArtwork();
-            		}
-        		});
-        		
-        		thread1.start();
-        		thread2.start();
-        	}
 
             // Calls the function to initialize the main layout.
             Platform.runLater(() -> {
@@ -391,10 +370,10 @@ public class MusicPlayer extends Application {
     	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
     	
     	// Assigns the filepath to the XML filepath set in Resources.java
-    	Resources.JAR = jarFilePath + "/";
+    	Resources.XML = jarFilePath + "/";
     	
     	// Specifies library.xml file and its location.
-    	File libraryXML = new File(Resources.JAR + "library.xml");
+    	File libraryXML = new File(Resources.XML + "library.xml");
     	
     	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	if (!libraryXML.exists()) {
