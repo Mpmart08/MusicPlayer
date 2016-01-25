@@ -1,6 +1,7 @@
 package app.musicplayer.view;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
@@ -9,7 +10,6 @@ import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -25,7 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
-public class PlaylistsController implements Initializable, Scrollable {
+public class PlaylistsController implements Initializable {
 
     @FXML private ListView<Playlist> playlistList;
     @FXML private TableView<Song> tableView;
@@ -53,11 +53,6 @@ public class PlaylistsController implements Initializable, Scrollable {
             tableView.setOpacity(frac);
         }
     };
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -110,7 +105,13 @@ public class PlaylistsController implements Initializable, Scrollable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(selectedPlaylist.getSongs());
+                    ObservableList<Song> songs = selectedPlaylist.getSongs();
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    	songs.remove(song);
+                    	songs.add(0, song);
+                    }
+                    MusicPlayer.setNowPlayingList(songs);
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }

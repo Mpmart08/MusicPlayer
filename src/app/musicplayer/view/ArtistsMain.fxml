@@ -47,10 +47,6 @@
       </VBox>
    </center>
    <left>
-      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefViewportHeight="600.0" prefViewportWidth="250.0" prefWidth="250.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-         <content>
-            <ListView fx:id="artistList" fixedCellSize="50.0" BorderPane.alignment="CENTER" />
-         </content>
-      </ScrollPane>
+      <ListView fx:id="artistList" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>
