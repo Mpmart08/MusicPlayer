@@ -234,17 +234,21 @@ public class ArtistsMainController implements Initializable, Scrollable {
                             songs.add(song);
                         }
                     }
-
-                    Collections.sort(songs, (first, second) -> {
-
-                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
-                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
-                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-                            return firstAlbum.compareTo(secondAlbum);
-                        } else {
-                            return first.compareTo(second);
-                        }
-                    });
+                    
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    } else {
+	                    Collections.sort(songs, (first, second) -> {
+	
+	                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
+	                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
+	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+	                            return firstAlbum.compareTo(secondAlbum);
+	                        } else {
+	                            return first.compareTo(second);
+	                        }
+	                    });
+                    }
 
                     Song song = songs.get(0);
                     MusicPlayer.setNowPlayingList(songs);
@@ -321,7 +325,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
                 ArrayList<Song> songs = selectedAlbum.getSongs();
 
-                Collections.sort(songs);
+                if (MusicPlayer.isShuffleActive()) {
+                	Collections.shuffle(songs);
+                } else {
+                	Collections.sort(songs);
+                }
 
                 MusicPlayer.setNowPlayingList(songs);
                 MusicPlayer.setNowPlaying(songs.get(0));
@@ -392,28 +400,37 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
                     if (selectedAlbum != null) {
 
-                        songs.addAll(selectedAlbum.getSongs());
+                        for (Song s : selectedAlbum.getSongs()) {
+                            songs.add(s);
+                        }
 
                     } else {
 
                         for (Album album : selectedArtist.getAlbums()) {
-                        	songs.addAll(album.getSongs());
+                            for (Song s : album.getSongs()) {
+                                songs.add(s);
+                            }
                         }
                     }
-
-                    Collections.sort(songs, (first, second) -> {
-
-                        Album firstAlbum = Library.getAlbum(first.getAlbum());
-                        Album secondAlbum = Library.getAlbum(second.getAlbum());
-                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-                            return firstAlbum.compareTo(secondAlbum);
-                        } else {
-                            return first.compareTo(second);
-                        }
-                    });
+                    
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    	songs.remove(song);
+                    	songs.add(0, song);
+                    } else {
+                    	Collections.sort(songs, (first, second) -> {
+	
+	                        Album firstAlbum = Library.getAlbum(first.getAlbum());
+	                        Album secondAlbum = Library.getAlbum(second.getAlbum());
+	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+	                            return firstAlbum.compareTo(secondAlbum);
+	                        } else {
+	                            return first.compareTo(second);
+	                        }
+	                    });
+                    }
 
                     MusicPlayer.setNowPlayingList(songs);
-
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
@@ -508,7 +525,9 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         selectedArtist = artist;
         artistList.getSelectionModel().select(artist);
-        artistList.scrollTo(artistList.getSelectionModel().getSelectedIndex());
+        int index = artistList.getSelectionModel().getSelectedIndex();
+        double vValue = (index * 55.3) / (artistList.getPrefHeight() - scrollPane.getHeight());
+        scrollPane.setVvalue(vValue);
         showAllSongs(artist);
         albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
         artistLabel.setText(artist.getTitle());

@@ -1,6 +1,8 @@
 package app.musicplayer.view;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
@@ -28,11 +30,6 @@ public class SongsController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -85,7 +82,13 @@ public class SongsController implements Initializable, Scrollable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    MusicPlayer.setNowPlayingList(Library.getSongs());
+                    ArrayList<Song> songList = new ArrayList<Song>(Library.getSongs());
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    	songs.remove(song);
+                    	songs.add(0, song);
+                    }
+                    MusicPlayer.setNowPlayingList(songList);
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
@@ -102,4 +105,7 @@ public class SongsController implements Initializable, Scrollable {
         	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
         });
     }
+    
+    @Override
+    public void scroll(char letter) {};
 }

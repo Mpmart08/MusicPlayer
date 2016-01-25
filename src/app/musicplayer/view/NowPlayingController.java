@@ -28,11 +28,6 @@ public class NowPlayingController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -93,4 +88,7 @@ public class NowPlayingController implements Initializable, Scrollable {
             return row ;
         });
     }
+    
+    @Override
+    public void scroll(char letter) {};
 }

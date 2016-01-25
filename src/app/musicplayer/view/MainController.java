@@ -16,6 +16,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -82,6 +83,16 @@ public class MainController implements Initializable {
     	
     	SliderSkin skin = new SliderSkin(timeSlider);
     	timeSlider.setSkin(skin);
+    	
+    	PseudoClass active = PseudoClass.getPseudoClass("active");
+    	loopButton.setOnMouseClicked(x -> {
+    		MusicPlayer.toggleLoop();
+    		loopButton.pseudoClassStateChanged(active, MusicPlayer.isLoopActive());
+    	});
+    	shuffleButton.setOnMouseClicked(x -> {
+    		MusicPlayer.toggleShuffle();
+    		shuffleButton.pseudoClassStateChanged(active, MusicPlayer.isShuffleActive());
+    	});
     	
         timeSlider.valueChangingProperty().addListener(
             (slider, wasChanging, isChanging) -> {
@@ -203,18 +214,13 @@ public class MainController implements Initializable {
     }
     
     @FXML
-    private void loopToggle() {
-    	
-    }
-    
-    @FXML
-    private void shuffleToggle() {
-    	
-    }
-    
-    @FXML
     private void volumeClick() {
     	
+    }
+    
+    public Scrollable getSubViewController() {
+    	
+    	return subViewController;
     }
     
     public ScrollPane getScrollPane() {
