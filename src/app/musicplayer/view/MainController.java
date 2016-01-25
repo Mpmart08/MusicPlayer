@@ -218,6 +218,11 @@ public class MainController implements Initializable {
     	
     }
     
+    public boolean isTimeSliderPressed() {
+    	
+    	return timeSlider.lookup(".thumb").isPressed();
+    }
+    
     public Scrollable getSubViewController() {
     	
     	return subViewController;

@@ -169,13 +169,15 @@ public class MusicPlayer extends Application {
         @Override
         public void run() {
             Platform.runLater(() -> {
-                if (timerCounter < length) {
+                if (timerCounter < length && !mainController.isTimeSliderPressed()) {
                     if (++timerCounter % 4 == 0) {
                         mainController.updateTimeLabels();
                         secondsPlayed++;
                     } // End if
                     mainController.updateTimeSlider();
-                } // End if
+                } else {
+                	timerCounter++;
+                }
             });
         } // End run()
     }// End TimeUpdater
