@@ -186,9 +186,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
                 scrollPane.setVvalue(vValue);
-                
-                // TODO: DEBUG
-                System.out.println("V value: " + vValue);
             }
         };
         scrollAnimation.play();

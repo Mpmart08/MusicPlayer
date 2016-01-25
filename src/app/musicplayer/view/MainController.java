@@ -108,6 +108,11 @@ public class MainController implements Initializable {
                 }
             }
         );
+        
+        for (Node node : letterBox.getChildren()) {
+        	Label label = (Label)node;
+        	label.prefWidthProperty().bind(letterBox.widthProperty().subtract(50).divide(26).subtract(1));
+        }
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()
