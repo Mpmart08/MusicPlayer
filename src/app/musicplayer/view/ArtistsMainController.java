@@ -55,11 +55,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
             artistImage.setPreserveRatio(true);
             artistImage.setSmooth(true);
             artistImage.setCache(true);
-            title.setMaxWidth(190);
             title.setTextOverrun(OverrunStyle.CLIP);
             cell.getChildren().addAll(artistImage, title);
             cell.setAlignment(Pos.CENTER_LEFT);
             HBox.setMargin(artistImage, new Insets(0, 10, 0, 0));
+            this.setPrefWidth(248);
         }
 
         @Override

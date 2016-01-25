@@ -68,7 +68,7 @@ public final class Library {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 factory.setProperty("javax.xml.stream.isCoalescing", true);
-                FileInputStream is = new FileInputStream(new File(Resources.XML + "library.xml"));
+                FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -254,7 +254,7 @@ public final class Library {
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                FileInputStream is = new FileInputStream(new File(Resources.XML + "library.xml"));
+                FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
                 String element = "";
@@ -397,7 +397,7 @@ public final class Library {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         DOMSource source = new DOMSource(doc);
         
-        File xmlFile = new File(Resources.XML + "library.xml");
+        File xmlFile = new File(Resources.JAR + "library.xml");
         
         StreamResult result = new StreamResult(xmlFile);
         transformer.transform(source, result);
