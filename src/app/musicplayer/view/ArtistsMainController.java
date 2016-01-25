@@ -12,7 +12,6 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -27,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -39,7 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable, Scrollable {
+public class ArtistsMainController implements Initializable {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -114,8 +112,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
         }
     }
 
-    @FXML private ScrollPane scrollPane;
-    @FXML private ListView<Artist> artistList;
+	@FXML private ListView<Artist> artistList;
     @FXML private ListView<Album> albumList;
     @FXML private TableView<Song> songTable;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -161,38 +158,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             songTable.setOpacity(frac);
         }
     };
-    
-    @Override
-    public void scroll(char letter) {
-    	ObservableList<Artist> artistListItems = artistList.getItems();
-    	int selectedCell = 0;
-
-    	for (int i = 0; i < artistListItems.size(); i++) {
-    		// Removes article from artist title and compares it to selected letter.
-    		String artistTitle = artistListItems.get(i).getTitle();
-    		char firstLetter = removeArticle(artistTitle).charAt(0);
-    		if (firstLetter < letter) {
-        		selectedCell++;
-    		}
-    	}
-    	
-    	double startVvalue = scrollPane.getVvalue();
-    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getHeight() - scrollPane.getHeight());
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollPane.setVvalue(vValue);
-                
-                // TODO: DEBUG
-                System.out.println("V value: " + vValue);
-            }
-        };
-        scrollAnimation.play();
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -216,12 +181,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
         Collections.sort(artists);
-        
-        // Sets the artist list height to the height required to fit the list view with all the artists.
-        // This is important so that the scrolling is done in the scroll pane which is important for the scroll animation.
-        artistList.setPrefHeight(50*artists.size());
-        artistList.setMinHeight(artistList.getPrefHeight());
-        
         artistList.setItems(artists);
 
         artistList.setOnMouseClicked(event -> {
@@ -237,17 +196,21 @@ public class ArtistsMainController implements Initializable, Scrollable {
                             songs.add(song);
                         }
                     }
-
-                    Collections.sort(songs, (first, second) -> {
-
-                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
-                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
-                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-                            return firstAlbum.compareTo(secondAlbum);
-                        } else {
-                            return first.compareTo(second);
-                        }
-                    });
+                    
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    } else {
+	                    Collections.sort(songs, (first, second) -> {
+	
+	                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
+	                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
+	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+	                            return firstAlbum.compareTo(secondAlbum);
+	                        } else {
+	                            return first.compareTo(second);
+	                        }
+	                    });
+                    }
 
                     Song song = songs.get(0);
                     MusicPlayer.setNowPlayingList(songs);
@@ -324,7 +287,11 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
                 ArrayList<Song> songs = selectedAlbum.getSongs();
 
-                Collections.sort(songs);
+                if (MusicPlayer.isShuffleActive()) {
+                	Collections.shuffle(songs);
+                } else {
+                	Collections.sort(songs);
+                }
 
                 MusicPlayer.setNowPlayingList(songs);
                 MusicPlayer.setNowPlaying(songs.get(0));
@@ -395,28 +362,37 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
                     if (selectedAlbum != null) {
 
-                        songs.addAll(selectedAlbum.getSongs());
+                        for (Song s : selectedAlbum.getSongs()) {
+                            songs.add(s);
+                        }
 
                     } else {
 
                         for (Album album : selectedArtist.getAlbums()) {
-                        	songs.addAll(album.getSongs());
+                            for (Song s : album.getSongs()) {
+                                songs.add(s);
+                            }
                         }
                     }
-
-                    Collections.sort(songs, (first, second) -> {
-
-                        Album firstAlbum = Library.getAlbum(first.getAlbum());
-                        Album secondAlbum = Library.getAlbum(second.getAlbum());
-                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-                            return firstAlbum.compareTo(secondAlbum);
-                        } else {
-                            return first.compareTo(second);
-                        }
-                    });
+                    
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(songs);
+                    	songs.remove(song);
+                    	songs.add(0, song);
+                    } else {
+                    	Collections.sort(songs, (first, second) -> {
+	
+	                        Album firstAlbum = Library.getAlbum(first.getAlbum());
+	                        Album secondAlbum = Library.getAlbum(second.getAlbum());
+	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+	                            return firstAlbum.compareTo(secondAlbum);
+	                        } else {
+	                            return first.compareTo(second);
+	                        }
+	                    });
+                    }
 
                     MusicPlayer.setNowPlayingList(songs);
-
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
                 }
@@ -426,7 +402,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
         });
     }
 
-    public void selectAlbum(Album album) {
+    private void selectAlbum(Album album) {
 
         if (selectedAlbum == album) {
 
@@ -434,11 +410,13 @@ public class ArtistsMainController implements Initializable, Scrollable {
             showAllSongs(artistList.getSelectionModel().getSelectedItem());
 
         } else {
-        	
             selectedAlbum = album;
-            albumList.getSelectionModel().select(selectedAlbum);
             ObservableList<Song> songs = FXCollections.observableArrayList();
-            songs.addAll(album.getSongs());
+
+            for (Song song : album.getSongs()) {
+                songs.add(song);
+            }
+
             Collections.sort(songs);
             songTable.getSelectionModel().clearSelection();
             songTable.setItems(songs);
@@ -484,28 +462,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
         songTable.setVisible(true);
         albumLabel.setText("All Songs");
     }
-    
-    private String removeArticle(String title) {
-
-        String arr[] = title.split(" ", 2);
-
-        if (arr.length < 2) {
-            return title;
-        } else {
-
-            String firstWord = arr[0];
-            String theRest = arr[1];
-
-            switch (firstWord) {
-                case "A":
-                case "An":
-                case "The":
-                    return theRest;
-                default:
-                    return title;
-            }
-        }
-    }
 
     public void selectArtist(Artist artist) {
 
@@ -516,11 +472,5 @@ public class ArtistsMainController implements Initializable, Scrollable {
         albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
         artistLabel.setText(artist.getTitle());
         separator.setVisible(true);
-    }
-    
-    public void selectSong(Song song) {
-    	
-    	songTable.getSelectionModel().select(song);
-    	songTable.scrollTo(song);
     }
 }

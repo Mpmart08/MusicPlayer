@@ -5,17 +5,14 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.model.Album;
-import app.musicplayer.model.Artist;
-import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
-import app.musicplayer.util.Scrollable;
 import app.musicplayer.util.SliderSkin;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +20,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +37,7 @@ public class MainController implements Initializable {
     private double collapsedWidth = 50;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
-    private Scrollable subViewController;
+    private Initializable subViewController;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -54,10 +50,6 @@ public class MainController implements Initializable {
     @FXML private Region sliderTrack;
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
-
-    @FXML private HBox letterBox;
-    @FXML private Separator letterSeparator;
-    
     @FXML private Pane backButton;
     @FXML private Pane playButton;
     @FXML private Pane pauseButton;
@@ -66,12 +58,6 @@ public class MainController implements Initializable {
     @FXML private Pane shuffleButton;
     @FXML private Pane volumeButton;
     @FXML private HBox controlBox;
-    
-    /**
-     * Creates a MainController Object.
-     * Constructor is called before the initialize() method.
-     */
-    public MainController() {}
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,6 +68,16 @@ public class MainController implements Initializable {
     	
     	SliderSkin skin = new SliderSkin(timeSlider);
     	timeSlider.setSkin(skin);
+    	
+    	PseudoClass active = PseudoClass.getPseudoClass("active");
+    	loopButton.setOnMouseClicked(x -> {
+    		MusicPlayer.toggleLoop();
+    		loopButton.pseudoClassStateChanged(active, MusicPlayer.isLoopActive());
+    	});
+    	shuffleButton.setOnMouseClicked(x -> {
+    		MusicPlayer.toggleShuffle();
+    		shuffleButton.pseudoClassStateChanged(active, MusicPlayer.isShuffleActive());
+    	});
     	
         timeSlider.valueChangingProperty().addListener(
             (slider, wasChanging, isChanging) -> {
@@ -108,6 +104,7 @@ public class MainController implements Initializable {
                 }
             }
         );
+
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()
@@ -133,28 +130,6 @@ public class MainController implements Initializable {
         } else if (styles.get(0).equals("bottomBarItem")) {
             loadView(eventSource.getId());
         }
-    }
-    
-    @FXML
-    private void navigateToCurrentSong() {
-    	
-    	Optional<Node> previous = sideBar.getChildren().stream()
-                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-
-        if (previous.isPresent()) {
-            HBox previousItem = (HBox)previous.get();
-            previousItem.getStyleClass().setAll("sideBarItem");
-        }
-        
-        sideBar.getChildren().get(2).getStyleClass().setAll("sideBarItemSelected");
-            
-        ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
-        Song song = MusicPlayer.getNowPlaying();
-        Artist artist = Library.getArtist(song.getArtist());
-        Album album = Library.getAlbum(song.getAlbum());
-        artistsMainController.selectArtist(artist);
-        artistsMainController.selectAlbum(album);
-        artistsMainController.selectSong(song);
     }
 
     @FXML
@@ -190,14 +165,6 @@ public class MainController implements Initializable {
     }
     
     @FXML
-    private void letterClicked(Event e) {
-    	
-    	Label eventSource = ((Label)e.getSource());
-    	char letter = eventSource.getText().charAt(0);
-    	subViewController.scroll(letter);
-    }
-    
-    @FXML
     private void loopToggle() {
     	
     }
@@ -212,31 +179,19 @@ public class MainController implements Initializable {
     	
     }
     
+    public Initializable getSubViewController() {
+    	
+    	return subViewController;
+    }
+    
     public ScrollPane getScrollPane() {
+    	
     	return this.subViewRoot;
     }
 
-    public Scrollable loadView(String viewName) {
+    public Initializable loadView(String viewName) {
 
         try {
-        	
-        	switch (viewName.toLowerCase()) {
-        	case "artists":
-        	case "artistsmain":
-        	case "albums":
-        	case "songs":
-        		if (!(subViewController instanceof ArtistsController
-        			|| subViewController instanceof ArtistsMainController
-        			|| subViewController instanceof AlbumsController
-        			|| subViewController instanceof SongsController)) {
-        			loadLettersAnimation.play();	
-        		}
-        		break;
-        	default:
-        		letterBox.setPrefHeight(0);
-        		letterBox.setOpacity(0);
-        		letterSeparator.setOpacity(0);
-        	}
         	
             String fileName = viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + ".fxml";
             
@@ -393,17 +348,6 @@ public class MainController implements Initializable {
                 subViewRoot.getContent().setTranslateY(collapsedHeight);
             }
             subViewRoot.getContent().setOpacity(frac);
-        }
-    };
-    
-    private Animation loadLettersAnimation = new Transition() {
-    	{
-            setCycleDuration(Duration.millis(1000));
-        }
-        protected void interpolate(double frac) {
-        	letterBox.setPrefHeight(50);
-    		letterBox.setOpacity(frac);
-    		letterSeparator.setOpacity(frac);
         }
     };
 }
