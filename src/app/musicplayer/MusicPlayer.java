@@ -100,6 +100,38 @@ public class MusicPlayer extends Application {
             Library.getAlbums();
             Library.getArtists();
             Library.getPlaylists();
+            nowPlayingList = Library.loadPlayingList();
+            
+            if (nowPlayingList.isEmpty()) {
+            	
+            	Artist artist = Library.getArtists().get(0);
+            	
+            	for (Album album : artist.getAlbums()) {
+            		nowPlayingList.addAll(album.getSongs());
+            	}
+            	
+            	Collections.sort(nowPlayingList, (first, second) -> {
+                    Album firstAlbum = Library.getAlbum(first.getAlbum());
+                    Album secondAlbum = Library.getAlbum(second.getAlbum());
+                    if (firstAlbum.compareTo(secondAlbum) != 0) {
+                        return firstAlbum.compareTo(secondAlbum);
+                    } else {
+                        return first.compareTo(second);
+                    }
+                });
+            }
+            
+            nowPlaying = nowPlayingList.get(0);
+            nowPlayingIndex = nowPlayingList.indexOf(0);
+            nowPlaying.setPlaying(true);
+            timer = new Timer();
+            timerCounter = 0;
+            secondsPlayed = 0;
+            String path = nowPlaying.getLocation();
+            Media media = new Media(Paths.get(path).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setVolume(0.5);
+            mediaPlayer.setOnEndOfMedia(new SongSkipper());
             
             File imgFolder = new File(Resources.JAR + "/img");
         	if (!imgFolder.exists()) {
@@ -169,14 +201,14 @@ public class MusicPlayer extends Application {
         @Override
         public void run() {
             Platform.runLater(() -> {
-                if (timerCounter < length && !mainController.isTimeSliderPressed()) {
+                if (timerCounter < length) {
                     if (++timerCounter % 4 == 0) {
                         mainController.updateTimeLabels();
                         secondsPlayed++;
-                    } // End if
-                    mainController.updateTimeSlider();
-                } else {
-                	timerCounter++;
+                    }
+                    if (!mainController.isTimeSliderPressed()) {
+                    	mainController.updateTimeSlider();
+                    }
                 }
             });
         } // End run()
@@ -321,6 +353,7 @@ public class MusicPlayer extends Application {
 
     public static void setNowPlayingList(List<Song> list) {
         nowPlayingList = new ArrayList<Song>(list);
+        Library.savePlayingList();
     }
 
     public static Song getNowPlaying() {

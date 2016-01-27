@@ -126,6 +126,11 @@ public class MainController implements Initializable {
         	Label label = (Label)node;
         	label.prefWidthProperty().bind(letterBox.widthProperty().subtract(50).divide(26).subtract(1));
         }
+        
+        updateNowPlayingButton();
+        initializeTimeSlider();
+        initializeTimeLabels();
+        
         // Loads the default view: artists.
         loadView("artists");
     } // End initialize()

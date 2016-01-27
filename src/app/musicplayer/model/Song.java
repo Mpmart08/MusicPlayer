@@ -211,7 +211,6 @@ public final class Song implements Comparable<Song> {
 
         });
 
-        thread.setDaemon(true);
         thread.start();
     }
 
