@@ -106,7 +106,7 @@
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-    -fx-padding: 15px;
+    -fx-padding: 15;
 }
 
 .backSliderTrack {
@@ -116,6 +116,10 @@
 
 .frontSliderTrack {
     -fx-background-color: white;
+}
+
+.block {
+    -fx-background-color: rgb(52, 109, 207);
 }
 
 .scroll-pane, .scroll-pane > .viewport {

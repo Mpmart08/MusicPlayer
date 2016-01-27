@@ -20,6 +20,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -28,7 +32,10 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import app.musicplayer.MusicPlayer;
 import app.musicplayer.util.ImportMusicTask;
 import app.musicplayer.util.Resources;
 import javafx.collections.FXCollections;
@@ -290,7 +297,7 @@ public final class Library {
                     } else if (reader.isStartElement()) {
 
                         element = reader.getName().getLocalPart();
-                        if (element == "playlists") {
+                        if (element.equals("playlists")) {
                             isPlaylist = true;
                         }
 
@@ -316,6 +323,105 @@ public final class Library {
             }
         }
         return playlists;
+    }
+    
+    public static ArrayList<Song> loadPlayingList() {
+    	
+    	ArrayList<Song> nowPlayingList = new ArrayList<Song>();
+    	
+    	try {
+
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+
+            String element = "";
+            boolean isNowPlayingList = false;
+
+            while(reader.hasNext()) {
+
+                reader.next();
+
+                if (reader.isWhiteSpace()) {
+
+                    continue;
+
+                } else if (reader.isCharacters() && isNowPlayingList) {
+
+                    String value = reader.getText();
+
+                    if (element.equals(ID)) {
+                    	nowPlayingList.add(getSong(Integer.parseInt(value)));
+                    }
+
+                } else if (reader.isStartElement()) {
+
+                    element = reader.getName().getLocalPart();
+                    if (element.equals("nowPlayingList")) {
+                        isNowPlayingList = true;
+                    }
+
+                } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("nowPlayingList")) {
+
+                    reader.close();
+                    break;
+                }
+            }
+            
+            reader.close();
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+    	
+    	return nowPlayingList;
+    }
+    
+    public static void savePlayingList() {
+    	
+    	Thread thread = new Thread(() -> {
+
+            try {
+
+                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+
+                XPathFactory xPathfactory = XPathFactory.newInstance();
+                XPath xpath = xPathfactory.newXPath();
+
+                XPathExpression expr = xpath.compile("/library/nowPlayingList");
+                Node playingList = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+                
+                NodeList nodes = playingList.getChildNodes();
+                while (nodes.getLength() > 0) {
+                	playingList.removeChild(nodes.item(0));
+                }
+
+                for (Song song : MusicPlayer.getNowPlayingList()) {
+                	Element id = doc.createElement(ID);
+                	id.setTextContent(Integer.toString(song.getId()));
+                	playingList.appendChild(id);
+                }
+
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                DOMSource source = new DOMSource(doc);
+                File xmlFile = new File(Resources.JAR + "library.xml");
+                StreamResult result = new StreamResult(xmlFile);
+                transformer.transform(source, result);
+
+            } catch (Exception ex) {
+
+                ex.printStackTrace();
+            }
+
+        });
+
+        thread.start();
     }
     
     // GETTERS
@@ -379,18 +485,20 @@ public final class Library {
         Element library = doc.createElement("library");
         Element songs = doc.createElement("songs");
         Element playlists = doc.createElement("playlists");
+        Element nowPlayingList = doc.createElement("nowPlayingList");
 
         doc.appendChild(library);
         library.appendChild(songs);
         library.appendChild(playlists);
+        library.appendChild(nowPlayingList);
 
         int id = 0;
         File directory = new File(Paths.get(path).toUri());
         getMaxProgress(directory);
         Library.task.updateProgress(id, Library.maxProgress);
-
+        
         writeXML(directory, doc, songs, id);
-
+        
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");

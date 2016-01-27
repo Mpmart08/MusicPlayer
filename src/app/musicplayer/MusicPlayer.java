@@ -100,6 +100,38 @@ public class MusicPlayer extends Application {
             Library.getAlbums();
             Library.getArtists();
             Library.getPlaylists();
+            nowPlayingList = Library.loadPlayingList();
+            
+            if (nowPlayingList.isEmpty()) {
+            	
+            	Artist artist = Library.getArtists().get(0);
+            	
+            	for (Album album : artist.getAlbums()) {
+            		nowPlayingList.addAll(album.getSongs());
+            	}
+            	
+            	Collections.sort(nowPlayingList, (first, second) -> {
+                    Album firstAlbum = Library.getAlbum(first.getAlbum());
+                    Album secondAlbum = Library.getAlbum(second.getAlbum());
+                    if (firstAlbum.compareTo(secondAlbum) != 0) {
+                        return firstAlbum.compareTo(secondAlbum);
+                    } else {
+                        return first.compareTo(second);
+                    }
+                });
+            }
+            
+            nowPlaying = nowPlayingList.get(0);
+            nowPlayingIndex = nowPlayingList.indexOf(0);
+            nowPlaying.setPlaying(true);
+            timer = new Timer();
+            timerCounter = 0;
+            secondsPlayed = 0;
+            String path = nowPlaying.getLocation();
+            Media media = new Media(Paths.get(path).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setVolume(0.5);
+            mediaPlayer.setOnEndOfMedia(new SongSkipper());
             
             File imgFolder = new File(Resources.JAR + "/img");
         	if (!imgFolder.exists()) {
@@ -169,14 +201,14 @@ public class MusicPlayer extends Application {
         @Override
         public void run() {
             Platform.runLater(() -> {
-                if (timerCounter < length && !mainController.isTimeSliderPressed()) {
+                if (timerCounter < length) {
                     if (++timerCounter % 4 == 0) {
                         mainController.updateTimeLabels();
                         secondsPlayed++;
-                    } // End if
-                    mainController.updateTimeSlider();
-                } else {
-                	timerCounter++;
+                    }
+                    if (!mainController.isTimeSliderPressed()) {
+                    	mainController.updateTimeSlider();
+                    }
                 }
             });
         } // End run()
@@ -229,10 +261,10 @@ public class MusicPlayer extends Application {
      * Plays selected song.
      */
     public static void play() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+        if (mediaPlayer != null && !isPlaying()) {
             mediaPlayer.play();
             timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
-            mainController.updatePlayPauseIcon();
+            mainController.updatePlayPauseIcon(true);
         }
     }
 
@@ -240,11 +272,11 @@ public class MusicPlayer extends Application {
      * Pauses selected song.
      */
     public static void pause() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+        if (isPlaying()) {
             mediaPlayer.pause();
             timer.cancel();
             timer = new Timer();
-            mainController.updatePlayPauseIcon();
+            mainController.updatePlayPauseIcon(false);
         }
     }
 
@@ -267,26 +299,24 @@ public class MusicPlayer extends Application {
      */
     public static void skip() {
         if (nowPlayingIndex < nowPlayingList.size() - 1) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
             setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
-            play();
+            if (isPlaying) {
+            	play();
+            }
         } else if (isLoopActive) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
         	nowPlayingIndex = 0;
         	setNowPlaying(nowPlayingList.get(nowPlayingIndex));
-            play();
+        	if (isPlaying) {
+            	play();
+            }
         } else {
-            updatePlayCount();
-            timer.cancel();
-            timer = new Timer();
-            mediaPlayer.stop();
-            mediaPlayer = null;
-            nowPlayingList = null;
+        	mainController.updatePlayPauseIcon(false);
             nowPlayingIndex = 0;
-            nowPlaying.setPlaying(false);
-            nowPlaying = null;
-            mainController.initializeTimeSlider();
-            mainController.initializeTimeLabels();
-            mainController.updateNowPlayingButton();
-            mainController.updatePlayPauseIcon();
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex));
         }
     }
 
@@ -308,7 +338,7 @@ public class MusicPlayer extends Application {
      * Checks if a song is playing.
      */
     public static boolean isPlaying() {
-        return mediaPlayer == null || mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+        return mediaPlayer != null && MediaPlayer.Status.PLAYING.equals(mediaPlayer.getStatus());
     }
     
     // GETTERS AND SETTERS
@@ -323,6 +353,7 @@ public class MusicPlayer extends Application {
 
     public static void setNowPlayingList(List<Song> list) {
         nowPlayingList = new ArrayList<Song>(list);
+        Library.savePlayingList();
     }
 
     public static Song getNowPlaying() {
@@ -354,11 +385,9 @@ public class MusicPlayer extends Application {
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setVolume(0.5);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
-            Platform.runLater(() -> {
-                mainController.updateNowPlayingButton();
-                mainController.initializeTimeSlider();
-                mainController.initializeTimeLabels();
-            });
+            mainController.updateNowPlayingButton();
+            mainController.initializeTimeSlider();
+            mainController.initializeTimeLabels();
         }
     }
 
