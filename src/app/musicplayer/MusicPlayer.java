@@ -229,10 +229,10 @@ public class MusicPlayer extends Application {
      * Plays selected song.
      */
     public static void play() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+        if (mediaPlayer != null && !isPlaying()) {
             mediaPlayer.play();
             timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
-            mainController.updatePlayPauseIcon();
+            mainController.updatePlayPauseIcon(true);
         }
     }
 
@@ -240,11 +240,11 @@ public class MusicPlayer extends Application {
      * Pauses selected song.
      */
     public static void pause() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+        if (isPlaying()) {
             mediaPlayer.pause();
             timer.cancel();
             timer = new Timer();
-            mainController.updatePlayPauseIcon();
+            mainController.updatePlayPauseIcon(false);
         }
     }
 
@@ -267,26 +267,24 @@ public class MusicPlayer extends Application {
      */
     public static void skip() {
         if (nowPlayingIndex < nowPlayingList.size() - 1) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
             setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
-            play();
+            if (isPlaying) {
+            	play();
+            }
         } else if (isLoopActive) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
         	nowPlayingIndex = 0;
         	setNowPlaying(nowPlayingList.get(nowPlayingIndex));
-            play();
+        	if (isPlaying) {
+            	play();
+            }
         } else {
-            updatePlayCount();
-            timer.cancel();
-            timer = new Timer();
-            mediaPlayer.stop();
-            mediaPlayer = null;
-            nowPlayingList = null;
+        	mainController.updatePlayPauseIcon(false);
             nowPlayingIndex = 0;
-            nowPlaying.setPlaying(false);
-            nowPlaying = null;
-            mainController.initializeTimeSlider();
-            mainController.initializeTimeLabels();
-            mainController.updateNowPlayingButton();
-            mainController.updatePlayPauseIcon();
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex));
         }
     }
 
@@ -308,7 +306,7 @@ public class MusicPlayer extends Application {
      * Checks if a song is playing.
      */
     public static boolean isPlaying() {
-        return mediaPlayer == null || mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+        return mediaPlayer != null && MediaPlayer.Status.PLAYING.equals(mediaPlayer.getStatus());
     }
     
     // GETTERS AND SETTERS
@@ -354,11 +352,9 @@ public class MusicPlayer extends Application {
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setVolume(0.5);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
-            Platform.runLater(() -> {
-                mainController.updateNowPlayingButton();
-                mainController.initializeTimeSlider();
-                mainController.initializeTimeLabels();
-            });
+            mainController.updateNowPlayingButton();
+            mainController.initializeTimeSlider();
+            mainController.initializeTimeLabels();
         }
     }
 

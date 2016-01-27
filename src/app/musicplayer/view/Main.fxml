@@ -184,8 +184,14 @@
                <center>
                   <StackPane BorderPane.alignment="CENTER">
                      <children>
-                        <Region maxHeight="-Infinity" minHeight="-Infinity" prefHeight="2.0" styleClass="backSliderTrack" StackPane.alignment="CENTER_LEFT" />
-                        <Region fx:id="sliderTrack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="2.0" styleClass="frontSliderTrack" StackPane.alignment="CENTER_LEFT" />
+                        <Region fx:id="backSliderTrack" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="2.0" styleClass="backSliderTrack" StackPane.alignment="CENTER_LEFT" />
+                        <Region fx:id="frontSliderTrack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="2.0" styleClass="frontSliderTrack" StackPane.alignment="CENTER_LEFT" />
+                        <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="15.0" styleClass="block" StackPane.alignment="CENTER_LEFT">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </Region>
+                        <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="15.0" styleClass="block" StackPane.alignment="CENTER_RIGHT" />
                         <Slider fx:id="timeSlider" blockIncrement="1.0" pickOnBounds="false" StackPane.alignment="CENTER_LEFT" />
                      </children>
                   </StackPane>

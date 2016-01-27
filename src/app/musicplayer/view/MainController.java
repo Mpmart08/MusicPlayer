@@ -3,6 +3,7 @@ package app.musicplayer.view;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
@@ -16,6 +17,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -43,6 +45,7 @@ public class MainController implements Initializable {
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
     private Scrollable subViewController;
+    private SliderSkin skin;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -52,7 +55,7 @@ public class MainController implements Initializable {
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
     @FXML private Slider timeSlider;
-    @FXML private Region sliderTrack;
+    @FXML private Region frontSliderTrack;
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
 
@@ -68,20 +71,14 @@ public class MainController implements Initializable {
     @FXML private Pane volumeButton;
     @FXML private HBox controlBox;
     
-    /**
-     * Creates a MainController Object.
-     * Constructor is called before the initialize() method.
-     */
-    public MainController() {}
-    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
     	controlBox.getChildren().remove(2);
     	
-    	sliderTrack.prefWidthProperty().bind(timeSlider.widthProperty().multiply(timeSlider.valueProperty().divide(timeSlider.maxProperty())));
+    	frontSliderTrack.prefWidthProperty().bind(timeSlider.widthProperty().multiply(timeSlider.valueProperty().divide(timeSlider.maxProperty())));
     	
-    	SliderSkin skin = new SliderSkin(timeSlider);
+    	skin = new SliderSkin(timeSlider);
     	timeSlider.setSkin(skin);
     	
     	PseudoClass active = PseudoClass.getPseudoClass("active");
@@ -111,7 +108,7 @@ public class MainController implements Initializable {
 
                 double previous = oldValue.doubleValue();
                 double current = newValue.doubleValue();
-                if (!timeSlider.isValueChanging() && current != previous + 1) {
+                if (!timeSlider.isValueChanging() && current != previous + 1 && !isTimeSliderPressed()) {
 
                     int seconds = (int) Math.round(current / 4.0);
                     timeSlider.setValue(seconds * 4);
@@ -119,6 +116,11 @@ public class MainController implements Initializable {
                 }
             }
         );
+        
+        unloadLettersAnimation.setOnFinished(x -> {
+        	letterBox.setPrefHeight(0);
+        	letterSeparator.setPrefHeight(0);
+		});
         
         for (Node node : letterBox.getChildren()) {
         	Label label = (Label)node;
@@ -219,8 +221,7 @@ public class MainController implements Initializable {
     }
     
     public boolean isTimeSliderPressed() {
-    	
-    	return timeSlider.lookup(".thumb").isPressed();
+    	return skin.getThumb().isPressed() || skin.getTrack().isPressed();
     }
     
     public Scrollable getSubViewController() {
@@ -236,33 +237,101 @@ public class MainController implements Initializable {
 
         try {
         	
+        	boolean loadLetters = false;
+        	boolean unloadLetters = false;
+        	
         	switch (viewName.toLowerCase()) {
         	case "artists":
         	case "artistsmain":
         	case "albums":
         	case "songs":
-        		if (!(subViewController instanceof ArtistsController
+        		if (subViewController instanceof ArtistsController
         			|| subViewController instanceof ArtistsMainController
         			|| subViewController instanceof AlbumsController
-        			|| subViewController instanceof SongsController)) {
-        			loadLettersAnimation.play();	
+        			|| subViewController instanceof SongsController) {
+        			loadLetters = false;
+        			unloadLetters = false;
+        		} else {
+        			loadLetters = true;
+        			unloadLetters = false;
         		}
         		break;
         	default:
-        		letterBox.setPrefHeight(0);
-        		letterBox.setOpacity(0);
-        		letterSeparator.setOpacity(0);
+        		if (subViewController instanceof ArtistsController
+        			|| subViewController instanceof ArtistsMainController
+        			|| subViewController instanceof AlbumsController
+        			|| subViewController instanceof SongsController) {
+        			loadLetters = false;
+        			unloadLetters = true;
+        		} else {
+        			loadLetters = false;
+        			unloadLetters = false;
+        		}
+        		break;
         	}
+	        
+	        final boolean loadLettersFinal = loadLetters;
+	        final boolean unloadLettersFinal = unloadLetters;
         	
             String fileName = viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + ".fxml";
             
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
             Node view = (Node) loader.load();
-            subViewRoot.setContent(view);
-            if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                loadViewAnimation.stop();
-            }
-            loadViewAnimation.play();
+            
+            CountDownLatch latch = new CountDownLatch(1);
+            
+            Task<Void> task = new Task<Void>() {
+	        	@Override protected Void call() throws Exception {
+	        		subViewRoot.setVisible(false);
+		        	subViewRoot.setContent(view);
+		        	latch.countDown();
+		        	return null;
+	        	}
+	        };
+	        
+	        task.setOnSucceeded(x -> {
+	        	subViewRoot.setVisible(true);
+	        	if (loadLettersFinal) {
+	        		loadLettersAnimation.play();
+	        	}
+	        	if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    loadViewAnimation.stop();
+                }
+                loadViewAnimation.play();
+	        });
+	        
+	        Thread thread = new Thread(() -> {
+	        	Platform.runLater(task);
+	        	try {
+					latch.await();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	        });
+            
+            unloadViewAnimation.setOnFinished(x -> {
+            	thread.start();
+            });
+            
+            if (subViewRoot.getContent() != null) {
+            	if (unloadLettersFinal) {
+            		unloadLettersAnimation.play();
+            	}
+	            if (unloadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+	            	unloadViewAnimation.stop();
+	            }
+	            unloadViewAnimation.play();
+        	} else {
+        		subViewRoot.setContent(view);
+        		if (loadLettersFinal) {
+        			loadLettersAnimation.play();
+        		}
+        		if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+                    loadViewAnimation.stop();
+                }
+                loadViewAnimation.play();
+        	}
+            
             subViewController = loader.getController();
             return subViewController;
 
@@ -272,16 +341,14 @@ public class MainController implements Initializable {
         }
     }
 
-    public void updatePlayPauseIcon() {
+    public void updatePlayPauseIcon(boolean isPlaying) {
 
-    	Platform.runLater(() -> {
-    		controlBox.getChildren().remove(1);
-    		if (MusicPlayer.isPlaying()) {
-            	controlBox.getChildren().add(1, playButton);
-            } else {
-            	controlBox.getChildren().add(1, pauseButton);
-            }
-    	});
+    	controlBox.getChildren().remove(1);
+    	if (isPlaying) {
+           	controlBox.getChildren().add(1, pauseButton);
+        } else {
+          	controlBox.getChildren().add(1, playButton);
+        }
     }
 
     public void updateNowPlayingButton() {
@@ -412,6 +479,17 @@ public class MainController implements Initializable {
         }
     };
     
+    private Animation unloadViewAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(100));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
+            subViewRoot.getContent().setTranslateY(expandedHeight - curHeight);
+            subViewRoot.getContent().setOpacity(1 - frac);
+        }
+    };
+    
     private Animation loadLettersAnimation = new Transition() {
     	{
             setCycleDuration(Duration.millis(1000));
@@ -419,7 +497,18 @@ public class MainController implements Initializable {
         protected void interpolate(double frac) {
         	letterBox.setPrefHeight(50);
     		letterBox.setOpacity(frac);
+    		letterSeparator.setPrefHeight(25);
     		letterSeparator.setOpacity(frac);
+        }
+    };
+    
+    private Animation unloadLettersAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(100));
+        }
+        protected void interpolate(double frac) {
+    		letterBox.setOpacity(1.0 - frac);
+    		letterSeparator.setOpacity(1.0 - frac);
         }
     };
 }
