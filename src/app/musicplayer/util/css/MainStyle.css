@@ -118,8 +118,52 @@
     -fx-background-color: white;
 }
 
+.volumeSlider .thumb {
+    -fx-background-color: white;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 2;
+    -fx-border-color: rgb(52, 109, 207);
+    -fx-padding: 10;
+    -fx-shape: "
+        M 100, 100
+        m -75, 0
+        a 75,75 0 1,0 150,0
+        a 75,75 0 1,0 -150,0
+        ";
+}
+
+.volumeSlider .thumb:hover {
+    -fx-border-color: rgb(153, 181, 230);
+}
+
+.volumeSlider .thumb:pressed {
+    -fx-border-color: rgb(52, 109, 207);
+}
+
+.volumeSlider .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 15;
+}
+
+.backVolumeTrack {
+    -fx-background-color: #dadada;
+}
+
+.frontVolumeTrack {
+    -fx-background-color: rgb(52, 109, 207);
+}
+
 .block {
     -fx-background-color: rgb(52, 109, 207);
+}
+
+.popup {
+    -fx-background-color: #f2f2f2;
+    -fx-border-width: 2;
+    -fx-border-color: #dadada;
 }
 
 .scroll-pane, .scroll-pane > .viewport {

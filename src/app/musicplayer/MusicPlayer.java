@@ -48,8 +48,8 @@ public class MusicPlayer extends Application {
     private static boolean isLoopActive = false;
     private static boolean isShuffleActive = false;
     
-    private Stage stage;
-    private BorderPane view;
+    private static Stage stage;
+    private static BorderPane view;
 
     public static void main(String[] args) {
         Application.launch(MusicPlayer.class);
@@ -64,10 +64,10 @@ public class MusicPlayer extends Application {
         timerCounter = 0;
         secondsPlayed = 0;
 
-        this.stage = stage;
-        this.stage.setTitle("Music Player");
-        this.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Icon.png").toString()));
-        this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        MusicPlayer.stage = stage;
+        MusicPlayer.stage.setTitle("Music Player");
+        MusicPlayer.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Icon.png").toString()));
+        MusicPlayer.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
                 Platform.exit();
@@ -122,7 +122,7 @@ public class MusicPlayer extends Application {
             }
             
             nowPlaying = nowPlayingList.get(0);
-            nowPlayingIndex = nowPlayingList.indexOf(0);
+            nowPlayingIndex = 0;
             nowPlaying.setPlaying(true);
             timer = new Timer();
             timerCounter = 0;
@@ -182,6 +182,7 @@ public class MusicPlayer extends Application {
     		
     		// Gives the controller access to the music player main application.
     		mainController = loader.getController();
+    		mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
     		
     	} catch (Exception ex) {
     		ex.printStackTrace();
@@ -213,6 +214,10 @@ public class MusicPlayer extends Application {
             });
         } // End run()
     }// End TimeUpdater
+    
+    public static Stage getStage() {
+    	return stage;
+    }
     
     public static void toggleLoop() {
     	
@@ -330,7 +335,9 @@ public class MusicPlayer extends Application {
             seek(0);
         } else {
             setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
-            play();
+            if (isPlaying()) {
+            	play();
+            }
         }
     }
 
@@ -383,7 +390,7 @@ public class MusicPlayer extends Application {
             String path = song.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setVolume(0.5);
+            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
             mainController.updateNowPlayingButton();
             mainController.initializeTimeSlider();

@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
@@ -34,7 +35,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class MainController implements Initializable {
@@ -46,6 +50,9 @@ public class MainController implements Initializable {
     private double collapsedHeight = 0;
     private Scrollable subViewController;
     private SliderSkin skin;
+    private Stage volumePopup;
+    private Slider volumeSlider;
+    private Region frontVolumeTrack;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -55,7 +62,7 @@ public class MainController implements Initializable {
     @FXML private Label nowPlayingTitle;
     @FXML private Label nowPlayingArtist;
     @FXML private Slider timeSlider;
-    @FXML private Region frontSliderTrack;
+    @FXML private Region frontSliderTrack;    
     @FXML private Label timePassed;
     @FXML private Label timeRemaining;
 
@@ -80,6 +87,8 @@ public class MainController implements Initializable {
     	
     	skin = new SliderSkin(timeSlider);
     	timeSlider.setSkin(skin);
+    	
+    	createVolumePopup();
     	
     	PseudoClass active = PseudoClass.getPseudoClass("active");
     	loopButton.setOnMouseClicked(x -> {
@@ -222,7 +231,14 @@ public class MainController implements Initializable {
     
     @FXML
     private void volumeClick() {
-    	
+    	if (!volumePopup.isShowing()) {
+    		volumePopup.show();
+    		popupShowAnimation.play();
+    	}
+    }
+    
+    public Slider getVolumeSlider() {
+    	return volumeSlider;
     }
     
     public boolean isTimeSliderPressed() {
@@ -444,7 +460,65 @@ public class MainController implements Initializable {
                 + (isSideBarExpanded ? "LeftArrowIcon.png" : "RightArrowIcon.png")).toString()));
     }
     
+    private void createVolumePopup() {
+    	
+    	try {
+    		
+    		Stage stage = MusicPlayer.getStage();
+        	FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "VolumePopup.fxml"));
+        	StackPane view = (StackPane) loader.load();
+        	volumeSlider = (Slider) view.getChildren().get(2);
+        	frontVolumeTrack = (Region) view.getChildren().get(1);
+        	SliderSkin skin = new SliderSkin(volumeSlider);
+        	volumeSlider.setSkin(skin);
+        	frontVolumeTrack.prefWidthProperty().bind(volumeSlider.widthProperty().subtract(30).multiply(volumeSlider.valueProperty().divide(volumeSlider.maxProperty())));
+        	volumeSlider.setValue(volumeSlider.getMax() - 1);
+        	volumeSlider.setValue(volumeSlider.getMax());
+        	Stage popup = new Stage();
+        	popup.setScene(new Scene(view));
+        	popup.initStyle(StageStyle.UNDECORATED);
+        	popup.initOwner(stage);
+        	popup.setX(stage.getWidth() - 270);
+        	popup.setY(stage.getHeight() - 120);
+        	popup.focusedProperty().addListener((x, wasFocused, isFocused) -> {
+        		if (wasFocused && !isFocused) {
+        			popupHideAnimation.play();
+        		}
+        	});
+        	popupHideAnimation.setOnFinished(x -> {
+        		popup.hide();
+        	});
+        	
+        	popup.show();
+        	popup.hide();
+        	volumePopup = popup;
+        	
+    	} catch (Exception ex) {
+    		
+    		ex.printStackTrace();
+    	}
+    }
+    
     // ANIMATIONS
+    
+    private Animation popupShowAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(250));
+        }
+    	
+        protected void interpolate(double frac) {
+        	volumePopup.setOpacity(frac);
+        }
+    };
+    
+    private Animation popupHideAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(250));
+        }
+        protected void interpolate(double frac) {
+            volumePopup.setOpacity(1.0 - frac);
+        }
+    };
     
     private Animation collapseAnimation = new Transition() {
         {

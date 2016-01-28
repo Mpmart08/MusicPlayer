@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" styleClass="popup" stylesheets="@/app/musicplayer/util/css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Region fx:id="backVolumeTrack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="2.0" prefWidth="190.0" styleClass="backVolumeTrack" StackPane.alignment="CENTER_LEFT">
+         <StackPane.margin>
+            <Insets left="30.0" right="30.0" />
+         </StackPane.margin></Region>
+      <Region fx:id="frontVolumeTrack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="2.0" styleClass="frontVolumeTrack" StackPane.alignment="CENTER_LEFT">
+         <StackPane.margin>
+            <Insets left="30.0" right="30.0" />
+         </StackPane.margin></Region>
+      <Slider fx:id="volumeSlider" blockIncrement="1.0" maxWidth="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefWidth="220.0" styleClass="volumeSlider" value="100.0" StackPane.alignment="CENTER">
+         <StackPane.margin>
+            <Insets />
+         </StackPane.margin></Slider>
+   </children>
+</StackPane>
