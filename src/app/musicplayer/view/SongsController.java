@@ -11,30 +11,73 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Scrollable;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Duration;
 
 public class SongsController implements Initializable, Scrollable {
 
-    @FXML private TableView<Song> tableView;
+    @FXML private ScrollPane scrollPane;
+	@FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
     @FXML private TableColumn<Song, String> titleColumn;
     @FXML private TableColumn<Song, String> artistColumn;
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    private String currentSort = "artist"; 
+    
+    // TODO: GET CURRENT SONG SORT (BY SONG TITLE, ARTIST, ALBUM)
+    
+    @Override
+    public void scroll(char letter) {
+    	// Gets the current sorting of the song table.
+    	// getSortPolicy getSortOrder getOnSort
+    	
+    	ObservableList<Song> songTableItems = tableView.getItems();
+    	
+    	int selectedCell = 0;
+    	
+    	for (int i = 0; i < songTableItems.size(); i++) {
+    		// Removes article from artist title and compares it to selected letter.
+    		String artistTitle = songTableItems.get(i).getArtist();
+    		char firstLetter = artistTitle.charAt(0);
+    		
+    		if (firstLetter < letter) {
+        		selectedCell++;
+    		}
+    	}
+    	
+    	double startVvalue = scrollPane.getVvalue();
+    	double finalVvalue = (double) (selectedCell * 50) / (tableView.getHeight() - scrollPane.getHeight());
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollPane.setVvalue(vValue);
+            }
+        };
+        scrollAnimation.play();
+    	
+
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        ObservableList<Song> songs = Library.getSongs();
 
         titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
         artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
@@ -55,8 +98,18 @@ public class SongsController implements Initializable, Scrollable {
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
-
+        
+        lengthColumn.setSortable(false);
+        playsColumn.setSortable(false);
+        
+        // Retrieves the list of songs in the library and adds them to the table.
+        ObservableList<Song> songs = Library.getSongs();
         tableView.setItems(songs);
+        
+        // Sets the table view height to the height required to fit the scroll pane with all the artists.
+        // This is important so that the scrolling is done in the scroll pane which is needed for the scroll animation.
+        tableView.setPrefHeight(50*songs.size());
+        tableView.setMinHeight(tableView.getPrefHeight());
 
         tableView.setRowFactory(x -> {
             TableRow<Song> row = new TableRow<Song>();
@@ -105,7 +158,4 @@ public class SongsController implements Initializable, Scrollable {
         	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
         });
     }
-    
-    @Override
-    public void scroll(char letter) {};
 }
