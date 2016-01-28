@@ -55,10 +55,10 @@ public final class Library {
     private static final String LOCATION = "location";
     private static final String SONGID = "songId";
 
-    private static ObservableList<Song> songs;
-    private static ObservableList<Artist> artists;
-    private static ObservableList<Album> albums;
-    private static ObservableList<Playlist> playlists;
+    private static ArrayList<Song> songs;
+    private static ArrayList<Artist> artists;
+    private static ArrayList<Album> albums;
+    private static ArrayList<Playlist> playlists;
     private static int maxProgress;
     private static ImportMusicTask<Boolean> task;
 
@@ -69,7 +69,7 @@ public final class Library {
     public static ObservableList<Song> getSongs() {
     	// If the observable list of songs has not been initialized.
         if (songs == null) {
-            songs = FXCollections.observableArrayList();
+            songs = new ArrayList<Song>();
             
             try {
 
@@ -161,7 +161,7 @@ public final class Library {
                 ex.printStackTrace();
             }
         } // End if (songs == null)
-        return songs;
+        return FXCollections.observableArrayList(songs);
     }
     
     /**
@@ -176,7 +176,7 @@ public final class Library {
                 getSongs();
             }
             
-            albums = FXCollections.observableArrayList();
+            albums = new ArrayList<Album>();
             
             TreeMap<String, List<Song>> albumMap = new TreeMap<String, List<Song>>(
                 songs.stream()
@@ -211,7 +211,7 @@ public final class Library {
                 }
             }
         }
-        return albums;
+        return FXCollections.observableArrayList(albums);
     } // End getAlbums()
     
     /**
@@ -226,7 +226,7 @@ public final class Library {
                 getAlbums();
             }
 
-            artists = FXCollections.observableArrayList();
+            artists = new ArrayList<Artist>();
 
             TreeMap<String, List<Album>> artistMap = new TreeMap<String, List<Album>>(
                 albums.stream()
@@ -245,14 +245,14 @@ public final class Library {
                 artists.add(new Artist(entry.getKey(), albums));
             }
         }
-        return artists;
+        return FXCollections.observableArrayList(artists);
     } // End getArtists()
 
     public static ObservableList<Playlist> getPlaylists() {
 
        if (playlists == null) {
 
-            playlists = FXCollections.observableArrayList();
+            playlists = new ArrayList<Playlist>();
 
             int id = 0;
             playlists.add(new MostPlayedPlaylist(id++));
@@ -322,7 +322,7 @@ public final class Library {
                 ex.printStackTrace();
             }
         }
-        return playlists;
+        return FXCollections.observableArrayList(playlists);
     }
     
     public static ArrayList<Song> loadPlayingList() {

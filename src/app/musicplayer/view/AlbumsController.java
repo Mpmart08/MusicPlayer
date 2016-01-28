@@ -163,7 +163,7 @@ public class AlbumsController implements Initializable, Scrollable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-		ObservableList<Album> albums = FXCollections.observableArrayList(Library.getAlbums());
+		ObservableList<Album> albums = Library.getAlbums();
 		Collections.sort(albums);
 
         int limit = (albums.size() < 25) ? albums.size() : 25;

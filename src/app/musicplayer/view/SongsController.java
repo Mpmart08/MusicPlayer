@@ -1,7 +1,6 @@
 package app.musicplayer.view;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
@@ -82,7 +81,7 @@ public class SongsController implements Initializable, Scrollable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    ArrayList<Song> songList = new ArrayList<Song>(Library.getSongs());
+                    ObservableList<Song> songList = Library.getSongs();
                     if (MusicPlayer.isShuffleActive()) {
                     	Collections.shuffle(songs);
                     	songs.remove(song);

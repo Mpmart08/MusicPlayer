@@ -12,7 +12,6 @@ import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -71,7 +70,7 @@ public class ArtistsController implements Initializable, Scrollable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
+        ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
 
         int limit = (artists.size() < 25) ? artists.size() : 25;

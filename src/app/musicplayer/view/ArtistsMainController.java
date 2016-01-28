@@ -211,7 +211,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
         albumList.setCellFactory(listView -> new AlbumCell());
         artistList.setCellFactory(listView -> new ArtistCell());
 
-        ObservableList<Artist> artists = FXCollections.observableArrayList(Library.getArtists());
+        ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
         
         // Sets the artist list height to the height required to fit the list view with all the artists.
