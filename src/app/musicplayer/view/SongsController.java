@@ -18,7 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -27,7 +27,6 @@ import javafx.util.Duration;
 
 public class SongsController implements Initializable, Scrollable {
 
-    @FXML private ScrollPane scrollPane;
 	@FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
     @FXML private TableColumn<Song, String> titleColumn;
@@ -35,6 +34,8 @@ public class SongsController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    private ScrollBar scrollBar;
     
     private String currentSort = "title";
     
@@ -45,6 +46,12 @@ public class SongsController implements Initializable, Scrollable {
     	// Gets the current sorting of the song table.
     	// getSortPolicy getSortOrder getOnSort
     	
+    	// Retrieves the table view scroll bar.
+    	if (scrollBar == null) {
+    		scrollBar = (ScrollBar) tableView.lookup(".scroll-bar");
+    	}
+    	
+    	// Retrieves songs from table.
     	ObservableList<Song> songTableItems = tableView.getItems();
     	
     	int selectedCell = 0;
@@ -65,32 +72,35 @@ public class SongsController implements Initializable, Scrollable {
 				}
         		
         	}
-    	} else if (currentSort.equals("album")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from artist title and compares it to selected letter.
-        		String songAlbum = songTableItems.get(i).getAlbum();
-        		char firstLetter = songAlbum.charAt(0);
-        		
-        		if (firstLetter < letter) {
-            		selectedCell++;
-        		}
-        	}
-    	} else {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from artist title and compares it to selected letter.
-        		String songArtist = songTableItems.get(i).getArtist();
-        		char firstLetter = songArtist.charAt(0);
-        		
-        		if (firstLetter < letter) {
-            		selectedCell++;
-        		}
-        	}
-    	}
+    	} 
+//    	else if (currentSort.equals("album")) {
+//        	for (int i = 0; i < songTableItems.size(); i++) {
+//        		// Removes article from artist title and compares it to selected letter.
+//        		String songAlbum = songTableItems.get(i).getAlbum();
+//        		char firstLetter = songAlbum.charAt(0);
+//        		
+//        		if (firstLetter < letter) {
+//            		selectedCell++;
+//        		}
+//        	}
+//    	} else {
+//        	for (int i = 0; i < songTableItems.size(); i++) {
+//        		// Removes article from artist title and compares it to selected letter.
+//        		String songArtist = songTableItems.get(i).getArtist();
+//        		char firstLetter = songArtist.charAt(0);
+//        		
+//        		if (firstLetter < letter) {
+//            		selectedCell++;
+//        		}
+//        	}
+//    	}
     	
-    	double startVvalue = scrollPane.getVvalue();
+    	double startVvalue = scrollBar.getValue();
+    	double finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - tableView.getHeight());
     	
-    	double finalVvalue = (double) (selectedCell * 50) / (tableView.getHeight() - scrollPane.getHeight()) + 
-    			50 / (tableView.getHeight() - scrollPane.getHeight());
+    	// TODO: DEBUG
+    	System.out.println("Start V Value: " + startVvalue);
+    	System.out.println("Final V Value: " + finalVvalue);
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -98,12 +108,10 @@ public class SongsController implements Initializable, Scrollable {
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollPane.setVvalue(vValue);
+                scrollBar.setValue(vValue);
             }
         };
         scrollAnimation.play();
-    	
-
     }
 
     @Override
@@ -194,11 +202,6 @@ public class SongsController implements Initializable, Scrollable {
         System.out.println("After sort");
         
         tableView.setItems(songs);
-        
-        // Sets the table view height to the height required to fit the scroll pane with all the artists.
-        // This is important so that the scrolling is done in the scroll pane which is needed for the scroll animation.
-        tableView.setPrefHeight(50*songs.size());
-        tableView.setMinHeight(tableView.getPrefHeight());
 
         tableView.setRowFactory(x -> {
             TableRow<Song> row = new TableRow<Song>();
@@ -246,5 +249,27 @@ public class SongsController implements Initializable, Scrollable {
         albumColumn.setComparator((first, second) -> {
         	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
         });
+    }
+    
+    private String removeArticle(String title) {
+
+        String arr[] = title.split(" ", 2);
+
+        if (arr.length < 2) {
+            return title;
+        } else {
+
+            String firstWord = arr[0];
+            String theRest = arr[1];
+
+            switch (firstWord) {
+                case "A":
+                case "An":
+                case "The":
+                    return theRest;
+                default:
+                    return title;
+            }
+        }
     }
 }
