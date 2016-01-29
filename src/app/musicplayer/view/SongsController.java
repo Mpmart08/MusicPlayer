@@ -35,65 +35,71 @@ public class SongsController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
     
+    // Initializes table view scroll bar.
     private ScrollBar scrollBar;
     
-    private String currentSort = "title";
-    
-    // TODO: GET CURRENT SONG SORT (BY SONG TITLE, ARTIST, ALBUM)
+    // Keeps track of which column is being used to sort table view
+    private String currentSortColumn = "titleColumn";
     
     @Override
     public void scroll(char letter) {
-    	// Gets the current sorting of the song table.
-    	// getSortPolicy getSortOrder getOnSort
+    	
+    	if (tableView.getSortOrder().size() > 0) {
+    		System.out.println("Column Id: " + tableView.getSortOrder().get(0).getId());
+    		currentSortColumn = tableView.getSortOrder().get(0).getId();
+    	}
+    	
+    	// Retrieves songs from table.
+    	ObservableList<Song> songTableItems = tableView.getItems();
+    	// Initializes counter for cells. Used to determine what cell to scroll to.
+    	int selectedCell = 0;
     	
     	// Retrieves the table view scroll bar.
     	if (scrollBar == null) {
     		scrollBar = (ScrollBar) tableView.lookup(".scroll-bar");
     	}
     	
-    	// Retrieves songs from table.
-    	ObservableList<Song> songTableItems = tableView.getItems();
-    	
-    	int selectedCell = 0;
-    	
-    	if (currentSort.equals("title")) {
+    	if (currentSortColumn.equals("titleColumn")) {
         	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from artist title and compares it to selected letter.
+        		// Gets song title and compares first letter to selected letter.
         		String songTitle = songTableItems.get(i).getTitle();
-        		
         		try {
 					char firstLetter = songTitle.charAt(0);
 					if (firstLetter < letter) {
 						selectedCell++;
 					}
 				} catch (NullPointerException npe) {
-					System.out.println("Null Song Title");
-//					npe.printStackTrace();
+//					System.out.println("Null Song Title");
 				}
         		
         	}
-    	} 
-//    	else if (currentSort.equals("album")) {
-//        	for (int i = 0; i < songTableItems.size(); i++) {
-//        		// Removes article from artist title and compares it to selected letter.
-//        		String songAlbum = songTableItems.get(i).getAlbum();
-//        		char firstLetter = songAlbum.charAt(0);
-//        		
-//        		if (firstLetter < letter) {
-//            		selectedCell++;
-//        		}
-//        	}
-//    	} else {
-//        	for (int i = 0; i < songTableItems.size(); i++) {
-//        		// Removes article from artist title and compares it to selected letter.
-//        		String songArtist = songTableItems.get(i).getArtist();
-//        		char firstLetter = songArtist.charAt(0);
-//        		
-//        		if (firstLetter < letter) {
-//            		selectedCell++;
-//        		}
-//        	}
-//    	}
+    	} else if (currentSortColumn.equals("artistColumn")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from song artist and compares it to selected letter.
+        		String songArtist = songTableItems.get(i).getArtist();
+        		try {
+					char firstLetter = removeArticle(songArtist).charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					}
+				} catch (NullPointerException npe) {
+					System.out.println("Null Song Artist");
+				}
+        	}
+    	} else if (currentSortColumn.equals("albumColumn")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from song album and compares it to selected letter.
+        		String songAlbum = songTableItems.get(i).getAlbum();
+        		try {
+					char firstLetter = removeArticle(songAlbum).charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					}
+				} catch (NullPointerException npe) {
+					System.out.println("Null Song Album");
+				}
+        	}
+    	}
     	
     	double startVvalue = scrollBar.getValue();
     	double finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - tableView.getHeight());
@@ -137,22 +143,14 @@ public class SongsController implements Initializable, Scrollable {
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
         
+        // TODO: GET COLUMN HEADER ON CLICK AND UPDATE currentSortColumn
+        
         lengthColumn.setSortable(false);
         playsColumn.setSortable(false);
         
-        // TODO:
-        // Updates the currentSort string which is helps determine which column is being used to sort the table.
-        
         // Retrieves the list of songs in the library, sorts them, and adds them to the table.
         ObservableList<Song> songs = Library.getSongs();
-        
-        if (songs == null) {
-        	System.out.println("Songs .equals null");
-        } else {
-        	System.out.println("Songs IS NOT null");
-        }
-        
-        System.out.println("Before sort");
+
         Collections.sort(songs, (Song x, Song y) -> {
         	// Song Title
         	if (x.getTitle() == null && y.getTitle() == null) {
@@ -179,7 +177,9 @@ public class SongsController implements Initializable, Scrollable {
         		// All other strings are before null.
         		return -1;
         	} else if (x.getArtist() != null && y.getArtist() != null) {
-        		return x.getArtist().compareTo(y.getArtist());
+        		String xArtist = x.getArtist();
+        		String yArtist = y.getArtist();
+        		return removeArticle(xArtist).compareTo(removeArticle(yArtist));
         	}
         	
         	// Song Album
@@ -193,13 +193,14 @@ public class SongsController implements Initializable, Scrollable {
         		// All other strings are before null.
         		return -1;
         	} else if (x.getAlbum() != null && y.getAlbum() != null) {
-        		return x.getAlbum().compareTo(y.getAlbum());
+        		String xAlbum = x.getAlbum();
+        		String yAlbum = y.getAlbum();
+        		return removeArticle(xAlbum).compareTo(removeArticle(yAlbum));
         	} else {
         		// Default case.
         		return x.getTitle().compareTo(y.getTitle());
         	}
         });
-        System.out.println("After sort");
         
         tableView.setItems(songs);
 
