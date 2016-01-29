@@ -38,21 +38,27 @@ public class SongsController implements Initializable, Scrollable {
     // Initializes table view scroll bar.
     private ScrollBar scrollBar;
     
-    // Keeps track of which column is being used to sort table view
+    // Keeps track of which column is being used to sort table view and in what order (ascending or descending)
     private String currentSortColumn = "titleColumn";
+    private String currentSortOrder = null;
     
     @Override
     public void scroll(char letter) {
     	
     	if (tableView.getSortOrder().size() > 0) {
-    		System.out.println("Column Id: " + tableView.getSortOrder().get(0).getId());
     		currentSortColumn = tableView.getSortOrder().get(0).getId();
+    		
+    		System.out.println(tableView.getSortOrder().get(0).getSortType().toString().toLowerCase());
+    		currentSortOrder = tableView.getSortOrder().get(0).getSortType().toString().toLowerCase();
+    		System.out.println("Current Sort Order: " + currentSortOrder);
+    		
     	}
     	
     	// Retrieves songs from table.
     	ObservableList<Song> songTableItems = tableView.getItems();
     	// Initializes counter for cells. Used to determine what cell to scroll to.
     	int selectedCell = 0;
+    	int selectedLetterCount = 0;
     	
     	// Retrieves the table view scroll bar.
     	if (scrollBar == null) {
@@ -67,6 +73,8 @@ public class SongsController implements Initializable, Scrollable {
 					char firstLetter = songTitle.charAt(0);
 					if (firstLetter < letter) {
 						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
 					}
 				} catch (NullPointerException npe) {
 //					System.out.println("Null Song Title");
@@ -81,6 +89,8 @@ public class SongsController implements Initializable, Scrollable {
 					char firstLetter = removeArticle(songArtist).charAt(0);
 					if (firstLetter < letter) {
 						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
 					}
 				} catch (NullPointerException npe) {
 					System.out.println("Null Song Artist");
@@ -94,6 +104,8 @@ public class SongsController implements Initializable, Scrollable {
 					char firstLetter = removeArticle(songAlbum).charAt(0);
 					if (firstLetter < letter) {
 						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
 					}
 				} catch (NullPointerException npe) {
 					System.out.println("Null Song Album");
@@ -102,7 +114,14 @@ public class SongsController implements Initializable, Scrollable {
     	}
     	
     	double startVvalue = scrollBar.getValue();
-    	double finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - tableView.getHeight());
+    	double finalVvalue;
+    	
+    	if (currentSortOrder.equals("descending")) {
+    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount + 1) * 50 - tableView.getHeight()) /
+    				(songTableItems.size() * 50 - tableView.getHeight()));
+    	} else {
+    		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - tableView.getHeight());
+    	}
     	
     	// TODO: DEBUG
     	System.out.println("Start V Value: " + startVvalue);
@@ -242,6 +261,8 @@ public class SongsController implements Initializable, Scrollable {
 
             return row ;
         });
+        
+//        titleColumn.setComparator(value);
         
         artistColumn.setComparator((first, second) -> {
         	return Library.getArtist(first).compareTo(Library.getArtist(second));
