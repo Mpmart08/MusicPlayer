@@ -36,7 +36,7 @@ public class SongsController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
     
-    private String currentSort = "artist"; 
+    private String currentSort = "title";
     
     // TODO: GET CURRENT SONG SORT (BY SONG TITLE, ARTIST, ALBUM)
     
@@ -49,18 +49,48 @@ public class SongsController implements Initializable, Scrollable {
     	
     	int selectedCell = 0;
     	
-    	for (int i = 0; i < songTableItems.size(); i++) {
-    		// Removes article from artist title and compares it to selected letter.
-    		String artistTitle = songTableItems.get(i).getArtist();
-    		char firstLetter = artistTitle.charAt(0);
-    		
-    		if (firstLetter < letter) {
-        		selectedCell++;
-    		}
+    	if (currentSort.equals("title")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from artist title and compares it to selected letter.
+        		String songTitle = songTableItems.get(i).getTitle();
+        		
+        		try {
+					char firstLetter = songTitle.charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					}
+				} catch (NullPointerException npe) {
+					System.out.println("Null Song Title");
+//					npe.printStackTrace();
+				}
+        		
+        	}
+    	} else if (currentSort.equals("album")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from artist title and compares it to selected letter.
+        		String songAlbum = songTableItems.get(i).getAlbum();
+        		char firstLetter = songAlbum.charAt(0);
+        		
+        		if (firstLetter < letter) {
+            		selectedCell++;
+        		}
+        	}
+    	} else {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from artist title and compares it to selected letter.
+        		String songArtist = songTableItems.get(i).getArtist();
+        		char firstLetter = songArtist.charAt(0);
+        		
+        		if (firstLetter < letter) {
+            		selectedCell++;
+        		}
+        	}
     	}
     	
     	double startVvalue = scrollPane.getVvalue();
-    	double finalVvalue = (double) (selectedCell * 50) / (tableView.getHeight() - scrollPane.getHeight());
+    	
+    	double finalVvalue = (double) (selectedCell * 50) / (tableView.getHeight() - scrollPane.getHeight()) + 
+    			50 / (tableView.getHeight() - scrollPane.getHeight());
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -102,8 +132,67 @@ public class SongsController implements Initializable, Scrollable {
         lengthColumn.setSortable(false);
         playsColumn.setSortable(false);
         
-        // Retrieves the list of songs in the library and adds them to the table.
+        // TODO:
+        // Updates the currentSort string which is helps determine which column is being used to sort the table.
+        
+        // Retrieves the list of songs in the library, sorts them, and adds them to the table.
         ObservableList<Song> songs = Library.getSongs();
+        
+        if (songs == null) {
+        	System.out.println("Songs .equals null");
+        } else {
+        	System.out.println("Songs IS NOT null");
+        }
+        
+        System.out.println("Before sort");
+        Collections.sort(songs, (Song x, Song y) -> {
+        	// Song Title
+        	if (x.getTitle() == null && y.getTitle() == null) {
+        		// Both are equal.
+        		return 0;
+        	} else if (x.getTitle() == null && y.getTitle() != null) {
+        		// Null is after other strings.
+        		return 1;
+        	} else if (y.getTitle() == null) {
+        		// All other strings are before null.
+        		return -1;
+        	} else if (x.getTitle() != null && y.getTitle() != null) {
+        		return x.getTitle().compareTo(y.getTitle());
+        	}
+        	
+        	// Song Artist
+        	if (x.getArtist() == null && y.getArtist() == null) {
+        		// Both are equal.
+        		return 0;
+        	} else if (x.getArtist() == null && y.getArtist() != null) {
+        		// Null is after other strings.
+        		return 1;
+        	} else if (y.getArtist() == null) {
+        		// All other strings are before null.
+        		return -1;
+        	} else if (x.getArtist() != null && y.getArtist() != null) {
+        		return x.getArtist().compareTo(y.getArtist());
+        	}
+        	
+        	// Song Album
+        	if (x.getAlbum() == null && y.getAlbum() == null) {
+        		// Both are equal.
+        		return 0;
+        	} else if (x.getAlbum() == null && y.getAlbum() != null) {
+        		// Null is after other strings.
+        		return 1;
+        	} else if (y.getAlbum() == null) {
+        		// All other strings are before null.
+        		return -1;
+        	} else if (x.getAlbum() != null && y.getAlbum() != null) {
+        		return x.getAlbum().compareTo(y.getAlbum());
+        	} else {
+        		// Default case.
+        		return x.getTitle().compareTo(y.getTitle());
+        	}
+        });
+        System.out.println("After sort");
+        
         tableView.setItems(songs);
         
         // Sets the table view height to the height required to fit the scroll pane with all the artists.

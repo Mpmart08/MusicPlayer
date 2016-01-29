@@ -216,8 +216,8 @@ public final class Song implements Comparable<Song> {
 
     @Override
     public int compareTo(Song other) throws NullPointerException {
-
         int discComparison = Integer.compare(this.discNumber, other.discNumber);
+        
         if (discComparison != 0) {
             return discComparison;
         } else {
