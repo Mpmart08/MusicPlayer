@@ -11,6 +11,7 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SongTitleComparator;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -116,7 +117,7 @@ public class SongsController implements Initializable, Scrollable {
     	double startVvalue = scrollBar.getValue();
     	double finalVvalue;
     	
-    	if (currentSortOrder.equals("descending")) {
+    	if ("descending".equals(currentSortOrder)) {
     		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount + 1) * 50 - tableView.getHeight()) /
     				(songTableItems.size() * 50 - tableView.getHeight()));
     	} else {
@@ -161,8 +162,6 @@ public class SongsController implements Initializable, Scrollable {
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
-        
-        // TODO: GET COLUMN HEADER ON CLICK AND UPDATE currentSortColumn
         
         lengthColumn.setSortable(false);
         playsColumn.setSortable(false);
@@ -262,7 +261,7 @@ public class SongsController implements Initializable, Scrollable {
             return row ;
         });
         
-//        titleColumn.setComparator(value);
+        titleColumn.setComparator(new SongTitleComparator<String>());
         
         artistColumn.setComparator((first, second) -> {
         	return Library.getArtist(first).compareTo(Library.getArtist(second));
