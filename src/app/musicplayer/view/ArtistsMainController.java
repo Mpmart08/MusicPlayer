@@ -165,6 +165,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
     @Override
     public void scroll(char letter) {
     	ObservableList<Artist> artistListItems = artistList.getItems();
+    	
     	int selectedCell = 0;
 
     	for (int i = 0; i < artistListItems.size(); i++) {
@@ -214,8 +215,8 @@ public class ArtistsMainController implements Initializable, Scrollable {
         ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
         
-        // Sets the artist list height to the height required to fit the list view with all the artists.
-        // This is important so that the scrolling is done in the scroll pane which is important for the scroll animation.
+        // Sets the artist list height to the height required to fit the scroll pane with all the artists.
+        // This is important so that the scrolling is done in the scroll pane which is needed for the scroll animation.
         artistList.setPrefHeight(50*artists.size());
         artistList.setMinHeight(artistList.getPrefHeight());
         
