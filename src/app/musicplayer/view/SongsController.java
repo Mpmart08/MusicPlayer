@@ -117,10 +117,10 @@ public class SongsController implements Initializable, Scrollable {
     	double finalVvalue;
     	
     	if ("descending".equals(currentSortOrder)) {
-    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount + 1) * 50 - tableView.getHeight()) /
-    				(songTableItems.size() * 50 - tableView.getHeight()));
+    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount) * 50 - scrollBar.getHeight()) /
+    				(songTableItems.size() * 50 - scrollBar.getHeight()));
     	} else {
-    		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - tableView.getHeight());
+    		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
     	}
     	
     	// TODO: DEBUG

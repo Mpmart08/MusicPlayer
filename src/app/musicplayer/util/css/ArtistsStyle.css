@@ -100,9 +100,12 @@
     -fx-background-color: white;
 }
 
+.table-view .column-header {
+    -fx-pref-height: 50;
+}
+
 .column-header > .label {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 16 0 16 0;
 }
 
 .textColumn, .numberColumn {

@@ -74,7 +74,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
             } else {
 
                 title.setText(artist.getTitle());
-                artistImage.setImage(artist.getArtistImage());
+                artistImage.imageProperty().bind(artist.artistImageProperty());
                 setGraphic(cell);
             }
         }
