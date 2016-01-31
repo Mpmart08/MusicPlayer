@@ -37,6 +37,11 @@ public class VolumePopupController implements Initializable {
         	volumeSlider.valueProperty().addListener((x, y, z) -> {
         		volumeLabel.setText(Integer.toString(z.intValue()));
         	});
+        	volumeSlider.setOnMousePressed(x -> {
+        		if (mutedButton.isVisible()) {
+        			muteClick();
+        		}
+        	});
         	
     	} catch (Exception ex) {
     		

@@ -3,7 +3,6 @@ package app.musicplayer.view;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.CountDownLatch;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
@@ -296,36 +295,30 @@ public class MainController implements Initializable {
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
             Node view = (Node) loader.load();
             
-            CountDownLatch latch = new CountDownLatch(1);
-            
             Task<Void> task = new Task<Void>() {
 	        	@Override protected Void call() throws Exception {
-	        		subViewRoot.setVisible(false);
-		        	subViewRoot.setContent(view);
-		        	latch.countDown();
+	        		Platform.runLater(() -> {
+	        			subViewRoot.setVisible(false);
+			        	subViewRoot.setContent(view);
+	        		});
 		        	return null;
 	        	}
 	        };
 	        
 	        task.setOnSucceeded(x -> {
-	        	subViewRoot.setVisible(true);
-	        	if (loadLettersFinal) {
-	        		loadLettersAnimation.play();
-	        	}
-	        	if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    loadViewAnimation.stop();
-                }
-                loadViewAnimation.play();
+	        	Platform.runLater(() -> {
+	        		subViewRoot.setVisible(true);
+		        	if (loadLettersFinal) {
+		        		loadLettersAnimation.play();
+		        	}
+		        	if (loadViewAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+	                    loadViewAnimation.stop();
+	                }
+	                loadViewAnimation.play();
+	        	});
 	        });
 	        
-	        Thread thread = new Thread(() -> {
-	        	Platform.runLater(task);
-	        	try {
-					latch.await();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-	        });
+	        Thread thread = new Thread(task);
             
             unloadViewAnimation.setOnFinished(x -> {
             	thread.start();
@@ -535,23 +528,19 @@ public class MainController implements Initializable {
 
     private Animation loadViewAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
             subViewRoot.setVvalue(0);
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            if (frac < 0.25) {
-                subViewRoot.getContent().setTranslateY(expandedHeight - curHeight * 4);
-            } else {
-                subViewRoot.getContent().setTranslateY(collapsedHeight);
-            }
+            subViewRoot.getContent().setTranslateY(expandedHeight - curHeight);
             subViewRoot.getContent().setOpacity(frac);
         }
     };
     
     private Animation unloadViewAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(100));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
@@ -562,7 +551,7 @@ public class MainController implements Initializable {
     
     private Animation loadLettersAnimation = new Transition() {
     	{
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
         	letterBox.setPrefHeight(50);
@@ -574,7 +563,7 @@ public class MainController implements Initializable {
     
     private Animation unloadLettersAnimation = new Transition() {
     	{
-            setCycleDuration(Duration.millis(100));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
     		letterBox.setOpacity(1.0 - frac);
