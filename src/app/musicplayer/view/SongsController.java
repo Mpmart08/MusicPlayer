@@ -123,10 +123,6 @@ public class SongsController implements Initializable, Scrollable {
     		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
     	}
     	
-    	// TODO: DEBUG
-    	System.out.println("Start V Value: " + startVvalue);
-    	System.out.println("Final V Value: " + finalVvalue);
-    	
     	Animation scrollAnimation = new Transition() {
             {
                 setCycleDuration(Duration.millis(500));
