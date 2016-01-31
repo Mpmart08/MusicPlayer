@@ -10,7 +10,6 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Scrollable;
-import app.musicplayer.util.SongTitleComparator;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -123,10 +122,6 @@ public class SongsController implements Initializable, Scrollable {
     		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
     	}
     	
-    	// TODO: DEBUG
-    	System.out.println("Start V Value: " + startVvalue);
-    	System.out.println("Final V Value: " + finalVvalue);
-    	
     	Animation scrollAnimation = new Transition() {
             {
                 setCycleDuration(Duration.millis(500));
@@ -168,56 +163,7 @@ public class SongsController implements Initializable, Scrollable {
         // Retrieves the list of songs in the library, sorts them, and adds them to the table.
         ObservableList<Song> songs = Library.getSongs();
 
-        Collections.sort(songs, (Song x, Song y) -> {
-        	// Song Title
-        	if (x.getTitle() == null && y.getTitle() == null) {
-        		// Both are equal.
-        		return 0;
-        	} else if (x.getTitle() == null && y.getTitle() != null) {
-        		// Null is after other strings.
-        		return 1;
-        	} else if (y.getTitle() == null) {
-        		// All other strings are before null.
-        		return -1;
-        	} else if (x.getTitle() != null && y.getTitle() != null) {
-        		return x.getTitle().compareTo(y.getTitle());
-        	}
-        	
-        	// Song Artist
-        	if (x.getArtist() == null && y.getArtist() == null) {
-        		// Both are equal.
-        		return 0;
-        	} else if (x.getArtist() == null && y.getArtist() != null) {
-        		// Null is after other strings.
-        		return 1;
-        	} else if (y.getArtist() == null) {
-        		// All other strings are before null.
-        		return -1;
-        	} else if (x.getArtist() != null && y.getArtist() != null) {
-        		String xArtist = x.getArtist();
-        		String yArtist = y.getArtist();
-        		return removeArticle(xArtist).compareTo(removeArticle(yArtist));
-        	}
-        	
-        	// Song Album
-        	if (x.getAlbum() == null && y.getAlbum() == null) {
-        		// Both are equal.
-        		return 0;
-        	} else if (x.getAlbum() == null && y.getAlbum() != null) {
-        		// Null is after other strings.
-        		return 1;
-        	} else if (y.getAlbum() == null) {
-        		// All other strings are before null.
-        		return -1;
-        	} else if (x.getAlbum() != null && y.getAlbum() != null) {
-        		String xAlbum = x.getAlbum();
-        		String yAlbum = y.getAlbum();
-        		return removeArticle(xAlbum).compareTo(removeArticle(yAlbum));
-        	} else {
-        		// Default case.
-        		return x.getTitle().compareTo(y.getTitle());
-        	}
-        });
+        Collections.sort(songs, (x, y) -> compareSongs(x, y));
         
         tableView.setItems(songs);
 
@@ -245,7 +191,7 @@ public class SongsController implements Initializable, Scrollable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Song song = row.getItem();
-                    ObservableList<Song> songList = Library.getSongs();
+                    ObservableList<Song> songList = tableView.getItems();
                     if (MusicPlayer.isShuffleActive()) {
                     	Collections.shuffle(songs);
                     	songs.remove(song);
@@ -260,7 +206,21 @@ public class SongsController implements Initializable, Scrollable {
             return row ;
         });
         
-        titleColumn.setComparator(new SongTitleComparator<String>());
+        titleColumn.setComparator((x, y) -> {
+        	
+        	if (x == null && y == null) {
+				return 0;
+			} else if (x == null) {
+				return 1;
+			} else if (y == null) {
+				return -1;
+			}
+        	
+        	Song first = Library.getSong(x);
+        	Song second = Library.getSong(y);
+        	
+        	return compareSongs(first, second);
+        });
         
         artistColumn.setComparator((first, second) -> {
         	return Library.getArtist(first).compareTo(Library.getArtist(second));
@@ -270,6 +230,79 @@ public class SongsController implements Initializable, Scrollable {
         	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
         });
     }
+    
+    private int compareSongs(Song x, Song y) {
+		try {
+			
+			if (x == null && y == null) {
+				return 0;
+			} else if (x == null) {
+				return 1;
+			} else if (y == null) {
+				return -1;
+			}
+			
+			// Song Title
+			if (x.getTitle() == null && y.getTitle() == null) {
+				// Both are equal.
+				return 0;
+			} else if (x.getTitle() == null) {
+				// Null is after other strings.
+				return 1;
+			} else if (y.getTitle() == null) {
+				// All other strings are before null.
+				return -1;
+			} else if (x.getTitle() != null && y.getTitle() != null) {
+				return x.getTitle().compareTo(y.getTitle());
+			}
+			
+			// Song Artist
+			if (x.getArtist() == null && y.getArtist() == null) {
+				// Both are equal.
+				return 0;
+			} else if (x.getArtist() == null && y.getArtist() != null) {
+				// Null is after other strings.
+				return 1;
+			} else if (y.getArtist() == null) {
+				// All other strings are before null.
+				return -1;
+			} else if (x.getArtist() != null && y.getArtist() != null) {
+				String xArtist = x.getArtist();
+				String yArtist = y.getArtist();
+				return removeArticle(xArtist).compareTo(removeArticle(yArtist));
+			}
+			
+			// Song Album
+			if (x.getAlbum() == null && y.getAlbum() == null) {
+				// Both are equal.
+				return 0;
+			} else if (x.getAlbum() == null && y.getAlbum() != null) {
+				// Null is after other strings.
+				return 1;
+			} else if (y.getAlbum() == null) {
+				// All other strings are before null.
+				return -1;
+			} else if (x.getAlbum() != null && y.getAlbum() != null) {
+				String xAlbum = x.getAlbum();
+				String yAlbum = y.getAlbum();
+				return removeArticle(xAlbum).compareTo(removeArticle(yAlbum));
+			} else {
+				// Default case.
+				return x.getTitle().compareTo(y.getTitle());
+			}
+		} catch (NullPointerException npe) {
+			if (x == null && y != null) {
+				// Null is after other strings.
+				return 1;
+			} else if (x != null && y == null) {
+				// All other strings are before null.
+				return -1;
+			} else {
+				// Both are equal.
+				return 0;
+			}
+		}
+	}
     
     private String removeArticle(String title) {
 
