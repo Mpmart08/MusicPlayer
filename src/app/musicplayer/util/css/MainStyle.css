@@ -148,6 +148,14 @@
     -fx-padding: 15;
 }
 
+.volumeSlider:muted .thumb {
+    -fx-border-color: #dadada;
+}
+
+.frontVolumeTrack:muted {
+    -fx-background-color: #dadada;
+}
+
 .backVolumeTrack {
     -fx-background-color: #dadada;
 }
@@ -164,6 +172,22 @@
     -fx-background-color: #f2f2f2;
     -fx-border-width: 2;
     -fx-border-color: #dadada;
+}
+
+.volumeIcon {
+    -fx-fill: rgb(52, 109, 207);
+}
+
+.volumeLabel {
+    -fx-text-fill: rgb(52, 109, 207);
+}
+
+.volumeLabel:muted {
+    -fx-text-fill: #dadada;
+}
+
+.volumeIconContainer:hover > .volumeIcon {
+    -fx-fill: rgb(153, 181, 230);
 }
 
 .scroll-pane, .scroll-pane > .viewport {

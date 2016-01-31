@@ -47,6 +47,7 @@ public class MusicPlayer extends Application {
     private static int secondsPlayed;
     private static boolean isLoopActive = false;
     private static boolean isShuffleActive = false;
+    private static boolean isMuted = false;
     
     private static Stage stage;
     private static BorderPane view;
@@ -252,6 +253,14 @@ public class MusicPlayer extends Application {
     	}
     }
     
+    public static void mute(boolean isMuted) {
+    	
+    	MusicPlayer.isMuted = !isMuted;
+    	if (mediaPlayer != null) {
+    		mediaPlayer.setMute(!isMuted);
+    	}
+    }
+    
     public static boolean isLoopActive() {
     	
     	return isLoopActive;
@@ -392,6 +401,7 @@ public class MusicPlayer extends Application {
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
+            mediaPlayer.setMute(isMuted);
             mainController.updateNowPlayingButton();
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();

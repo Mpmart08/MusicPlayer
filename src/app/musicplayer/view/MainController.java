@@ -35,7 +35,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -51,8 +50,7 @@ public class MainController implements Initializable {
     private Scrollable subViewController;
     private SliderSkin skin;
     private Stage volumePopup;
-    private Slider volumeSlider;
-    private Region frontVolumeTrack;
+    private VolumePopupController volumePopupController;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -229,8 +227,7 @@ public class MainController implements Initializable {
     	subViewController.scroll(letter);
     }
     
-    @FXML
-    private void volumeClick() {
+    public void volumeClick() {
     	if (!volumePopup.isShowing()) {
     		volumePopup.show();
     		popupShowAnimation.play();
@@ -238,7 +235,7 @@ public class MainController implements Initializable {
     }
     
     public Slider getVolumeSlider() {
-    	return volumeSlider;
+    	return volumePopupController.getSlider();
     }
     
     public boolean isTimeSliderPressed() {
@@ -466,14 +463,8 @@ public class MainController implements Initializable {
     		
     		Stage stage = MusicPlayer.getStage();
         	FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "VolumePopup.fxml"));
-        	StackPane view = (StackPane) loader.load();
-        	volumeSlider = (Slider) view.getChildren().get(2);
-        	frontVolumeTrack = (Region) view.getChildren().get(1);
-        	SliderSkin skin = new SliderSkin(volumeSlider);
-        	volumeSlider.setSkin(skin);
-        	frontVolumeTrack.prefWidthProperty().bind(volumeSlider.widthProperty().subtract(30).multiply(volumeSlider.valueProperty().divide(volumeSlider.maxProperty())));
-        	volumeSlider.setValue(volumeSlider.getMax() - 1);
-        	volumeSlider.setValue(volumeSlider.getMax());
+        	HBox view = (HBox) loader.load();
+        	volumePopupController = loader.getController();
         	Stage popup = new Stage();
         	popup.setScene(new Scene(view));
         	popup.initStyle(StageStyle.UNDECORATED);
