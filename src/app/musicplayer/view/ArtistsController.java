@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
@@ -143,7 +144,15 @@ public class ArtistsController implements Initializable, Scrollable {
             VBox artistCell = (VBox) event.getSource();
             String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
             Artist a = Library.getArtist(artistTitle);
-            artistsMainController.selectArtist(a);
+            CountDownLatch latch = artistsMainController.getLoadedLatch();
+            new Thread(() -> {
+            	try {
+    				latch.await();
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+                artistsMainController.selectArtist(a);
+            }).start();
         });
 
         return cell;

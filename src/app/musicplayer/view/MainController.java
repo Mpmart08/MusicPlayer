@@ -315,6 +315,9 @@ public class MainController implements Initializable {
 	                    loadViewAnimation.stop();
 	                }
 	                loadViewAnimation.play();
+	                if (viewName.toLowerCase().equals("artistsmain")) {
+		        		((ArtistsMainController) loader.getController()).getLoadedLatch().countDown();
+		        	}
 	        	});
 	        });
 	        

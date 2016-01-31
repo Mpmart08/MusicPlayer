@@ -28,11 +28,11 @@
                   <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
                </children>
             </HBox>
-            <ListView fx:id="albumList" fixedCellSize="150.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0" styleClass="albumList">
+            <ListView fx:id="albumList" fixedCellSize="150.0" focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0" styleClass="albumList">
                <VBox.margin>
                   <Insets />
                </VBox.margin></ListView>
-            <TableView fx:id="songTable" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
+            <TableView fx:id="songTable" fixedCellSize="50.0" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
               <columns>
                   <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
                 <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
@@ -47,10 +47,6 @@
       </VBox>
    </center>
    <left>
-      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefViewportHeight="600.0" prefViewportWidth="250.0" prefWidth="250.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-         <content>
-            <ListView fx:id="artistList" fixedCellSize="50.0" BorderPane.alignment="CENTER" />
-         </content>
-      </ScrollPane>
+      <ListView fx:id="artistList" fixedCellSize="50.0" focusTraversable="false" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

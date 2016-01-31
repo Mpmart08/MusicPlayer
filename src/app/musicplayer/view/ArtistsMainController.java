@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
@@ -15,9 +16,11 @@ import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.Scrollable;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,14 +30,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -114,7 +116,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
         }
     }
 
-    @FXML private ScrollPane scrollPane;
     @FXML private ListView<Artist> artistList;
     @FXML private ListView<Album> albumList;
     @FXML private TableView<Song> songTable;
@@ -131,39 +132,60 @@ public class ArtistsMainController implements Initializable, Scrollable {
     private Artist selectedArtist;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
+    private ScrollBar scrollBar;
+    private CountDownLatch loadedLatch = new CountDownLatch(1);
 
     private Animation artistLoadAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            if (frac < 0.25) {
-                subViewRoot.setTranslateY(expandedHeight - curHeight * 4);
-            } else {
-                subViewRoot.setTranslateY(collapsedHeight);
-            }
+            subViewRoot.setTranslateY(expandedHeight - curHeight);
             subViewRoot.setOpacity(frac);
+        }
+    };
+    
+    private Animation artistUnloadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
+            subViewRoot.setTranslateY(expandedHeight - curHeight);
+            subViewRoot.setOpacity(1 - frac);
         }
     };
 
     private Animation albumLoadAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            if (frac < 0.25) {
-                songTable.setTranslateY(expandedHeight - curHeight * 4);
-            } else {
-                songTable.setTranslateY(collapsedHeight);
-            }
+            songTable.setTranslateY(expandedHeight - curHeight);
             songTable.setOpacity(frac);
+        }
+    };
+    
+    private Animation albumUnloadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
+            songTable.setTranslateY(expandedHeight - curHeight);
+            songTable.setOpacity(1 - frac);
         }
     };
     
     @Override
     public void scroll(char letter) {
+    	
+    	if (scrollBar == null) {
+    		scrollBar = (ScrollBar) artistList.lookup(".scroll-bar");
+    	}
+    	
     	ObservableList<Artist> artistListItems = artistList.getItems();
     	
     	int selectedCell = 0;
@@ -177,8 +199,8 @@ public class ArtistsMainController implements Initializable, Scrollable {
     		}
     	}
     	
-    	double startVvalue = scrollPane.getVvalue();
-    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getHeight() - scrollPane.getHeight());
+    	double startVvalue = scrollBar.getValue();
+    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getItems().size() * 50 - artistList.getHeight());
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -186,7 +208,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollPane.setVvalue(vValue);
+                scrollBar.setValue(vValue);
             }
         };
         scrollAnimation.play();
@@ -215,102 +237,74 @@ public class ArtistsMainController implements Initializable, Scrollable {
         ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
         
-        // Sets the artist list height to the height required to fit the scroll pane with all the artists.
-        // This is important so that the scrolling is done in the scroll pane which is needed for the scroll animation.
-        artistList.setPrefHeight(50*artists.size());
-        artistList.setMinHeight(artistList.getPrefHeight());
-        
         artistList.setItems(artists);
 
         artistList.setOnMouseClicked(event -> {
 
             if (event.getClickCount() == 2) {
 
-                Thread thread = new Thread(() -> {
-                    ObservableList<Song> songs = FXCollections.observableArrayList();
-                    ObservableList<Album> albums = FXCollections.observableArrayList();
-                    for (Album album : selectedArtist.getAlbums()) {
-                        albums.add(album);
-                        for (Song song : album.getSongs()) {
-                            songs.add(song);
+                ObservableList<Song> songs = FXCollections.observableArrayList();
+                ObservableList<Album> albums = FXCollections.observableArrayList();
+                for (Album album : selectedArtist.getAlbums()) {
+                    albums.add(album);
+                    for (Song song : album.getSongs()) {
+                        songs.add(song);
+                    }
+                }
+                
+                if (MusicPlayer.isShuffleActive()) {
+                	Collections.shuffle(songs);
+                } else {
+                    Collections.sort(songs, (first, second) -> {
+
+                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
+                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
+                        if (firstAlbum.compareTo(secondAlbum) != 0) {
+                            return firstAlbum.compareTo(secondAlbum);
+                        } else {
+                            return first.compareTo(second);
                         }
-                    }
-                    
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    } else {
-	                    Collections.sort(songs, (first, second) -> {
-	
-	                        Album firstAlbum = albums.stream().filter(x -> x.getTitle().equals(first.getAlbum())).findFirst().get();
-	                        Album secondAlbum = albums.stream().filter(x -> x.getTitle().equals(second.getAlbum())).findFirst().get();
-	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-	                            return firstAlbum.compareTo(secondAlbum);
-	                        } else {
-	                            return first.compareTo(second);
-	                        }
-	                    });
-                    }
+                    });
+                }
 
-                    Song song = songs.get(0);
-                    MusicPlayer.setNowPlayingList(songs);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
-                });
-
-                thread.start();
+                Song song = songs.get(0);
+                MusicPlayer.setNowPlayingList(songs);
+                MusicPlayer.setNowPlaying(song);
+                MusicPlayer.play();
 
             } else {
+                	
+            	Task<Void> task = new Task<Void>() {
+            		@Override protected Void call() throws Exception {
+    	        		Platform.runLater(() -> {
+    	        			subViewRoot.setVisible(false);
+    	        			selectedArtist = artistList.getSelectionModel().getSelectedItem();
+                            showAllSongs(selectedArtist);
+                            artistLabel.setText(selectedArtist.getTitle());
+                            albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
+                            albumList.scrollTo(0);
+    	        		});
+    		        	return null;
+    	        	}                		
+            	};
+            	
+            	task.setOnSucceeded(x -> {
+            		Platform.runLater(() -> {
+    	        		subViewRoot.setVisible(true);
+    		        	if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+    	                    artistLoadAnimation.stop();
+    	                }
+    	                artistLoadAnimation.play();
+    	        	});
+            	});
+            	
+            	Thread thread = new Thread(task);
 
-                if (selectedArtist != artistList.getSelectionModel().getSelectedItem()) {
-
-                    selectedArtist = artistList.getSelectionModel().getSelectedItem();
-                    showAllSongs(selectedArtist);
-                    artistLabel.setText(selectedArtist.getTitle());
-                    albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-                    albumList.scrollTo(0);
-
-                    if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                        artistLoadAnimation.stop();
-                    }
-                    artistLoadAnimation.play();
-
-                } else {
-
-                    showAllSongs(selectedArtist);
-                    if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                        albumLoadAnimation.stop();
-                    }
-                    albumLoadAnimation.play();
-                }
-            }
-        });
-
-        artistList.setOnKeyPressed(event -> {
-
-            KeyCode key = event.getCode();
-            int index = -1;
-            switch (key) {
-                case DOWN:
-                    index = artistList.getSelectionModel().getSelectedIndex() + 1;
-                    break;
-                case UP:
-                    index = artistList.getSelectionModel().getSelectedIndex() - 1;
-                    break;
-			default:
-				break;
-            }
-
-            if (index >= 0 && index < artists.size()) {
-                Artist artist = artists.get(index);
-                selectedArtist = artist;
-                showAllSongs(selectedArtist);
-                artistLabel.setText(selectedArtist.getTitle());
-                albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-                albumList.scrollTo(0);
-                if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    artistLoadAnimation.stop();
-                }
-                artistLoadAnimation.play();
+            	artistUnloadAnimation.setOnFinished(x -> {
+            		thread.start();
+            	});
+            	
+            	artistUnloadAnimation.play();
             }
         });
 
@@ -337,37 +331,34 @@ public class ArtistsMainController implements Initializable, Scrollable {
                 MusicPlayer.play();
 
             } else {
+            	
+            	Task<Void> task = new Task<Void>() {
+            		@Override protected Void call() throws Exception {
+    	        		Platform.runLater(() -> {
+    	        			songTable.setVisible(false);
+    	        			selectAlbum(album);
+    	        		});
+    		        	return null;
+    	        	}                		
+            	};
+            	
+            	task.setOnSucceeded(x -> {
+            		Platform.runLater(() -> {
+    	        		songTable.setVisible(true);
+    		        	if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
+    		        		albumLoadAnimation.stop();
+    	                }
+    		        	albumLoadAnimation.play();
+    	        	});
+            	});
+            	
+            	Thread thread = new Thread(task);
 
-                selectAlbum(album);
-                if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    albumLoadAnimation.stop();
-                }
-                albumLoadAnimation.play();
-            }
-        });
-
-        albumList.setOnKeyPressed(event -> {
-
-            KeyCode key = event.getCode();
-            int index = -1;
-            switch (key) {
-                case LEFT:
-                    index = albumList.getSelectionModel().getSelectedIndex() - 1;
-                    break;
-                case RIGHT:
-                    index = albumList.getSelectionModel().getSelectedIndex() + 1;
-                    break;
-			default:
-				break;
-            }
-
-            if (index >= 0 && index < selectedArtist.getAlbums().size()) {
-                Album album = albumList.getItems().get(index);
-                selectAlbum(album);
-                if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    albumLoadAnimation.stop();
-                }
-                albumLoadAnimation.play();
+            	albumUnloadAnimation.setOnFinished(x -> {
+            		thread.start();
+            	});
+            	
+            	albumUnloadAnimation.play();
             }
         });
 
@@ -440,6 +431,10 @@ public class ArtistsMainController implements Initializable, Scrollable {
             return row ;
         });
     }
+    
+    public CountDownLatch getLoadedLatch() {
+    	return loadedLatch;
+    }
 
     public void selectAlbum(Album album) {
 
@@ -490,14 +485,16 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         Collections.sort(albums);
 
-        selectedAlbum = null;
+    	selectedAlbum = null;
         albumList.getSelectionModel().clearSelection();
         albumList.setItems(albums);
         songTable.setItems(songs);
         songTable.getSelectionModel().clearSelection();
-        songTable.scrollTo(0);
+        Platform.runLater(() -> {
+        	songTable.scrollTo(0);
+        	albumLabel.setText("All Songs");
+        });
         songTable.setVisible(true);
-        albumLabel.setText("All Songs");
     }
     
     private String removeArticle(String title) {
@@ -523,15 +520,22 @@ public class ArtistsMainController implements Initializable, Scrollable {
     }
 
     public void selectArtist(Artist artist) {
+    	
+    	if (scrollBar == null) {
+    		scrollBar = (ScrollBar) artistList.lookup(".scroll-bar");
+    	}
 
         selectedArtist = artist;
         artistList.getSelectionModel().select(artist);
-        int index = artistList.getSelectionModel().getSelectedIndex();
-        double vValue = (index * 55.3) / (artistList.getPrefHeight() - scrollPane.getHeight());
-        scrollPane.setVvalue(vValue);
+        int selectedCell = artistList.getSelectionModel().getSelectedIndex();
+        double vValue = (selectedCell * 50) / (artistList.getItems().size() * 50 - artistList.getHeight());
+        scrollBar.setValue(vValue);
         showAllSongs(artist);
-        albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
-        artistLabel.setText(artist.getTitle());
+        albumList.setPrefWidth(artist.getAlbums().size() * 150);
+        albumList.setMaxWidth(artist.getAlbums().size() * 150);
+        Platform.runLater(() -> {
+            artistLabel.setText(artist.getTitle());
+        });
         separator.setVisible(true);
     }
     
