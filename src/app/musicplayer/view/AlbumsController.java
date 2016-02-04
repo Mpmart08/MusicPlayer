@@ -54,7 +54,7 @@ public class AlbumsController implements Initializable, Scrollable {
     private double expandedHeightReload = 50;
     private double collapsedHeightReload = 0;
     private double expandedHeight = 400;
-    private double collapsedHeight = 50;
+    private double collapsedHeight = 0;
     
     // Initializes the index for the currently selected cell.
     private int currentCell;
@@ -138,11 +138,9 @@ public class AlbumsController implements Initializable, Scrollable {
     		}
     	}
     	
-    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
-    	
     	double row = (index / 5) * cellHeight;
-    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
-    	double startVvalue = scrollpane.getVvalue();
+    	double finalVvalue = row / (grid.getHeight() - gridBox.getHeight());
+    	double startVvalue = gridBox.getVvalue();
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -150,7 +148,7 @@ public class AlbumsController implements Initializable, Scrollable {
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollpane.setVvalue(vValue);
+                gridBox.setVvalue(vValue);
             }
         };
         
