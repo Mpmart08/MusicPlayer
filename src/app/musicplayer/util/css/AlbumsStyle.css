@@ -89,8 +89,8 @@
 
 .table-view {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-border-width: 0 0 0 0;
+    -fx-border-color: rgb(52, 109, 207);
+    -fx-border-width: 5 3 0 3;
     -fx-background-insets: 0 0 0 0;
     -fx-background-radius: 0 0 0 0;
     -fx-focus-color: transparent;
@@ -239,4 +239,28 @@
 
 .artist-cell:pressed {
     -fx-background-color: #c2c2c2;
+}
+
+.album-cell:hover {
+    -fx-background-color: #dadada;
+}
+
+.album-cell:pressed {
+    -fx-background-color: #c2c2c2;
+}
+
+.album-cell:selected {
+    -fx-background-color: rgb(52, 109, 207);
+}
+
+.album-cell:selected:hover {
+    -fx-background-color: rgb(47, 98, 187);
+}
+
+.album-cell:selected .text {
+    -fx-fill: white;
+}
+
+.album-cell:selected:hover .text {
+    -fx-fill: white;
 }
