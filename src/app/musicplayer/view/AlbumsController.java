@@ -163,7 +163,7 @@ public class AlbumsController implements Initializable, Scrollable {
         int rows = (albums.size() % 5 == 0) ? albums.size() / 5 : albums.size() / 5 + 1;
         
         // Sets the height and width of the grid to fill the screen.
-        grid.prefHeightProperty().bind(grid.widthProperty().divide(5).add(16).multiply(rows));
+        grid.prefHeightProperty().bind(gridBox.widthProperty().divide(5).add(16).multiply(rows));
         grid.prefWidthProperty().bind(gridBox.widthProperty());
         
 		// Sets the song table to be invisible when the view is initialized.
