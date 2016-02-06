@@ -8,8 +8,9 @@ import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -24,7 +25,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Duration;
 
-public class SongsController implements Initializable, Scrollable {
+public class SongsController implements Initializable, SubView {
 
 	@FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -41,16 +42,29 @@ public class SongsController implements Initializable, Scrollable {
     private String currentSortColumn = "titleColumn";
     private String currentSortOrder = null;
     
+    private Song selectedSong;
+    
+    @Override
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ObservableList<Song> songList = tableView.getItems();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songList);
+        	songList.remove(song);
+        	songList.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songList);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
+    
     @Override
     public void scroll(char letter) {
     	
     	if (tableView.getSortOrder().size() > 0) {
     		currentSortColumn = tableView.getSortOrder().get(0).getId();
-    		
-    		System.out.println(tableView.getSortOrder().get(0).getSortType().toString().toLowerCase());
     		currentSortOrder = tableView.getSortOrder().get(0).getSortType().toString().toLowerCase();
-    		System.out.println("Current Sort Order: " + currentSortOrder);
-    		
     	}
     	
     	// Retrieves songs from table.
@@ -144,7 +158,7 @@ public class SongsController implements Initializable, Scrollable {
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
         artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
@@ -190,20 +204,21 @@ public class SongsController implements Initializable, Scrollable {
 
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    Song song = row.getItem();
-                    ObservableList<Song> songList = tableView.getItems();
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    	songs.remove(song);
-                    	songs.add(0, song);
-                    }
-                    MusicPlayer.setNowPlayingList(songList);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
+                    play();
                 }
             });
 
             return row ;
+        });
+        
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        	if (oldSelection != null) {
+        		oldSelection.setSelected(false);
+        	}
+        	if (newSelection != null) {
+        		newSelection.setSelected(true);
+        		selectedSong = newSelection;
+        	}
         });
         
         titleColumn.setComparator((x, y) -> {

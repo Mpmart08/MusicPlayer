@@ -18,6 +18,6 @@ public class MostPlayedPlaylist extends Playlist {
 
         ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
         Collections.sort(songs, (x, y) -> Integer.compare(y.getPlayCount(), x.getPlayCount()));
-        return FXCollections.observableArrayList(songs.subList(0, 25));
+        return FXCollections.observableArrayList(songs.subList(0, 100));
     }
 }

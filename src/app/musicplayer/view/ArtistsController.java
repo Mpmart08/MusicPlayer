@@ -4,12 +4,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
-import java.util.concurrent.CountDownLatch;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
@@ -27,9 +26,14 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsController implements Initializable, Scrollable {
+public class ArtistsController implements Initializable, SubView {
 
     @FXML private FlowPane grid;
+    
+    @Override
+    public void play() {
+    	
+    }
     
     @Override
     public void scroll(char letter) {
@@ -144,15 +148,7 @@ public class ArtistsController implements Initializable, Scrollable {
             VBox artistCell = (VBox) event.getSource();
             String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
             Artist a = Library.getArtist(artistTitle);
-            CountDownLatch latch = artistsMainController.getLoadedLatch();
-            new Thread(() -> {
-            	try {
-    				latch.await();
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    			}
-                artistsMainController.selectArtist(a);
-            }).start();
+            artistsMainController.selectArtist(a);
         });
 
         return cell;

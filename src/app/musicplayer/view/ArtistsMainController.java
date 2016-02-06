@@ -12,9 +12,11 @@ import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
+import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -30,7 +32,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -41,7 +43,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class ArtistsMainController implements Initializable, Scrollable {
+public class ArtistsMainController implements Initializable, SubView {
 
     public class ArtistCell extends ListCell<Artist> {
 
@@ -127,17 +129,19 @@ public class ArtistsMainController implements Initializable, Scrollable {
     @FXML private Label albumLabel;
     @FXML private Separator separator;
     @FXML private VBox subViewRoot;
+    @FXML private ScrollPane scrollPane;
+    @FXML private ScrollPane artistListScrollPane;
 
+    private Song selectedSong;
     private Album selectedAlbum;
     private Artist selectedArtist;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
-    private ScrollBar scrollBar;
-    private CountDownLatch loadedLatch = new CountDownLatch(1);
 
     private Animation artistLoadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
@@ -149,6 +153,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
     private Animation artistUnloadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
@@ -160,6 +165,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
     private Animation albumLoadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
@@ -171,6 +177,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
     private Animation albumUnloadAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
@@ -180,11 +187,50 @@ public class ArtistsMainController implements Initializable, Scrollable {
     };
     
     @Override
-    public void scroll(char letter) {
+    public void play() {
     	
-    	if (scrollBar == null) {
-    		scrollBar = (ScrollBar) artistList.lookup(".scroll-bar");
-    	}
+    	Song song = selectedSong;
+        ArrayList<Song> songs = new ArrayList<Song>();
+
+        if (selectedAlbum != null) {
+
+            for (Song s : selectedAlbum.getSongs()) {
+                songs.add(s);
+            }
+
+        } else {
+
+            for (Album album : selectedArtist.getAlbums()) {
+                for (Song s : album.getSongs()) {
+                    songs.add(s);
+                }
+            }
+        }
+        
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songs);
+        	songs.remove(song);
+        	songs.add(0, song);
+        } else {
+        	Collections.sort(songs, (first, second) -> {
+
+                Album firstAlbum = Library.getAlbum(first.getAlbum());
+                Album secondAlbum = Library.getAlbum(second.getAlbum());
+                if (firstAlbum.compareTo(secondAlbum) != 0) {
+                    return firstAlbum.compareTo(secondAlbum);
+                } else {
+                    return first.compareTo(second);
+                }
+            });
+        }
+
+        MusicPlayer.setNowPlayingList(songs);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
+    
+    @Override
+    public void scroll(char letter) {
     	
     	ObservableList<Artist> artistListItems = artistList.getItems();
     	
@@ -199,8 +245,8 @@ public class ArtistsMainController implements Initializable, Scrollable {
     		}
     	}
     	
-    	double startVvalue = scrollBar.getValue();
-    	double finalVvalue = (double) (selectedCell * 50) / (artistList.getItems().size() * 50 - artistList.getHeight());
+    	double startVvalue = artistListScrollPane.getVvalue();
+    	double finalVvalue = (double) (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -208,7 +254,7 @@ public class ArtistsMainController implements Initializable, Scrollable {
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollBar.setValue(vValue);
+                artistListScrollPane.setVvalue(vValue);
             }
         };
         scrollAnimation.play();
@@ -216,13 +262,13 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
+    	
+    	titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
 
@@ -285,16 +331,13 @@ public class ArtistsMainController implements Initializable, Scrollable {
                             albumList.scrollTo(0);
     	        		});
     		        	return null;
-    	        	}                		
+    	        	}
             	};
             	
             	task.setOnSucceeded(x -> {
             		Platform.runLater(() -> {
     	        		subViewRoot.setVisible(true);
-    		        	if (artistLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-    	                    artistLoadAnimation.stop();
-    	                }
-    	                artistLoadAnimation.play();
+    		        	artistLoadAnimation.play();
     	        	});
             	});
             	
@@ -345,9 +388,6 @@ public class ArtistsMainController implements Initializable, Scrollable {
             	task.setOnSucceeded(x -> {
             		Platform.runLater(() -> {
     	        		songTable.setVisible(true);
-    		        	if (albumLoadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-    		        		albumLoadAnimation.stop();
-    	                }
     		        	albumLoadAnimation.play();
     	        	});
             	});
@@ -386,54 +426,38 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-
-                    Song song = row.getItem();
-                    ArrayList<Song> songs = new ArrayList<Song>();
-
-                    if (selectedAlbum != null) {
-
-                        for (Song s : selectedAlbum.getSongs()) {
-                            songs.add(s);
-                        }
-
-                    } else {
-
-                        for (Album album : selectedArtist.getAlbums()) {
-                            for (Song s : album.getSongs()) {
-                                songs.add(s);
-                            }
-                        }
-                    }
-                    
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    	songs.remove(song);
-                    	songs.add(0, song);
-                    } else {
-                    	Collections.sort(songs, (first, second) -> {
-	
-	                        Album firstAlbum = Library.getAlbum(first.getAlbum());
-	                        Album secondAlbum = Library.getAlbum(second.getAlbum());
-	                        if (firstAlbum.compareTo(secondAlbum) != 0) {
-	                            return firstAlbum.compareTo(secondAlbum);
-	                        } else {
-	                            return first.compareTo(second);
-	                        }
-	                    });
-                    }
-
-                    MusicPlayer.setNowPlayingList(songs);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
+                    play();
                 }
             });
 
             return row ;
         });
-    }
-    
-    public CountDownLatch getLoadedLatch() {
-    	return loadedLatch;
+        
+        songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        	if (oldSelection != null) {
+        		oldSelection.setSelected(false);
+        	}
+        	if (newSelection != null) {
+        		newSelection.setSelected(true);
+        		selectedSong = newSelection;
+        	}
+        });
+        
+        artistList.setMinHeight(0);
+        artistList.setPrefHeight(0);
+        double height = artists.size() * 50;
+        Animation artistListLoadAnimation = new Transition() {
+        	{
+        		setCycleDuration(Duration.millis(250));
+                setInterpolator(Interpolator.EASE_BOTH);
+        	}
+        	
+        	protected void interpolate(double frac) {
+        		artistList.setMinHeight(frac * height);
+        		artistList.setPrefHeight(frac * height);
+        	}
+        };
+        artistListLoadAnimation.play();
     }
 
     public void selectAlbum(Album album) {
@@ -445,6 +469,10 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         } else {
         	
+        	if (selectedSong != null) {
+        		selectedSong.setSelected(false);
+        	}
+        	selectedSong = null;
             selectedAlbum = album;
             albumList.getSelectionModel().select(selectedAlbum);
             ObservableList<Song> songs = FXCollections.observableArrayList();
@@ -452,8 +480,24 @@ public class ArtistsMainController implements Initializable, Scrollable {
             Collections.sort(songs);
             songTable.getSelectionModel().clearSelection();
             songTable.setItems(songs);
-            songTable.scrollTo(0);
+            scrollPane.setVvalue(0);
             albumLabel.setText(album.getTitle());
+            songTable.setMinHeight(0);
+            songTable.setPrefHeight(0);
+            songTable.setVisible(true);
+            double height = (songs.size() + 1) * 50 + 2;
+            Animation songTableLoadAnimation = new Transition() {
+            	{
+            		setCycleDuration(Duration.millis(250));
+                    setInterpolator(Interpolator.EASE_BOTH);
+            	}
+            	
+            	protected void interpolate(double frac) {
+            		songTable.setMinHeight(frac * height);
+                    songTable.setPrefHeight(frac * height);
+            	}
+            };
+            songTableLoadAnimation.play();
         }
     }
 
@@ -485,16 +529,33 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
         Collections.sort(albums);
 
+        if (selectedSong != null) {
+        	selectedSong.setSelected(false);
+        }
+        selectedSong = null;
     	selectedAlbum = null;
         albumList.getSelectionModel().clearSelection();
         albumList.setItems(albums);
         songTable.setItems(songs);
         songTable.getSelectionModel().clearSelection();
-        Platform.runLater(() -> {
-        	songTable.scrollTo(0);
-        	albumLabel.setText("All Songs");
-        });
+        scrollPane.setVvalue(0);
+        albumLabel.setText("All Songs");
+        songTable.setMinHeight(0);
+        songTable.setPrefHeight(0);
         songTable.setVisible(true);
+        double height = (songs.size() + 1) * 50 + 2;
+        Animation songTableLoadAnimation = new Transition() {
+        	{
+        		setCycleDuration(Duration.millis(250));
+                setInterpolator(Interpolator.EASE_BOTH);
+        	}
+        	
+        	protected void interpolate(double frac) {
+        		songTable.setMinHeight(frac * height);
+                songTable.setPrefHeight(frac * height);
+        	}
+        };
+        songTableLoadAnimation.play();
     }
     
     private String removeArticle(String title) {
@@ -521,27 +582,52 @@ public class ArtistsMainController implements Initializable, Scrollable {
 
     public void selectArtist(Artist artist) {
     	
-    	if (scrollBar == null) {
-    		scrollBar = (ScrollBar) artistList.lookup(".scroll-bar");
-    	}
-
-        selectedArtist = artist;
+    	selectedArtist = artist;
         artistList.getSelectionModel().select(artist);
-        int selectedCell = artistList.getSelectionModel().getSelectedIndex();
-        double vValue = (selectedCell * 50) / (artistList.getItems().size() * 50 - artistList.getHeight());
-        scrollBar.setValue(vValue);
+        CountDownLatch latch = new CountDownLatch(1);
+        artistListScrollPane.heightProperty().addListener((x, y, z) -> {
+        	if (z.doubleValue() != 0) {
+        		latch.countDown();
+        	}
+        });
+        new Thread(() -> {
+            try {
+				latch.await();
+				int selectedCell = artistList.getSelectionModel().getSelectedIndex();
+	            double vValue = (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
+	            artistListScrollPane.setVvalue(vValue);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }).start();
         showAllSongs(artist);
         albumList.setPrefWidth(artist.getAlbums().size() * 150);
         albumList.setMaxWidth(artist.getAlbums().size() * 150);
-        Platform.runLater(() -> {
-            artistLabel.setText(artist.getTitle());
-        });
+        artistLabel.setText(artist.getTitle());
         separator.setVisible(true);
     }
     
     public void selectSong(Song song) {
     	
-    	songTable.getSelectionModel().select(song);
-    	songTable.scrollTo(song);
+    	CountDownLatch latch = new CountDownLatch(1);
+        scrollPane.heightProperty().addListener((x, y, z) -> {
+        	if (z.doubleValue() != 0) {
+        		latch.countDown();
+        	}
+        });
+        new Thread(() -> {
+            try {
+				latch.await();
+				Platform.runLater(() -> {
+					songTable.getSelectionModel().select(song);
+					int selectedCell = songTable.getSelectionModel().getSelectedIndex();
+			        double vValue = (selectedCell * 50 + 250) / (songTable.getHeight() + 200 - scrollPane.getHeight());
+			        scrollPane.setVvalue(vValue);
+			        scrollPane.requestFocus();
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }).start();
     }
 }

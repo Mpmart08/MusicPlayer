@@ -8,45 +8,60 @@
 
 <BorderPane stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsMainController">
    <center>
-      <VBox fx:id="subViewRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets left="25.0" />
-         </BorderPane.margin>
-         <children>
-            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
+      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportHeight="600.0" prefViewportWidth="248.0" styleClass="sub-view" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+         <content>
+            <VBox fx:id="subViewRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="25.0" />
+               </BorderPane.margin>
                <children>
-                  <Label fx:id="artistLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP">
-                     <HBox.margin>
+                  <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
+                     <children>
+                        <Label fx:id="artistLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Separator fx:id="separator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0" visible="false">
+                           <HBox.margin>
+                              <Insets bottom="10.0" top="10.0" />
+                           </HBox.margin>
+                        </Separator>
+                        <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
+                     </children>
+                  </HBox>
+                  <ListView fx:id="albumList" fixedCellSize="150.0" focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0" styleClass="albumList">
+                     <VBox.margin>
                         <Insets />
-                     </HBox.margin>
-                  </Label>
-                  <Separator fx:id="separator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0" visible="false">
-                     <HBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
-                     </HBox.margin>
-                  </Separator>
-                  <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
+                     </VBox.margin>
+                  </ListView>
+                  <TableView fx:id="songTable" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" sortable="false" styleClass="playingColumn" />
+                      <TableColumn fx:id="titleColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" sortable="false" styleClass="firstColumn" text="Title" />
+                      <TableColumn fx:id="lengthColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" sortable="false" styleClass="numberColumn" text="Length" />
+                        <TableColumn fx:id="playsColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" sortable="false" styleClass="numberColumn" text="Plays" />
+                    </columns>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </TableView>
                </children>
-            </HBox>
-            <ListView fx:id="albumList" fixedCellSize="150.0" focusTraversable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="150.0" styleClass="albumList">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin></ListView>
-            <TableView fx:id="songTable" fixedCellSize="50.0" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
-              <columns>
-                  <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
-                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
-                <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
-                  <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
-              </columns>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </TableView>
-         </children>
-      </VBox>
+            </VBox>
+         </content>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets left="25.0" right="25.0" />
+         </padding>
+      </ScrollPane>
    </center>
    <left>
-      <ListView fx:id="artistList" fixedCellSize="50.0" focusTraversable="false" BorderPane.alignment="CENTER" />
+      <ScrollPane fx:id="artistListScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportHeight="600.0" prefViewportWidth="248.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+         <content>
+            <ListView fx:id="artistList" fixedCellSize="50.0" focusTraversable="false" BorderPane.alignment="CENTER" />
+         </content>
+      </ScrollPane>
    </left>
 </BorderPane>

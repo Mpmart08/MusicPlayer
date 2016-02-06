@@ -343,8 +343,9 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeSlider();
             seek(0);
         } else {
+        	boolean isPlaying = isPlaying();
             setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
-            if (isPlaying()) {
+            if (isPlaying) {
             	play();
             }
         }

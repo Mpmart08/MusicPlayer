@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.util.SliderSkin;
+import app.musicplayer.util.CustomSliderSkin;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,8 +31,8 @@ public class VolumePopupController implements Initializable {
 
 		try {
     		
-        	SliderSkin skin = new SliderSkin(volumeSlider);
-        	volumeSlider.setSkin(skin);
+        	CustomSliderSkin sliderSkin = new CustomSliderSkin(volumeSlider);
+        	volumeSlider.setSkin(sliderSkin);
         	frontVolumeTrack.prefWidthProperty().bind(volumeSlider.widthProperty().subtract(30).multiply(volumeSlider.valueProperty().divide(volumeSlider.maxProperty())));
         	volumeSlider.valueProperty().addListener((x, y, z) -> {
         		volumeLabel.setText(Integer.toString(z.intValue()));

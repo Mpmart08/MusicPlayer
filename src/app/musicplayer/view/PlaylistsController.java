@@ -9,8 +9,9 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
@@ -23,10 +24,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
-public class PlaylistsController implements Initializable, Scrollable {
+public class PlaylistsController implements Initializable, SubView {
 
     @FXML private ListView<Playlist> playlistList;
     @FXML private TableView<Song> tableView;
@@ -37,6 +37,7 @@ public class PlaylistsController implements Initializable, Scrollable {
     @FXML private TableColumn<Song, Integer> playsColumn;
 
     private Playlist selectedPlaylist;
+    private Song selectedSong;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
 
@@ -70,7 +71,7 @@ public class PlaylistsController implements Initializable, Scrollable {
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.15));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
         artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
@@ -105,19 +106,20 @@ public class PlaylistsController implements Initializable, Scrollable {
 
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    Song song = row.getItem();
-                    ObservableList<Song> songs = selectedPlaylist.getSongs();
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    	songs.remove(song);
-                    	songs.add(0, song);
-                    }
-                    MusicPlayer.setNowPlayingList(songs);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
+                    play();
                 }
             });
             return row ;
+        });
+        
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        	if (oldSelection != null) {
+        		oldSelection.setSelected(false);
+        	}
+        	if (newSelection != null) {
+        		newSelection.setSelected(true);
+        		selectedSong = newSelection;
+        	}
         });
 
         playlistList.setOnMouseClicked(event -> {
@@ -128,6 +130,9 @@ public class PlaylistsController implements Initializable, Scrollable {
 
                 Thread thread = new Thread(() -> {
                     ObservableList<Song> playlistSongs = playlist.getSongs();
+                    if (MusicPlayer.isShuffleActive()) {
+                    	Collections.shuffle(playlistSongs);
+                    }
                     Song song = playlistSongs.get(0);
                     MusicPlayer.setNowPlayingList(playlistSongs);
                     MusicPlayer.setNowPlaying(song);
@@ -145,36 +150,14 @@ public class PlaylistsController implements Initializable, Scrollable {
                 loadAnimation.play();
             }
         });
-
-        playlistList.setOnKeyPressed(event -> {
-
-            KeyCode key = event.getCode();
-            int index = -1;
-            switch (key) {
-                case DOWN:
-                    index = playlistList.getSelectionModel().getSelectedIndex() + 1;
-                    break;
-                case UP:
-                    index = playlistList.getSelectionModel().getSelectedIndex() - 1;
-                    break;
-			default:
-				break;
-            }
-
-            if (index >= 0 && index < playlists.size()) {
-                Playlist playlist = playlists.get(index);
-                selectPlaylist(playlist);
-                tableView.scrollTo(0);
-                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    loadAnimation.stop();
-                }
-                loadAnimation.play();
-            }
-        });
     }
 
     private void selectPlaylist(Playlist playlist) {
 
+    	if (selectedSong != null) {
+        	selectedSong.setSelected(false);
+        }
+    	selectedSong = null;
         selectedPlaylist = playlist;
         playlistList.getSelectionModel().select(playlist);
         playlistList.scrollTo(playlistList.getSelectionModel().getSelectedIndex());
@@ -186,4 +169,19 @@ public class PlaylistsController implements Initializable, Scrollable {
     
     @Override
     public void scroll(char letter) {};
+    
+    @Override
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ObservableList<Song> songs = selectedPlaylist.getSongs();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songs);
+        	songs.remove(song);
+        	songs.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songs);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
 }

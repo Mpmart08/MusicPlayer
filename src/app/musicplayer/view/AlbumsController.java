@@ -11,7 +11,7 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
@@ -41,7 +41,7 @@ import javafx.util.Duration;
  * @version 1.0
  *
  */
-public class AlbumsController implements Initializable, Scrollable {
+public class AlbumsController implements Initializable, SubView {
 	
     @FXML private FlowPane grid;
     @FXML private VBox songBox;
@@ -108,6 +108,11 @@ public class AlbumsController implements Initializable, Scrollable {
             songTable.setOpacity(frac);
         }
     };
+    
+    @Override
+    public void play() {
+    	
+    }
     
     @Override
     public void scroll(char letter) {

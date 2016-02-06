@@ -7,7 +7,7 @@ import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.PlayingTableCell;
-import app.musicplayer.util.Scrollable;
+import app.musicplayer.util.SubView;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +19,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class NowPlayingController implements Initializable, Scrollable {
+public class NowPlayingController implements Initializable, SubView {
 
     @FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -90,5 +90,8 @@ public class NowPlayingController implements Initializable, Scrollable {
     }
     
     @Override
-    public void scroll(char letter) {};
+    public void play() {}
+    
+    @Override
+    public void scroll(char letter) {}
 }

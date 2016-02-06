@@ -19,7 +19,7 @@ import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 /**
  * Region/css based skin for Slider
 */
-public class SliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
+public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
 
     /** Track if slider is vertical/horizontal and cause re layout */
 //    private boolean horizontal;
@@ -70,7 +70,7 @@ public class SliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         }
     };
 
-    public SliderSkin(Slider slider) {
+    public CustomSliderSkin(Slider slider) {
         super(slider, new SliderBehavior(slider));
 
         initialize();

@@ -18,6 +18,6 @@ public class RecentlyPlayedPlaylist extends Playlist {
 
         ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
         Collections.sort(songs, (x, y) -> y.getPlayDate().compareTo(x.getPlayDate()));
-        return FXCollections.observableArrayList(songs.subList(0, 25));
+        return FXCollections.observableArrayList(songs.subList(0, 100));
     }
 }

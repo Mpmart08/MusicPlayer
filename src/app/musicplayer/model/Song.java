@@ -1,6 +1,8 @@
 package app.musicplayer.model;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -43,10 +45,17 @@ public final class Song implements Comparable<Song> {
     private LocalDateTime playDate;
     private String location;
     private SimpleBooleanProperty playing;
+    private SimpleBooleanProperty selected;
 
     public Song(int id, String title, String artist, String album, Duration length,
         int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
+    	if (title == null) {
+    		Path path = Paths.get(location);
+    		String fileName = path.getFileName().toString();
+    		title = fileName.substring(0, fileName.lastIndexOf('.'));
+    	}
+    	
     	if (album == null) {
     		album = "Unknown Album";
     	}
@@ -68,6 +77,7 @@ public final class Song implements Comparable<Song> {
         this.playDate = playDate;
         this.location = location;
         this.playing = new SimpleBooleanProperty(false);
+        this.selected = new SimpleBooleanProperty(false);
     }
 
     public int getId() {
@@ -163,6 +173,21 @@ public final class Song implements Comparable<Song> {
     public void setPlaying(boolean playing) {
 
         this.playing.set(playing);
+    }
+
+    public BooleanProperty selectedProperty() {
+
+        return this.selected;
+    }
+    
+    public boolean getSelected() {
+
+        return this.selected.get();
+    }
+
+    public void setSelected(boolean selected) {
+
+        this.selected.set(selected);
     }
 
     public BooleanProperty playingProperty() {
