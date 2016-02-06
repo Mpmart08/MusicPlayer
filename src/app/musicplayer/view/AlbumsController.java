@@ -36,14 +36,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-/**
- * 
- * @version 1.0
- *
- */
 public class AlbumsController implements Initializable, Scrollable {
 	
-    @FXML private FlowPane grid;
+    @FXML private ScrollPane gridBox;
+	@FXML private FlowPane grid;
     @FXML private VBox songBox;
     @FXML private TableView<Song> songTable;
     @FXML private TableColumn<Song, Boolean> playingColumn;
@@ -57,7 +53,7 @@ public class AlbumsController implements Initializable, Scrollable {
     private double expandedHeightReload = 50;
     private double collapsedHeightReload = 0;
     private double expandedHeight = 400;
-    private double collapsedHeight = 50;
+    private double collapsedHeight = 0;
     
     // Initializes the index for the currently selected cell.
     private int currentCell;
@@ -81,30 +77,22 @@ public class AlbumsController implements Initializable, Scrollable {
 
     private Animation expandAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
         	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            if (frac < 0.25) {
-            	songBox.setPrefHeight(curHeight * 4);
-            } else {
-            	songBox.setPrefHeight(expandedHeight);
-            }
+            songBox.setPrefHeight(curHeight);
             songBox.setOpacity(frac);
         }
     };
     
     private Animation songTableReloadAnimation = new Transition() {
         {
-            setCycleDuration(Duration.millis(1000));
+            setCycleDuration(Duration.millis(250));
         }
         protected void interpolate(double frac) {
             double curHeight = collapsedHeightReload + (expandedHeightReload - collapsedHeightReload) * (frac);
-            if (frac < 0.25) {
-                songTable.setTranslateY(expandedHeightReload - curHeight * 4);
-            } else {
-                songTable.setTranslateY(collapsedHeightReload);
-            }
+            songTable.setTranslateY(expandedHeightReload - curHeight);
             songTable.setOpacity(frac);
         }
     };
@@ -141,11 +129,9 @@ public class AlbumsController implements Initializable, Scrollable {
     		}
     	}
     	
-    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
-    	
     	double row = (index / 5) * cellHeight;
-    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
-    	double startVvalue = scrollpane.getVvalue();
+    	double finalVvalue = row / (grid.getHeight() - gridBox.getHeight());
+    	double startVvalue = gridBox.getVvalue();
     	
     	Animation scrollAnimation = new Transition() {
             {
@@ -153,7 +139,7 @@ public class AlbumsController implements Initializable, Scrollable {
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollpane.setVvalue(vValue);
+                gridBox.setVvalue(vValue);
             }
         };
         
@@ -175,7 +161,13 @@ public class AlbumsController implements Initializable, Scrollable {
 		}
 
         int rows = (albums.size() % 5 == 0) ? albums.size() / 5 : albums.size() / 5 + 1;
-        grid.prefHeightProperty().bind(grid.widthProperty().divide(5).add(16).multiply(rows));
+        
+        // Sets the height and width of the grid to fill the screen.
+        grid.prefHeightProperty().bind(gridBox.widthProperty().divide(5).add(16).multiply(rows));
+        grid.prefWidthProperty().bind(gridBox.widthProperty());
+        
+		// Sets the song table to be invisible when the view is initialized.
+        songBox.setVisible(false);
 
         new Thread(() -> {
 
@@ -187,17 +179,9 @@ public class AlbumsController implements Initializable, Scrollable {
         	
             ArrayList<VBox> cells = new ArrayList<VBox>();
 
-            for (int j = 25; j < albums.size() + 10; j++) {
-            	// If all the albums have been added, add an extra 10 empty vboxes to the flow pane.
-            	// This prevents errors when expanding the song table in the last row. 
-            	if (j >= albums.size()) {
-            		cells.add(new VBox());
-            		
-            		// Else (the albums in the library are still being added), add the album to the flow pane.
-            	} else {
-            		Album album = albums.get(j);
-                    cells.add(createCell(album, j));
-            	}
+            for (int j = 25; j < albums.size(); j++) {
+            	Album album = albums.get(j);
+                cells.add(createCell(album, j));
             }
 
             Platform.runLater(() -> {
@@ -205,16 +189,10 @@ public class AlbumsController implements Initializable, Scrollable {
             });
         }).start();
         
-        // Sets song box width to scene width.
-        songBox.prefWidthProperty().bind(grid.widthProperty());
-        
         // Sets preferred column width.
         titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
-        
-		// Sets the song table to be invisible when the view is initialized.
-        songBox.setVisible(false);
         
         // Sets the playing properties for the songs in the song table.
         songTable.setRowFactory(x -> {
@@ -302,6 +280,7 @@ public class AlbumsController implements Initializable, Scrollable {
         		// Shows song table, plays load animation and populates song table with album songs.
         		expandAlbumDetail(cell, index);
         		expandAnimation.play();
+        		
         		populateSongTable(cell, album);
         		
         		// Else if album detail is expanded and opened album is reselected.
@@ -361,35 +340,11 @@ public class AlbumsController implements Initializable, Scrollable {
     }
     
     private void expandAlbumDetail(VBox cell, int index) {
-    	// Converts the index integer to a string.
-    	String indexString = Integer.toString(index);
-    	
-    	// Initializes index used to insert song table into flowpane.
-    	int insertIndex = 0;
-    	
-    	// Defines insertIndex based on the clicked cell index so that the song table
-    	// is inserted in the row after the clicked row.
-    	if (indexString.endsWith("0") || indexString.endsWith("5")) {
-    		insertIndex = index + 5;
-    	} else if (indexString.endsWith("1") || indexString.endsWith("6"))  {
-    		insertIndex = index + 4;
-    	} else if (indexString.endsWith("2") || indexString.endsWith("7"))  {
-    		insertIndex = index + 3;
-    	} else if (indexString.endsWith("3") || indexString.endsWith("8"))  {
-    		insertIndex = index + 2;
-    	} else if (indexString.endsWith("4") || indexString.endsWith("9"))  {
-    		insertIndex = index + 1;
-    	}
-    	
-    	// Adds the song box to the flow pane.
-    	grid.getChildren().add(insertIndex, songBox);
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
     }
     
     private void collapseAlbumDetail() {
-    	// Removes the songBox from the flow pane.
-    	grid.getChildren().remove(songBox);
     	isAlbumDetailCollapsed = true;
     	songBox.setVisible(false);
     }
