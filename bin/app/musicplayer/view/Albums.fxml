@@ -6,12 +6,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane stylesheets="@../util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
+<StackPane stylesheets="@../util/css/AlbumsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
    <children>
-      <FlowPane fx:id="grid" />
-      <VBox fx:id="songBox" StackPane.alignment="BOTTOM_CENTER">
+      <ScrollPane fx:id="gridBox" hbarPolicy="NEVER" prefViewportWidth="400.0" vbarPolicy="NEVER">
+         <content>
+            <FlowPane fx:id="grid" />
+         </content>
+      </ScrollPane>
+      <VBox fx:id="songBox" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="200.0" styleClass="songTable-box" StackPane.alignment="BOTTOM_CENTER">
          <children>
-            <TableView fx:id="songTable" fixedCellSize="50.0">
+            <TableView fx:id="songTable" fixedCellSize="50.0" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TableColumn fx:id="playingColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
                 <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
