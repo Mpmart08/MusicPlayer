@@ -486,8 +486,11 @@ public final class Library {
         Element songs = doc.createElement("songs");
         Element playlists = doc.createElement("playlists");
         Element nowPlayingList = doc.createElement("nowPlayingList");
+        Element musicLibrary = doc.createElement("musicLibrary");
+        musicLibrary.setTextContent(path);
 
         doc.appendChild(library);
+        library.appendChild(musicLibrary);
         library.appendChild(songs);
         library.appendChild(playlists);
         library.appendChild(nowPlayingList);

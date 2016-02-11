@@ -15,6 +15,7 @@ import app.musicplayer.model.Album;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
+import app.musicplayer.util.DirectoryWatch;
 import app.musicplayer.util.Resources;
 import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
@@ -89,6 +90,9 @@ public class MusicPlayer extends Application {
     		
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
+            
+            // Creates a Directory Watch object to monitor music library for changes.
+            DirectoryWatch watcher = new DirectoryWatch();
     		
         } catch (Exception ex) {
         	System.exit(0);
