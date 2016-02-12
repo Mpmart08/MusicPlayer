@@ -55,8 +55,6 @@ public class AlbumsController implements Initializable, SubView {
     private boolean isAlbumDetailCollapsed = true;
     
     // Initializes values used for animations.
-    private double expandedHeightReload = 50;
-    private double collapsedHeightReload = 0;
     private double expandedHeight = 400;
     private double collapsedHeight = 0;
     
@@ -88,17 +86,6 @@ public class AlbumsController implements Initializable, SubView {
         	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
             songBox.setPrefHeight(curHeight);
             songBox.setOpacity(frac);
-        }
-    };
-    
-    private Animation songTableReloadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeightReload + (expandedHeightReload - collapsedHeightReload) * (frac);
-            songTable.setTranslateY(expandedHeightReload - curHeight);
-            songTable.setOpacity(frac);
         }
     };
     
@@ -288,7 +275,7 @@ public class AlbumsController implements Initializable, SubView {
             	currentCell = index;
             	
         		// Shows song table, plays load animation and populates song table with album songs.
-        		expandAlbumDetail(cell, index);
+        		expandAlbumDetail();
         		expandAnimation.play();
         		
         		populateSongTable(cell, album);
@@ -314,8 +301,14 @@ public class AlbumsController implements Initializable, SubView {
             	currentCell = index;
             	
             	// Plays load animation and populates song table with songs of newly selected album.
-            	songTableReloadAnimation.play();
-        		populateSongTable(cell, album);
+            	collapseAnimation.setOnFinished(x -> {
+            		populateSongTable(cell, album);
+            		expandAlbumDetail();
+            		expandAnimation.play();
+            		collapseAnimation.setOnFinished(y -> collapseAlbumDetail());
+            	});
+            	
+            	collapseAnimation.play();
         		
         		// Else if album detail is expanded and a different album is selected on a different row.
         	} else if (!isAlbumDetailCollapsed && !(index == currentCell)
@@ -331,8 +324,16 @@ public class AlbumsController implements Initializable, SubView {
             	
             	// Collapses the song table and then expands it in the appropriate row with songs on new album.
             	collapseAlbumDetail();
-        		expandAlbumDetail(cell, index);
-            	songTableReloadAnimation.play();
+        		expandAlbumDetail();
+        		// Plays load animation and populates song table with songs of newly selected album.
+            	collapseAnimation.setOnFinished(x -> {
+            		populateSongTable(cell, album);
+            		expandAlbumDetail();
+            		expandAnimation.play();
+            		collapseAnimation.setOnFinished(y -> collapseAlbumDetail());
+            	});
+            	
+            	collapseAnimation.play();
         		populateSongTable(cell, album);
         	} else {
         		
@@ -349,7 +350,7 @@ public class AlbumsController implements Initializable, SubView {
         return cell;
     }
     
-    private void expandAlbumDetail(VBox cell, int index) {
+    private void expandAlbumDetail() {
     	isAlbumDetailCollapsed = false;
     	songBox.setVisible(true);
     }
