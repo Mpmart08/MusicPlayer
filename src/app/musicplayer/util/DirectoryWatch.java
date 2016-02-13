@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
@@ -46,11 +47,7 @@ public class DirectoryWatch {
                     System.out.println("Start Element: " + element);
                     
                 } else if (reader.isCharacters() && element.equals("musicLibrary")) {
-                	path = reader.getText();
-                	
-                	// TODO: DEBUG
-                	System.out.println("Path: " + path);
-                	
+                	path = reader.getText();               	
                 	break;
                 }
             }
@@ -62,16 +59,63 @@ public class DirectoryWatch {
 			directory.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 			
 			// TODO: DEBUG
-			System.out.println("Watch Service reigstered for directory: " + directory.getFileName());
+			System.out.println("Watch Service reigstered for directory: " + directory.getFileName() + 
+					" in: " + directory.getParent());
 			
 			// Sets infinite loop to monitor directory.
 			while (true) {
+				// Waits for the key to be signaled.
 				WatchKey key;
+				try {
+					key = watcher.take();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return;
+				}
+				
+				for (WatchEvent<?> event: key.pollEvents()) {
+					// Gets event type (create, delete, modify).
+					WatchEvent.Kind<?> kind = event.kind();
+					
+					// Gets file name of file that triggered event.
+					@SuppressWarnings("unchecked")
+					WatchEvent<Path> ev = (WatchEvent<Path>) event;
+					Path fileName = ev.context();
+
+					// 	TODO: DEBUG
+					System.out.println(kind.name() + ": " + fileName);
+					
+					// TODO: CALL METHODS TO DEAL WITH THESE CASES
+					if (kind == ENTRY_CREATE) {
+						fileAdd();
+					} else if (kind == ENTRY_DELETE) {
+						System.out.println("File deleted!");
+					} else if (kind == ENTRY_MODIFY) {
+						System.out.println("File modified!");
+					}
+				}
+				// Resets the key.
+				// If the key is no longer valid, exits loop.
+				// Makes it possible to receive further watch events.
+				boolean valid = key.reset();
+				if (!valid) {
+					break;
+				}
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String getPath() {
+		return this.path;
+	}
+	
+	private void fileAdd() {
+		System.out.println("File created!");
+		
+		// TODO: RETURN SONG PROPERTIES
+		
 	}
 
 }

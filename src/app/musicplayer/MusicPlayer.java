@@ -89,10 +89,7 @@ public class MusicPlayer extends Application {
     		stage.show();
     		
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
-            checkLibraryXML();
-            
-            // Creates a Directory Watch object to monitor music library for changes.
-            DirectoryWatch watcher = new DirectoryWatch();
+            checkLibraryXML();           
     		
         } catch (Exception ex) {
         	System.exit(0);
@@ -161,6 +158,10 @@ public class MusicPlayer extends Application {
             Platform.runLater(() -> {
             	initMain();
             });
+            
+            // Creates a Directory Watch object to monitor music library for changes.
+            @SuppressWarnings("unused")
+			DirectoryWatch watcher = new DirectoryWatch();
         });
         
         thread.start();
