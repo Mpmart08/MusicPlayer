@@ -5,16 +5,11 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 public class DirectoryWatch {
 	private String path;
@@ -22,45 +17,17 @@ public class DirectoryWatch {
 	/**
 	 * Creates a Directory Watch object.
 	 */
-	public DirectoryWatch() {
+	public DirectoryWatch(Path musicDirectory) {
 		try {
 			// Creates new watch service to monitor directory.
 			WatchService watcher = FileSystems.getDefault().newWatchService();
 			
-			// Creates reader for xml file.
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            factory.setProperty("javax.xml.stream.isCoalescing", true);
-            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
-            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
-            
-            String element = null;
-            
-            // Loops through xml file looking for the music directory file path.
-            while(reader.hasNext()) {
-                reader.next();
-                if (reader.isWhiteSpace()) {
-                    continue;
-                } else if (reader.isStartElement()) {
-                	element = reader.getName().getLocalPart();
-                	
-                	// TODO: DEBUG 
-                    System.out.println("Start Element: " + element);
-                    
-                } else if (reader.isCharacters() && element.equals("musicLibrary")) {
-                	path = reader.getText();               	
-                	break;
-                }
-            }
-            // Closes xml reader.
-            reader.close();
-            
-            // Gets the directory and watches for file creation, deletion, or modification.
-			Path directory = Paths.get(path);
-			directory.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            // Watches for file creation, deletion, or modification.
+			musicDirectory.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 			
 			// TODO: DEBUG
-			System.out.println("Watch Service reigstered for directory: " + directory.getFileName() + 
-					" in: " + directory.getParent());
+			System.out.println("DW29_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
+					" in: " + musicDirectory.getParent());
 			
 			// Sets infinite loop to monitor directory.
 			while (true) {
@@ -83,11 +50,12 @@ public class DirectoryWatch {
 					Path fileName = ev.context();
 
 					// 	TODO: DEBUG
-					System.out.println(kind.name() + ": " + fileName);
+					System.out.println("DW53_File Name to String: " + fileName.toString());
+					System.out.println("DW54_" + kind.name() + ": " + fileName);
 					
 					// TODO: CALL METHODS TO DEAL WITH THESE CASES
 					if (kind == ENTRY_CREATE) {
-						fileAdd();
+						fileAdd(fileName);
 					} else if (kind == ENTRY_DELETE) {
 						System.out.println("File deleted!");
 					} else if (kind == ENTRY_MODIFY) {
@@ -111,10 +79,19 @@ public class DirectoryWatch {
 		return this.path;
 	}
 	
-	private void fileAdd() {
+	private void fileAdd(Path fileName) {
 		System.out.println("File created!");
 		
 		// TODO: RETURN SONG PROPERTIES
+		System.out.println("DW86_File Name: " + fileName);
+		
+		File newFile = fileName.toFile();
+		
+		if (newFile.isFile()) {
+			System.out.println("DW91_New file created!");
+		} else if (newFile.isDirectory()) {
+			System.out.println("DW93_New folder created!");
+		}
 		
 	}
 

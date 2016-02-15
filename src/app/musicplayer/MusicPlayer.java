@@ -1,8 +1,10 @@
 package app.musicplayer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.LogManager;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Artist;
@@ -52,6 +57,8 @@ public class MusicPlayer extends Application {
     
     private static Stage stage;
     private static BorderPane view;
+    
+    private static Path musicDirectory;
 
     public static void main(String[] args) {
         Application.launch(MusicPlayer.class);
@@ -161,7 +168,7 @@ public class MusicPlayer extends Application {
             
             // Creates a Directory Watch object to monitor music library for changes.
             @SuppressWarnings("unused")
-			DirectoryWatch watcher = new DirectoryWatch();
+			DirectoryWatch watcher = new DirectoryWatch(musicDirectory);
         });
         
         thread.start();
@@ -457,6 +464,24 @@ public class MusicPlayer extends Application {
     	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	if (!libraryXML.exists()) {
     		createLibraryXML();
+    		// If the file exists, check if the music directory has changed.
+    	} else if (libraryXML.exists()) {
+    		// TODO: DEBUG
+    		System.out.println("MP469_File exists");
+    		
+    		// Gets music directory path from xml file.
+    		musicDirectory = musicDirectoryFinder();
+    		
+    		// TODO: DEBUG
+    		System.out.println("MP475_Music Directory: " + musicDirectory);
+    		
+    		// TODO: CHECK NUMBER OF FILES IN DIRECOTORY AND COMPARE TO NUMBER OF FILES IN XML
+    		
+//    		if (dirFileNum != xmlFileNum) {
+//    			CREATE NEW XML FILE AND REPLACE
+//    			createLibraryXML(); // maybe create a new function replaceLibraryXML with appropriate new popup
+//    		}
+    		
     	}
     }
     
@@ -493,6 +518,45 @@ public class MusicPlayer extends Application {
 	        }
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+    }
+    
+    private Path musicDirectoryFinder() {
+		try {
+			// Creates reader for xml file.
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty("javax.xml.stream.isCoalescing", true);
+			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+			
+			String element = null;
+			String path = null;
+			
+			// Loops through xml file looking for the music directory file path.
+			while(reader.hasNext()) {
+			    reader.next();
+			    if (reader.isWhiteSpace()) {
+			        continue;
+			    } else if (reader.isStartElement()) {
+			    	element = reader.getName().getLocalPart();
+			    	
+			    	// TODO: DEBUG 
+			        System.out.println("MP535_Start Element: " + element);
+			        
+			    } else if (reader.isCharacters() && element.equals("musicLibrary")) {
+			    	path = reader.getText();               	
+			    	break;
+			    }
+			}
+			// Closes xml reader.
+			reader.close();
+			
+			// Gets the directory and watches for file creation, deletion, or modification.
+			Path directory = Paths.get(path);
+			return directory;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
     }
 

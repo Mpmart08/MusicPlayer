@@ -483,11 +483,13 @@ public final class Library {
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
         Element library = doc.createElement("library");
+        Element musicLibrary = doc.createElement("musicLibrary");
+        musicLibrary.setTextContent(path);
         Element songs = doc.createElement("songs");
         Element playlists = doc.createElement("playlists");
         Element nowPlayingList = doc.createElement("nowPlayingList");
-        Element musicLibrary = doc.createElement("musicLibrary");
-        musicLibrary.setTextContent(path);
+        
+        // TODO: CREATE STRUCTURE <musicLibrary><Path></Path><>Size</></musicLibrary>
 
         doc.appendChild(library);
         library.appendChild(musicLibrary);
