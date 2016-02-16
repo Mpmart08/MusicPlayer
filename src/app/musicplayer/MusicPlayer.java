@@ -461,27 +461,37 @@ public class MusicPlayer extends Application {
     	// Specifies library.xml file and its location.
     	File libraryXML = new File(Resources.JAR + "library.xml");
     	
-    	// If the library.xml file does not exist, the file is created from the user specified music library location.
-    	if (!libraryXML.exists()) {
+		// If the file exists, check if the music directory has changed.
+    	if (libraryXML.exists()) {
+    		// Gets music directory path from xml file so that the number of files in the
+    		// music directory can be counted and compared to the data in the xml file.
+    		// It is then passed as an argument when creating the directory watch.
+        	musicDirectory = xmlMusicDirPathFinder();
+        	
+    		// TODO: DEBUG
+    		System.out.println("MP467_File exists");
+    		
+    		// Gets the number of files saved in the xml file and the number of files in the music directory.
+    		int xmlFileNum = xmlMusicDirFileNumFinder();
+    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory);
+    		
+    		// TODO: DEBUG
+    		System.out.println("MP474_XML File Num: " + xmlFileNum);
+    		System.out.println("MP475_Music Dir File Num: " + musicDirFileNum);
+    		
+    		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
+    		// Music library has changed; update the xml file.
+    		if (musicDirFileNum != xmlFileNum) {
+    			// TODO: CREATE NEW XML FILE AND REPLACE PREVIOUS ONE.
+    			// CREATE A NEW FUNCTION replaceLibraryXML WITH APPROPRIATE ALERT BOX?
+    			createLibraryXML();
+    		}
+    		
+        	// If the library.xml file does not exist, the file is created from the user specified music library location.
+    	} else if (!libraryXML.exists()) {
     		createLibraryXML();
-    		// If the file exists, check if the music directory has changed.
-    	} else if (libraryXML.exists()) {
-    		// TODO: DEBUG
-    		System.out.println("MP469_File exists");
-    		
-    		// Gets music directory path from xml file.
-    		musicDirectory = musicDirectoryFinder();
-    		
-    		// TODO: DEBUG
-    		System.out.println("MP475_Music Directory: " + musicDirectory);
-    		
-    		// TODO: CHECK NUMBER OF FILES IN DIRECOTORY AND COMPARE TO NUMBER OF FILES IN XML
-    		
-//    		if (dirFileNum != xmlFileNum) {
-//    			CREATE NEW XML FILE AND REPLACE
-//    			createLibraryXML(); // maybe create a new function replaceLibraryXML with appropriate new popup
-//    		}
-    		
+    		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
+        	musicDirectory = xmlMusicDirPathFinder();
     	}
     }
     
@@ -521,7 +531,7 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private Path musicDirectoryFinder() {
+    private Path xmlMusicDirPathFinder() {
 		try {
 			// Creates reader for xml file.
 			XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -539,11 +549,7 @@ public class MusicPlayer extends Application {
 			        continue;
 			    } else if (reader.isStartElement()) {
 			    	element = reader.getName().getLocalPart();
-			    	
-			    	// TODO: DEBUG 
-			        System.out.println("MP535_Start Element: " + element);
-			        
-			    } else if (reader.isCharacters() && element.equals("musicLibrary")) {
+			    } else if (reader.isCharacters() && element.equals("path")) {
 			    	path = reader.getText();               	
 			    	break;
 			    }
@@ -558,6 +564,45 @@ public class MusicPlayer extends Application {
 			e.printStackTrace();
 			return null;
 		}
+    }
+    
+    private int xmlMusicDirFileNumFinder() {
+		try {
+			// Creates reader for xml file.
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty("javax.xml.stream.isCoalescing", true);
+			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+			
+			String element = null;
+			String fileNum = null;
+			
+			// Loops through xml file looking for the music directory file path.
+			while(reader.hasNext()) {
+			    reader.next();
+			    if (reader.isWhiteSpace()) {
+			        continue;
+			    } else if (reader.isStartElement()) {
+			    	element = reader.getName().getLocalPart();
+			    } else if (reader.isCharacters() && element.equals("fileNum")) {
+			    	fileNum = reader.getText();               	
+			    	break;
+			    }
+			}
+			// Closes xml reader.
+			reader.close();
+			
+			// Converts the file number to an int and returns the value. 
+			return Integer.parseInt(fileNum);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+    }
+    
+    private int musicDirFileNumFinder(Path musicDirectory) {
+    	// TODO: FINISH
+    	return 1;
     }
 
     private static void updatePlayCount() {

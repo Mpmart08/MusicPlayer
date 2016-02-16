@@ -83,6 +83,8 @@ public class DirectoryWatch {
 		System.out.println("File created!");
 		
 		// TODO: RETURN SONG PROPERTIES
+		
+		// TODO: DEBUG
 		System.out.println("DW86_File Name: " + fileName);
 		
 		File newFile = fileName.toFile();

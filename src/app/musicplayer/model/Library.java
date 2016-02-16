@@ -484,25 +484,37 @@ public final class Library {
         Document doc = docBuilder.newDocument();
         Element library = doc.createElement("library");
         Element musicLibrary = doc.createElement("musicLibrary");
-        musicLibrary.setTextContent(path);
         Element songs = doc.createElement("songs");
         Element playlists = doc.createElement("playlists");
         Element nowPlayingList = doc.createElement("nowPlayingList");
         
-        // TODO: CREATE STRUCTURE <musicLibrary><Path></Path><>Size</></musicLibrary>
-
+        // Adds elements to library section.
         doc.appendChild(library);
         library.appendChild(musicLibrary);
         library.appendChild(songs);
         library.appendChild(playlists);
         library.appendChild(nowPlayingList);
+        
+        // Creates sub sections for music library path and number of files.
+        Element musicLibraryPath = doc.createElement("path");
+        Element musicLibraryFileNum = doc.createElement("fileNum");
+        
+        // Adds music library path to xml file.
+        musicLibraryPath.setTextContent(path);
+        musicLibrary.appendChild(musicLibraryPath);
 
         int id = 0;
         File directory = new File(Paths.get(path).toUri());
         getMaxProgress(directory);
         Library.task.updateProgress(id, Library.maxProgress);
         
-        writeXML(directory, doc, songs, id);
+        // Writes xml file and returns the number of files in the music directory.
+        int i = writeXML(directory, doc, songs, id);
+        String fileNumber = Integer.toString(i);
+        
+        // Adds the number of files in the music directory to the appropriate section in the xml file.
+        musicLibraryFileNum.setTextContent(fileNumber);
+        musicLibrary.appendChild(musicLibraryFileNum);
         
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
