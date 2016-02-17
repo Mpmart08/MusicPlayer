@@ -473,7 +473,7 @@ public class MusicPlayer extends Application {
     		
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		int xmlFileNum = xmlMusicDirFileNumFinder();
-    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory);
+    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory, 0);
     		
     		// TODO: DEBUG
     		System.out.println("MP474_XML File Num: " + xmlFileNum);
@@ -482,9 +482,14 @@ public class MusicPlayer extends Application {
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
     		if (musicDirFileNum != xmlFileNum) {
-    			// TODO: CREATE NEW XML FILE AND REPLACE PREVIOUS ONE.
-    			// CREATE A NEW FUNCTION replaceLibraryXML WITH APPROPRIATE ALERT BOX?
-    			createLibraryXML();
+    			// TODO: DEBUG
+    			System.out.println("MP486_Files don't match!");
+//    			// TODO: CREATE NEW XML FILE AND REPLACE PREVIOUS ONE.
+//    			// CREATE A NEW FUNCTION replaceLibraryXML WITH APPROPRIATE ALERT BOX?
+//    			createLibraryXML();
+    		} else if (musicDirFileNum == xmlFileNum) {
+    			// TODO: DEBUG
+    			System.out.println("MP486_Files DO match!");
     		}
     		
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
@@ -600,9 +605,26 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private int musicDirFileNumFinder(Path musicDirectory) {
-    	// TODO: FINISH
-    	return 1;
+    private int musicDirFileNumFinder(Path musicDirectory, int i) {
+    	
+    	// TODO: DEBUG
+    	System.out.println("MP608_Music Dir: " + musicDirectory.toString());
+    	
+    	// Converts the musicDirectory to a file and lists all the files in an array.
+        File[] files = musicDirectory.toFile().listFiles();
+
+        // Loops through the files, increments counter if file is found.
+        for (File file : files) {
+        	// TODO: DEBUG
+        	System.out.println("MP618_File to String: " + file.toString());
+        	System.out.println("MP619_Is File?: " + file.isFile());
+            if (file.isFile()) {
+            	i++;
+            } else if (file.isDirectory()) {
+                i = musicDirFileNumFinder(file.toPath(), i);
+            }
+        }
+    	return i;
     }
 
     private static void updatePlayCount() {
