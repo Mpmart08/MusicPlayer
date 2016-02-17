@@ -25,6 +25,7 @@ import app.musicplayer.util.Resources;
 import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
 import app.musicplayer.view.NowPlayingController;
+import app.musicplayer.view.UpdateMusicDialogController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -469,27 +470,27 @@ public class MusicPlayer extends Application {
         	musicDirectory = xmlMusicDirPathFinder();
         	
     		// TODO: DEBUG
-    		System.out.println("MP467_File exists");
+    		System.out.println("MP473_File exists");
     		
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		int xmlFileNum = xmlMusicDirFileNumFinder();
-    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory, 0);
+    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
     		
     		// TODO: DEBUG
-    		System.out.println("MP474_XML File Num: " + xmlFileNum);
-    		System.out.println("MP475_Music Dir File Num: " + musicDirFileNum);
+    		System.out.println("MP480_XML File Num: " + xmlFileNum);
+    		System.out.println("MP481_Music Dir File Num: " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
     		if (musicDirFileNum != xmlFileNum) {
     			// TODO: DEBUG
-    			System.out.println("MP486_Files don't match!");
-//    			// TODO: CREATE NEW XML FILE AND REPLACE PREVIOUS ONE.
-//    			// CREATE A NEW FUNCTION replaceLibraryXML WITH APPROPRIATE ALERT BOX?
-//    			createLibraryXML();
+    			System.out.println("MP487_Files don't match!");
+    			
+    			// Updates the xml file from the saved music directory.
+    			updateLibraryXML(musicDirectory);
     		} else if (musicDirFileNum == xmlFileNum) {
     			// TODO: DEBUG
-    			System.out.println("MP486_Files DO match!");
+    			System.out.println("MP493_Files DO match!");
     		}
     		
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
@@ -529,6 +530,49 @@ public class MusicPlayer extends Application {
 	        // Checks if the music was imported successfully. Closes the application otherwise.
 	        boolean musicImported = controller.isMusicImported();
 	        if (!musicImported) {
+	        	System.exit(0);
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    private void updateLibraryXML(Path musicDirectory) {
+    	
+    	// TODO: DEBUG
+    	System.out.println("MP543_In update library xml");
+    	try {
+			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
+			BorderPane importView = (BorderPane) loader.load();
+			
+			// Create the dialog Stage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Music Library Update");
+			// Forces user to focus on dialog.
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			// Sets minimal decorations for dialog.
+			dialogStage.initStyle(StageStyle.UTILITY);
+			// Prevents the alert from being re-sizable.
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(stage);
+			
+			// Sets the update music dialog scene in the stage.
+			dialogStage.setScene(new Scene(importView));
+
+			// Set the dialog and music directory in the controller.
+			UpdateMusicDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setMusicDirectory(musicDirectory);
+			
+			// Calls the method to handle the xml file update.
+			controller.handleUpdate();
+			
+	        // Show the dialog and wait until the user closes it.
+	        dialogStage.showAndWait();
+	        
+	        // Checks if the music was updated successfully. Closes the application otherwise.
+	        boolean musicUpdated = controller.isMusicUpdated();
+	        if (!musicUpdated) {
 	        	System.exit(0);
 	        }
 		} catch (IOException e) {
@@ -605,23 +649,22 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private int musicDirFileNumFinder(Path musicDirectory, int i) {
+    private int musicDirFileNumFinder(File musicDirectory, int i) {
     	
     	// TODO: DEBUG
     	System.out.println("MP608_Music Dir: " + musicDirectory.toString());
     	
     	// Converts the musicDirectory to a file and lists all the files in an array.
-        File[] files = musicDirectory.toFile().listFiles();
+        File[] files = musicDirectory.listFiles();
 
         // Loops through the files, increments counter if file is found.
         for (File file : files) {
         	// TODO: DEBUG
         	System.out.println("MP618_File to String: " + file.toString());
-        	System.out.println("MP619_Is File?: " + file.isFile());
             if (file.isFile()) {
             	i++;
             } else if (file.isDirectory()) {
-                i = musicDirFileNumFinder(file.toPath(), i);
+                i = musicDirFileNumFinder(file, i);
             }
         }
     	return i;
