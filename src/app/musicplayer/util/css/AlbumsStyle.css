@@ -89,8 +89,8 @@
 
 .table-view {
     -fx-background-color: white;
-    -fx-border-color: #f2f2f2;
-    -fx-border-width: 5 3 0 3;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 0;
     -fx-background-insets: 0 0 0 0;
     -fx-background-radius: 0 0 0 0;
     -fx-focus-color: white;
@@ -267,4 +267,23 @@
 
 .songTable-box {
 	-fx-background-color: white;
+}
+
+.separator:vertical .line {
+    -fx-border-width: 0 1 0 0;
+    -fx-border-color: #c2c2c2;
+}
+
+
+.separator:horizontal .line {
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #c2c2c2;
+}
+
+.separator:horizontal:hover {
+    -fx-background-color: #f2f2f2;
+}
+
+.separator:horizontal:pressed {
+    -fx-background-color: #dadada;
 }

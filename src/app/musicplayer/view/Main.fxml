@@ -30,6 +30,9 @@
                      </HBox.margin>
                   </ImageView>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="230.0">
                <VBox.margin>
@@ -55,6 +58,9 @@
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <HBox id="albums" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
@@ -92,6 +98,9 @@
                      </HBox.margin>
                   </Label>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <HBox id="playlists" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
@@ -109,6 +118,9 @@
                      </HBox.margin>
                   </Label>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
             <HBox id="nowPlaying" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" onMouseClicked="#selectView" prefHeight="50.0" prefWidth="250.0" styleClass="sideBarItem">
                <children>
@@ -126,12 +138,10 @@
                      </HBox.margin>
                   </Label>
                </children>
-            </HBox>
-            <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="230.0">
                <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
+                  <Insets />
                </VBox.margin>
-            </Separator>
+            </HBox>
          </children>
       </VBox>
    </left>

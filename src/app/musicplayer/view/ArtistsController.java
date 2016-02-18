@@ -1,7 +1,6 @@
 package app.musicplayer.view;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
@@ -97,16 +96,12 @@ public class ArtistsController implements Initializable, SubView {
         		ex.printStackTrace();
         	}
         	
-            ArrayList<VBox> cells = new ArrayList<VBox>();
-
             for (int j = 25; j < artists.size(); j++) {
                 Artist artist = artists.get(j);
-                cells.add(createCell(artist));
+                Platform.runLater(() -> {
+                    grid.getChildren().add(createCell(artist));
+                });
             }
-
-            Platform.runLater(() -> {
-                grid.getChildren().addAll(cells);
-            });
 
         }).start();
     }
