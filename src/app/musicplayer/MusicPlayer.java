@@ -541,6 +541,7 @@ public class MusicPlayer extends Application {
     	
     	// TODO: DEBUG
     	System.out.println("MP543_In update library xml");
+    	
     	try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
 			BorderPane importView = (BorderPane) loader.load();
@@ -652,7 +653,7 @@ public class MusicPlayer extends Application {
     private int musicDirFileNumFinder(File musicDirectory, int i) {
     	
     	// TODO: DEBUG
-    	System.out.println("MP608_Music Dir: " + musicDirectory.toString());
+//    	System.out.println("MP656_Music Dir: " + musicDirectory.toString());
     	
     	// Converts the musicDirectory to a file and lists all the files in an array.
         File[] files = musicDirectory.listFiles();
@@ -660,7 +661,7 @@ public class MusicPlayer extends Application {
         // Loops through the files, increments counter if file is found.
         for (File file : files) {
         	// TODO: DEBUG
-        	System.out.println("MP618_File to String: " + file.toString());
+//        	System.out.println("MP664_File to String: " + file.toString());
             if (file.isFile()) {
             	i++;
             } else if (file.isDirectory()) {

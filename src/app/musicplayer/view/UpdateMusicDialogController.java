@@ -36,6 +36,11 @@ public class UpdateMusicDialogController {
 		this.dialogStage = dialogStage;
 	}
 	
+	/**
+	 * Sets the music directory path as a string for the dialog.
+	 * 
+	 * @param musicDirectory
+	 */
 	public void setMusicDirectory(Path musicDirectory) {
 		this.musicDirectory = musicDirectory.toString();
 		

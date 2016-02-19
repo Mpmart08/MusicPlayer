@@ -40,6 +40,12 @@ public class DirectoryWatch {
 					return;
 				}
 				
+//				Path dir = keys.get(key);
+//				if (dir == null) {
+//					System.err.println("Watchkey not recognized!");
+//					continue;
+//				}
+				
 				for (WatchEvent<?> event: key.pollEvents()) {
 					// Gets event type (create, delete, modify).
 					WatchEvent.Kind<?> kind = event.kind();
