@@ -287,3 +287,48 @@
 .separator:horizontal:pressed {
     -fx-background-color: #dadada;
 }
+
+.sub-view .scroll-bar:vertical .increment-button,
+.sub-view .scroll-bar:vertical .decrement-button,
+.sub-view .scroll-bar:vertical .increment-arrow,
+.sub-view .scroll-bar:vertical .decrement-arrow {
+    -fx-pref-height: 0;
+    -fx-padding: 3;
+}
+
+.sub-view .scroll-bar:vertical .track {
+    -fx-background-color: #f2f2f2;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.sub-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #dadada;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.sub-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #c2c2c2;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.table-view .scroll-bar,
+.table-view .scroll-bar:horizontal .increment-button,
+.table-view .scroll-bar:horizontal .decrement-button,
+.table-view .scroll-bar:horizontal .increment-arrow, 
+.table-view .scroll-bar:horizontal .decrement-arrow,
+.table-view .scroll-bar:vertical .increment-button,
+.table-view .scroll-bar:vertical .decrement-button,
+.table-view .scroll-bar:vertical .increment-arrow, 
+.table-view .scroll-bar:vertical .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    visibility: hidden;
+}
