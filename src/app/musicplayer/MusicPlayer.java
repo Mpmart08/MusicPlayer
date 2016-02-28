@@ -55,6 +55,7 @@ public class MusicPlayer extends Application {
     private static boolean isLoopActive = false;
     private static boolean isShuffleActive = false;
     private static boolean isMuted = false;
+    private static Object draggedItem;
     
     private static Stage stage;
     private static BorderPane view;
@@ -446,7 +447,21 @@ public class MusicPlayer extends Application {
         return mainController;
     }
     
+<<<<<<< HEAD
     private static void checkLibraryXML() {
+||||||| 6b8e4bf... Revert "Merge remote-tracking branch 'refs/remotes/origin/master' into musicDirListener"
+    private void checkLibraryXML() {
+=======
+    public static void setDraggedItem(Object item) {
+    	draggedItem = item;
+    }
+    
+    public static Object getDraggedItem() {
+    	return draggedItem;
+    }
+    
+    private void checkLibraryXML() {
+>>>>>>> parent of 6b8e4bf... Revert "Merge remote-tracking branch 'refs/remotes/origin/master' into musicDirListener"
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
 		try {

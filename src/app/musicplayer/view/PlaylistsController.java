@@ -5,30 +5,30 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.model.Library;
 import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.SubView;
-import javafx.animation.Animation;
-import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Duration;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 
 public class PlaylistsController implements Initializable, SubView {
 
-    @FXML private ListView<Playlist> playlistList;
     @FXML private TableView<Song> tableView;
     @FXML private TableColumn<Song, Boolean> playingColumn;
     @FXML private TableColumn<Song, String> titleColumn;
@@ -38,32 +38,9 @@ public class PlaylistsController implements Initializable, SubView {
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
-    private double expandedHeight = 50;
-    private double collapsedHeight = 0;
-
-    private Animation loadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(1000));
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            if (frac < 0.25) {
-                tableView.setTranslateY(expandedHeight - curHeight * 4);
-            } else {
-                tableView.setTranslateY(collapsedHeight);
-            }
-            tableView.setOpacity(frac);
-        }
-    };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        ObservableList<Playlist> playlists = Library.getPlaylists();
-        playlistList.setItems(playlists);
-
-        selectedPlaylist = playlists.get(0);
-        selectPlaylist(selectedPlaylist);
 
         titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
         artistColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.35));
@@ -81,6 +58,10 @@ public class PlaylistsController implements Initializable, SubView {
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        
+        tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	event.consume();
+        });
 
         tableView.setRowFactory(x -> {
 
@@ -107,8 +88,24 @@ public class PlaylistsController implements Initializable, SubView {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
+                } else {
+                	tableView.getSelectionModel().select(row.getItem());
                 }
             });
+            
+            row.setOnDragDetected(event -> {
+            	Dragboard db = row.startDragAndDrop(TransferMode.ANY);
+            	ClipboardContent content = new ClipboardContent();
+                content.putString("Song");
+                db.setContent(content);
+            	MusicPlayer.setDraggedItem(row.getItem());
+            	ImageView image = new ImageView(row.snapshot(null, null));
+            	Rectangle2D rectangle = new Rectangle2D(0, 0, 250, 50);
+            	image.setViewport(rectangle);
+            	db.setDragView(image.snapshot(null, null));
+                event.consume();
+            });
+            
             return row ;
         });
         
@@ -121,50 +118,18 @@ public class PlaylistsController implements Initializable, SubView {
         		selectedSong = newSelection;
         	}
         });
-
-        playlistList.setOnMouseClicked(event -> {
-
-            Playlist playlist = playlistList.getSelectionModel().getSelectedItem();
-
-            if (event.getClickCount() == 2) {
-
-                Thread thread = new Thread(() -> {
-                    ObservableList<Song> playlistSongs = playlist.getSongs();
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(playlistSongs);
-                    }
-                    Song song = playlistSongs.get(0);
-                    MusicPlayer.setNowPlayingList(playlistSongs);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
-                });
-
-                thread.start();
-
-            } else if (selectedPlaylist != playlist) {
-
-                selectPlaylist(playlist);
-                if (loadAnimation.statusProperty().get() == Animation.Status.RUNNING) {
-                    loadAnimation.stop();
-                }
-                loadAnimation.play();
-            }
-        });
     }
 
-    private void selectPlaylist(Playlist playlist) {
+    public void selectPlaylist(Playlist playlist) {
 
-    	if (selectedSong != null) {
-        	selectedSong.setSelected(false);
-        }
-    	selectedSong = null;
-        selectedPlaylist = playlist;
-        playlistList.getSelectionModel().select(playlist);
-        playlistList.scrollTo(playlistList.getSelectionModel().getSelectedIndex());
+    	selectedPlaylist = playlist;
         ObservableList<Song> songs = playlist.getSongs();
         tableView.getSelectionModel().clearSelection();
+        
+        if (songs.isEmpty()) {
+        	songs.add(null);
+        }
         tableView.setItems(songs);
-        tableView.scrollTo(0);
     }
     
     @Override
