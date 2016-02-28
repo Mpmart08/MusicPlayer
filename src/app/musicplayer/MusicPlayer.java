@@ -446,7 +446,7 @@ public class MusicPlayer extends Application {
         return mainController;
     }
     
-    private void checkLibraryXML() {
+    private static void checkLibraryXML() {
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
 		try {
@@ -470,7 +470,7 @@ public class MusicPlayer extends Application {
         	musicDirectory = xmlMusicDirPathFinder();
         	
     		// TODO: DEBUG
-    		System.out.println("MP473_File exists");
+//    		System.out.println("MP473_File exists");
     		
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		int xmlFileNum = xmlMusicDirFileNumFinder();
@@ -484,13 +484,13 @@ public class MusicPlayer extends Application {
     		// Music library has changed; update the xml file.
     		if (musicDirFileNum != xmlFileNum) {
     			// TODO: DEBUG
-    			System.out.println("MP487_Files don't match!");
+//    			System.out.println("MP487_Files don't match!");
     			
     			// Updates the xml file from the saved music directory.
     			updateLibraryXML(musicDirectory);
     		} else if (musicDirFileNum == xmlFileNum) {
     			// TODO: DEBUG
-    			System.out.println("MP493_Files DO match!");
+//    			System.out.println("MP493_Files DO match!");
     		}
     		
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
@@ -501,9 +501,9 @@ public class MusicPlayer extends Application {
     	}
     }
     
-    private void createLibraryXML() {    	
+    private static void createLibraryXML() {    	
     	try {
-			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "ImportMusicDialog.fxml"));
+			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
 			BorderPane importView = (BorderPane) loader.load();
 			
 			// Create the dialog Stage.
@@ -537,13 +537,13 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private void updateLibraryXML(Path musicDirectory) {
+    public static void updateLibraryXML(Path musicDirectory) {
     	
     	// TODO: DEBUG
     	System.out.println("MP543_In update library xml");
     	
     	try {
-			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
+			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
 			BorderPane importView = (BorderPane) loader.load();
 			
 			// Create the dialog Stage.
@@ -581,7 +581,7 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private Path xmlMusicDirPathFinder() {
+    private static Path xmlMusicDirPathFinder() {
 		try {
 			// Creates reader for xml file.
 			XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -616,7 +616,7 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private int xmlMusicDirFileNumFinder() {
+    private static int xmlMusicDirFileNumFinder() {
 		try {
 			// Creates reader for xml file.
 			XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -650,7 +650,7 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    private int musicDirFileNumFinder(File musicDirectory, int i) {
+    private static int musicDirFileNumFinder(File musicDirectory, int i) {
     	
     	// TODO: DEBUG
 //    	System.out.println("MP656_Music Dir: " + musicDirectory.toString());

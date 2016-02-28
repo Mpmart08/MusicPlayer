@@ -505,6 +505,10 @@ public final class Library {
 
         int id = 0;
         File directory = new File(Paths.get(path).toUri());
+        
+        // TODO: DEBUG
+        System.out.println("L510_Directory: " + directory);
+        
         getMaxProgress(directory);
         Library.task.updateProgress(id, Library.maxProgress);
         
@@ -532,6 +536,9 @@ public final class Library {
     }
     
     private static void getMaxProgress(File directory) {
+    	
+    	// TODO: DEBUG
+    	System.out.println("L541_Directory: " + directory);
     	
     	File[] files = directory.listFiles();
     	
