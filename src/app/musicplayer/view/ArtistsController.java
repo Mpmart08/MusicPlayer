@@ -1,7 +1,6 @@
 package app.musicplayer.view;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
@@ -13,6 +12,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -22,6 +22,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -97,16 +100,12 @@ public class ArtistsController implements Initializable, SubView {
         		ex.printStackTrace();
         	}
         	
-            ArrayList<VBox> cells = new ArrayList<VBox>();
-
             for (int j = 25; j < artists.size(); j++) {
                 Artist artist = artists.get(j);
-                cells.add(createCell(artist));
+                Platform.runLater(() -> {
+                    grid.getChildren().add(createCell(artist));
+                });
             }
-
-            Platform.runLater(() -> {
-                grid.getChildren().addAll(cells);
-            });
 
         }).start();
     }
@@ -149,6 +148,18 @@ public class ArtistsController implements Initializable, SubView {
             String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
             Artist a = Library.getArtist(artistTitle);
             artistsMainController.selectArtist(a);
+        });
+        
+        cell.setOnDragDetected(event -> {
+        	PseudoClass pressed = PseudoClass.getPseudoClass("pressed");
+        	cell.pseudoClassStateChanged(pressed, false);
+        	Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
+        	ClipboardContent content = new ClipboardContent();
+            content.putString("Artist");
+            db.setContent(content);
+        	MusicPlayer.setDraggedItem(artist);
+        	db.setDragView(cell.snapshot(null, null));
+            event.consume();
         });
 
         return cell;

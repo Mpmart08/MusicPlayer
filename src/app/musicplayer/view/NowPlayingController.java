@@ -1,11 +1,13 @@
 package app.musicplayer.view;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
+import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.SubView;
 import javafx.beans.value.ChangeListener;
@@ -14,10 +16,16 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.transform.Transform;
 
 public class NowPlayingController implements Initializable, SubView {
 
@@ -28,6 +36,8 @@ public class NowPlayingController implements Initializable, SubView {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    private Song selectedSong;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -41,7 +51,7 @@ public class NowPlayingController implements Initializable, SubView {
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
         playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
         artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
         lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
@@ -53,6 +63,10 @@ public class NowPlayingController implements Initializable, SubView {
         albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        
+        tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	event.consume();
+        });
 
         tableView.setItems(songs);
 
@@ -83,14 +97,51 @@ public class NowPlayingController implements Initializable, SubView {
                     Song song = row.getItem();
                     MusicPlayer.setNowPlaying(song);
                     MusicPlayer.play();
+                } else {
+                	tableView.getSelectionModel().select(row.getItem());
                 }
             });
+            
+            row.setOnDragDetected(event -> {
+            	Dragboard db = row.startDragAndDrop(TransferMode.ANY);
+            	ClipboardContent content = new ClipboardContent();
+                content.putString("Song");
+                db.setContent(content);
+            	MusicPlayer.setDraggedItem(row.getItem());
+            	SnapshotParameters sp = new SnapshotParameters();
+            	sp.setTransform(Transform.scale(1.5, 1.5));
+            	db.setDragView(row.snapshot(sp, null));
+                event.consume();
+            });
+            
             return row ;
+        });
+        
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+        	if (oldSelection != null) {
+        		oldSelection.setSelected(false);
+        	}
+        	if (newSelection != null) {
+        		newSelection.setSelected(true);
+        		selectedSong = newSelection;
+        	}
         });
     }
     
     @Override
-    public void play() {}
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ObservableList<Song> songList = tableView.getItems();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songList);
+        	songList.remove(song);
+        	songList.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songList);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
     
     @Override
     public void scroll(char letter) {}
