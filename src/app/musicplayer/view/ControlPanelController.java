@@ -5,7 +5,6 @@ import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.util.SubView;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
@@ -27,20 +26,19 @@ public class ControlPanelController implements Initializable {
 	}
 	
 	@FXML
-	private void playSong(Event e) {
+	private void playSong() {
 		
 		SubView controller = MusicPlayer.getMainController().getSubViewController();
 		controller.play();
-		e.consume();
 	}
 	
 	@FXML
-	private void addToPlaylist(Event e) {
-		e.consume();
+	private void addToPlaylist() {
+			
 	}
 	
 	@FXML
-	private void showInfo(Event e) {
-		e.consume();
+	private void showInfo() {
+		
 	}
 }

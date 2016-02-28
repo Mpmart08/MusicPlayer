@@ -34,12 +34,6 @@ public class Playlist {
     public ObservableList<Song> getSongs() {
         return FXCollections.observableArrayList(this.songs);
     }
-    
-    public void addSong(Song song) {
-    	if (!songs.contains(song)) {
-    		songs.add(song);
-    	}
-    }
 
     @Override
     public String toString() {

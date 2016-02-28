@@ -13,54 +13,17 @@
             <FlowPane fx:id="grid" />
          </content>
       </ScrollPane>
-      <VBox fx:id="songBox" alignment="TOP_CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="200.0" styleClass="songTable-box" StackPane.alignment="BOTTOM_CENTER">
+      <VBox fx:id="songBox" alignment="BOTTOM_CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="200.0" styleClass="songTable-box" StackPane.alignment="BOTTOM_CENTER">
          <children>
-            <Separator fx:id="horizontalSeparator" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="15.0">
-               <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
-               </VBox.margin>
-            </Separator>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="sub-view" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-               <content>
-                  <VBox>
-                     <children>
-                        <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
-                           <children>
-                              <Label fx:id="artistLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                              </Label>
-                              <Separator fx:id="verticalSeparator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0">
-                                 <HBox.margin>
-                                    <Insets bottom="10.0" top="10.0" />
-                                 </HBox.margin>
-                              </Separator>
-                              <Label fx:id="albumLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
-                           </children>
-                        </HBox>
-                        <TableView fx:id="songTable" fixedCellSize="50.0" focusTraversable="false" prefHeight="400.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
-                          <columns>
-                            <TableColumn fx:id="playingColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
-                            <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
-                              <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
-                              <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
-                          </columns>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </TableView>
-                     </children>
-                  </VBox>
-               </content>
-               <padding>
-                  <Insets right="25.0" />
-               </padding>
-            </ScrollPane>
+            <TableView fx:id="songTable" fixedCellSize="50.0" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="playingColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
+                <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
+                  <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+                  <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
+              </columns>
+            </TableView>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
       </VBox>
    </children>
 </StackPane>

@@ -28,7 +28,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -40,10 +39,6 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -52,10 +47,9 @@ public class ArtistsMainController implements Initializable, SubView {
 
     public class ArtistCell extends ListCell<Artist> {
 
-        private HBox cell = new HBox();
-        private ImageView artistImage = new ImageView();
-        private Label title = new Label();
-        private Artist artist;
+        HBox cell = new HBox();
+        ImageView artistImage = new ImageView();
+        Label title = new Label();
 
         public ArtistCell() {
 
@@ -70,27 +64,12 @@ public class ArtistsMainController implements Initializable, SubView {
             cell.setAlignment(Pos.CENTER_LEFT);
             HBox.setMargin(artistImage, new Insets(0, 10, 0, 0));
             this.setPrefWidth(248);
-            
-            this.setOnMouseClicked(event -> {
-            	artistList.getSelectionModel().select(artist);
-            });
-            
-            this.setOnDragDetected(event -> {
-            	Dragboard db = this.startDragAndDrop(TransferMode.ANY);
-            	ClipboardContent content = new ClipboardContent();
-                content.putString("Artist");
-                db.setContent(content);
-            	MusicPlayer.setDraggedItem(artist);
-            	db.setDragView(this.snapshot(null, null));
-            	event.consume();
-            });
         }
 
         @Override
         protected void updateItem(Artist artist, boolean empty) {
 
             super.updateItem(artist, empty);
-            this.artist = artist;
 
             if (empty){
 
@@ -107,8 +86,7 @@ public class ArtistsMainController implements Initializable, SubView {
 
     public class AlbumCell extends ListCell<Album> {
 
-        private ImageView albumArtwork = new ImageView();
-        private Album album;
+        ImageView albumArtwork = new ImageView();
 
         public AlbumCell() {
 
@@ -121,27 +99,12 @@ public class ArtistsMainController implements Initializable, SubView {
             albumArtwork.setPreserveRatio(true);
             albumArtwork.setSmooth(true);
             albumArtwork.setCache(true);
-            
-            this.setOnMouseClicked(event -> {
-            	albumList.getSelectionModel().select(album);
-            });
-            
-            this.setOnDragDetected(event -> {
-            	Dragboard db = this.startDragAndDrop(TransferMode.ANY);
-            	ClipboardContent content = new ClipboardContent();
-                content.putString("Album");
-                db.setContent(content);
-            	MusicPlayer.setDraggedItem(album);
-            	db.setDragView(this.snapshot(null, null));
-                event.consume();
-            });
         }
 
         @Override
         protected void updateItem(Album album, boolean empty) {
 
             super.updateItem(album, empty);
-            this.album = album;
 
             if (empty){
 
@@ -220,8 +183,6 @@ public class ArtistsMainController implements Initializable, SubView {
             double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
             songTable.setTranslateY(expandedHeight - curHeight);
             songTable.setOpacity(1 - frac);
-            songTable.setMinHeight(1 - frac);
-            songTable.setPrefHeight(1 - frac);
         }
     };
     
@@ -318,18 +279,6 @@ public class ArtistsMainController implements Initializable, SubView {
 
         albumList.setCellFactory(listView -> new AlbumCell());
         artistList.setCellFactory(listView -> new ArtistCell());
-        
-        artistList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-        	event.consume();
-        });
-        
-        albumList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-        	event.consume();
-        });
-        
-        songTable.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-        	event.consume();
-        });
 
         ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
@@ -378,7 +327,6 @@ public class ArtistsMainController implements Initializable, SubView {
     	        			selectedArtist = artistList.getSelectionModel().getSelectedItem();
                             showAllSongs(selectedArtist);
                             artistLabel.setText(selectedArtist.getTitle());
-                            albumList.setPrefWidth(albumList.getItems().size() * 150 + 2);
                             albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
                             albumList.scrollTo(0);
     	        		});
@@ -479,22 +427,7 @@ public class ArtistsMainController implements Initializable, SubView {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
-                } else {
-                	songTable.getSelectionModel().select(row.getItem());
                 }
-            });
-            
-            row.setOnDragDetected(event -> {
-            	Dragboard db = row.startDragAndDrop(TransferMode.ANY);
-            	ClipboardContent content = new ClipboardContent();
-                content.putString("Song");
-                db.setContent(content);
-            	MusicPlayer.setDraggedItem(row.getItem());
-            	ImageView image = new ImageView(row.snapshot(null, null));
-            	Rectangle2D rectangle = new Rectangle2D(0, 0, 250, 50);
-            	image.setViewport(rectangle);
-            	db.setDragView(image.snapshot(null, null));
-                event.consume();
             });
 
             return row ;
@@ -668,8 +601,8 @@ public class ArtistsMainController implements Initializable, SubView {
 			}
         }).start();
         showAllSongs(artist);
-        albumList.setPrefWidth(artist.getAlbums().size() * 150 + 2);
-        albumList.setMaxWidth(artist.getAlbums().size() * 150 + 2);
+        albumList.setPrefWidth(artist.getAlbums().size() * 150);
+        albumList.setMaxWidth(artist.getAlbums().size() * 150);
         artistLabel.setText(artist.getTitle());
         separator.setVisible(true);
     }

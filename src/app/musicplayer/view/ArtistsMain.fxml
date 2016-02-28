@@ -35,7 +35,7 @@
                         <Insets />
                      </VBox.margin>
                   </ListView>
-                  <TableView fx:id="songTable" fixedCellSize="50.0" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="songTable" fixedCellSize="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" sortable="false" styleClass="playingColumn" />
                       <TableColumn fx:id="titleColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" sortable="false" styleClass="firstColumn" text="Title" />
