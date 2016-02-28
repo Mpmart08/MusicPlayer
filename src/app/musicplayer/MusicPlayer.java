@@ -447,11 +447,6 @@ public class MusicPlayer extends Application {
         return mainController;
     }
     
-<<<<<<< HEAD
-    private static void checkLibraryXML() {
-||||||| 6b8e4bf... Revert "Merge remote-tracking branch 'refs/remotes/origin/master' into musicDirListener"
-    private void checkLibraryXML() {
-=======
     public static void setDraggedItem(Object item) {
     	draggedItem = item;
     }
@@ -460,8 +455,7 @@ public class MusicPlayer extends Application {
     	return draggedItem;
     }
     
-    private void checkLibraryXML() {
->>>>>>> parent of 6b8e4bf... Revert "Merge remote-tracking branch 'refs/remotes/origin/master' into musicDirListener"
+    private static void checkLibraryXML() {
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
 		try {
