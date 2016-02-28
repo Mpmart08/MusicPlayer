@@ -55,7 +55,6 @@ public class MusicPlayer extends Application {
     private static boolean isLoopActive = false;
     private static boolean isShuffleActive = false;
     private static boolean isMuted = false;
-    private static Object draggedItem;
     
     private static Stage stage;
     private static BorderPane view;
@@ -445,14 +444,6 @@ public class MusicPlayer extends Application {
      */
     public static MainController getMainController() {
         return mainController;
-    }
-    
-    public static void setDraggedItem(Object item) {
-    	draggedItem = item;
-    }
-    
-    public static Object getDraggedItem() {
-    	return draggedItem;
     }
     
     private void checkLibraryXML() {

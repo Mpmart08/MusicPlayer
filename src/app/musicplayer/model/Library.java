@@ -255,11 +255,12 @@ public final class Library {
             playlists = new ArrayList<Playlist>();
 
             int id = 0;
+            playlists.add(new MostPlayedPlaylist(id++));
+            playlists.add(new RecentlyPlayedPlaylist(id++));
 
             try {
 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                factory.setProperty("javax.xml.stream.isCoalescing", true);
                 FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
                 XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 
@@ -320,19 +321,6 @@ public final class Library {
 
                 ex.printStackTrace();
             }
-            
-            playlists.sort((x, y) -> {
-            	if (x.getId() < y.getId()) {
-            		return 1;
-            	} else if (x.getId() > y.getId()) {
-            		return -1;
-            	} else {
-            		return 0;
-            	}
-            });
-            
-            playlists.add(new MostPlayedPlaylist(id++));
-            playlists.add(new RecentlyPlayedPlaylist(id++));
         }
         return FXCollections.observableArrayList(playlists);
     }
@@ -436,55 +424,6 @@ public final class Library {
         thread.start();
     }
     
-    public static void addPlaylist(String text) {
-    	
-    	Thread thread = new Thread(() -> {
-    		
-    		int i = playlists.size() - 2;
-    		playlists.add(new Playlist(i, text, new ArrayList<Song>()));
-
-            try {
-
-                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                Document doc = docBuilder.parse(Resources.JAR + "library.xml");
-
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
-
-                XPathExpression expr = xpath.compile("/library/playlists");
-                Node playlists = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-                
-                Element playlist = doc.createElement("playlist");
-                Element id = doc.createElement(ID);
-                Element title = doc.createElement(TITLE);
-                
-                id.setTextContent(Integer.toString(i));
-                title.setTextContent(text);
-                
-                playlists.appendChild(playlist);
-                playlist.appendChild(id);
-                playlist.appendChild(title);
-
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer transformer = transformerFactory.newTransformer();
-                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                DOMSource source = new DOMSource(doc);
-                File xmlFile = new File(Resources.JAR + "library.xml");
-                StreamResult result = new StreamResult(xmlFile);
-                transformer.transform(source, result);
-
-            } catch (Exception ex) {
-
-                ex.printStackTrace();
-            }
-
-        });
-
-        thread.start();
-    }
-    
     // GETTERS
 
     /**
@@ -513,13 +452,6 @@ public final class Library {
         }
         return songs.get(id);
     }
-    
-    public static Playlist getPlaylist(int id) {
-    	if (playlists == null) {
-    		getPlaylists();
-    	}
-    	return playlists.get(id);
-    }
 
     public static Artist getArtist(String title) {
         if (artists == null) {
@@ -540,13 +472,6 @@ public final class Library {
             getSongs();
         }
         return songs.stream().filter(song -> title.equals(song.getTitle())).findFirst().get();
-    }
-    
-    public static Playlist getPlaylist(String title) {
-        if (playlists == null) {
-            getPlaylists();
-        }
-        return playlists.stream().filter(playlist -> title.equals(playlist.getTitle())).findFirst().get();
     }
 
     public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {

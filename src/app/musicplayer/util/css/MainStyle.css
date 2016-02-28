@@ -2,26 +2,13 @@
     -fx-background-color: #ffffff;
 }
 
-.label, .letter, .text-field {
+.label, .letter {
     -fx-font-family: verdana;
     -fx-font-size: 18px;
 }
 
-.text-field, .text-field:focused {
-    -fx-border-width: 0 0 0 0;
-    -fx-border-color: transparent;
-    -fx-background-insets: 0;
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-}
-
 .letter:hover {
     -fx-text-fill: #c2c2c2;
-}
-
-.letter:pressed {
-    -fx-text-fill: #dadada;
 }
 
 .bottomBarLabel {
@@ -209,13 +196,4 @@
     -fx-border-width: 0 0 0 0;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-}
-
-.playlistBox, .playlistBox > .viewport {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-border-width: 0 0 0 0;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
 }
