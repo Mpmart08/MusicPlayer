@@ -31,10 +31,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -196,6 +198,8 @@ public class AlbumsController implements Initializable, SubView {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
+		songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		ObservableList<Album> albums = Library.getAlbums();
 		Collections.sort(albums);
 
@@ -272,44 +276,79 @@ public class AlbumsController implements Initializable, SubView {
             });
 
             row.setOnMouseClicked(event -> {
+            	TableViewSelectionModel<Song> sm = songTable.getSelectionModel();
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    Song song = row.getItem();
-                    Album album = Library.getAlbum(song.getAlbum());
-                    ArrayList<Song> songs = album.getSongs();
-                    if (MusicPlayer.isShuffleActive()) {
-                    	Collections.shuffle(songs);
-                    	songs.remove(song);
-                    	songs.add(0, song);
-                    }
-                    MusicPlayer.setNowPlayingList(songs);
-                    MusicPlayer.setNowPlaying(song);
-                    MusicPlayer.play();
+                    play();
+                } else if (event.isShiftDown()) {
+                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	if (indices.size() < 1) {
+                		if (indices.contains(row.getIndex())) {
+                    		sm.clearSelection(row.getIndex());
+                    	} else {
+                    		sm.select(row.getItem());
+                    	}
+                	} else {
+                		sm.clearSelection();
+	                	indices.sort((first, second) -> first.compareTo(second));
+	                	int max = indices.get(indices.size() - 1);
+	                	int min = indices.get(0);
+	                	if (min < row.getIndex()) {
+	                		for (int i = min; i <= row.getIndex(); i++) {
+	                			sm.select(i);
+	                		}
+	                	} else {
+	                		for (int i = row.getIndex(); i <= max; i++) {
+	                			sm.select(i);
+	                		}
+	                	}
+                	}
+                	
+                } else if (event.isControlDown()) {
+                	if (sm.getSelectedIndices().contains(row.getIndex())) {
+                		sm.clearSelection(row.getIndex());
+                	} else {
+                		sm.select(row.getItem());
+                	}
                 } else {
-                	songTable.getSelectionModel().select(row.getItem());
+                	if (sm.getSelectedIndices().size() > 1) {
+                		sm.clearSelection();
+                    	sm.select(row.getItem());
+                	} else if (sm.getSelectedIndices().contains(row.getIndex())) {
+                		sm.clearSelection();
+                	} else {
+                		sm.clearSelection();
+                    	sm.select(row.getItem());
+                	}
                 }
             });
             
             row.setOnDragDetected(event -> {
             	Dragboard db = row.startDragAndDrop(TransferMode.ANY);
             	ClipboardContent content = new ClipboardContent();
-                content.putString("Song");
-                db.setContent(content);
-            	MusicPlayer.setDraggedItem(row.getItem());
+            	if (songTable.getSelectionModel().getSelectedIndices().size() > 1) {
+            		content.putString("List");
+                    db.setContent(content);
+                	MusicPlayer.setDraggedItem(songTable.getSelectionModel().getSelectedItems());
+            	} else {
+            		content.putString("Song");
+                    db.setContent(content);
+                	MusicPlayer.setDraggedItem(row.getItem());
+            	}
             	ImageView image = new ImageView(row.snapshot(null, null));
             	Rectangle2D rectangle = new Rectangle2D(0, 0, 250, 50);
             	image.setViewport(rectangle);
-            	db.setDragView(image.snapshot(null, null));
+            	db.setDragView(image.snapshot(null, null), 125, 25);
                 event.consume();
             });
 
-            return row;
+            return row ;
         });
         
         songTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
         	if (oldSelection != null) {
         		oldSelection.setSelected(false);
         	}
-        	if (newSelection != null) {
+        	if (newSelection != null && songTable.getSelectionModel().getSelectedIndices().size() == 1) {
         		newSelection.setSelected(true);
         		selectedSong = newSelection;
         	}
@@ -461,7 +500,7 @@ public class AlbumsController implements Initializable, SubView {
             content.putString("Album");
             db.setContent(content);
         	MusicPlayer.setDraggedItem(album);
-        	db.setDragView(cell.snapshot(null, null));
+        	db.setDragView(cell.snapshot(null, null), cell.widthProperty().divide(2).get(), cell.heightProperty().divide(2).get());
             event.consume();
         });
         

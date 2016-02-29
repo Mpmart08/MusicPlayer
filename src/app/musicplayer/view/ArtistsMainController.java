@@ -34,10 +34,12 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -81,7 +83,7 @@ public class ArtistsMainController implements Initializable, SubView {
                 content.putString("Artist");
                 db.setContent(content);
             	MusicPlayer.setDraggedItem(artist);
-            	db.setDragView(this.snapshot(null, null));
+            	db.setDragView(this.snapshot(null, null), 125, 25);
             	event.consume();
             });
         }
@@ -132,7 +134,7 @@ public class ArtistsMainController implements Initializable, SubView {
                 content.putString("Album");
                 db.setContent(content);
             	MusicPlayer.setDraggedItem(album);
-            	db.setDragView(this.snapshot(null, null));
+            	db.setDragView(this.snapshot(null, null), 75, 75);
                 event.consume();
             });
         }
@@ -174,6 +176,7 @@ public class ArtistsMainController implements Initializable, SubView {
     private Artist selectedArtist;
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
+    private CountDownLatch loadedLatch;
 
     private Animation artistLoadAnimation = new Transition() {
         {
@@ -302,6 +305,18 @@ public class ArtistsMainController implements Initializable, SubView {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
+    	songTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    	
+    	loadedLatch = new CountDownLatch(1);
+    	
+    	artistLoadAnimation.setOnFinished(x -> {
+    		loadedLatch.countDown();
+    	});
+    	
+    	albumLoadAnimation.setOnFinished(x -> {
+    		loadedLatch.countDown();
+    	});
+    	
     	titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
@@ -376,7 +391,7 @@ public class ArtistsMainController implements Initializable, SubView {
     	        		Platform.runLater(() -> {
     	        			subViewRoot.setVisible(false);
     	        			selectedArtist = artistList.getSelectionModel().getSelectedItem();
-                            showAllSongs(selectedArtist);
+                            showAllSongs(selectedArtist, false);
                             artistLabel.setText(selectedArtist.getTitle());
                             albumList.setPrefWidth(albumList.getItems().size() * 150 + 2);
                             albumList.setMaxWidth(albumList.getItems().size() * 150 + 2);
@@ -477,23 +492,68 @@ public class ArtistsMainController implements Initializable, SubView {
             });
 
             row.setOnMouseClicked(event -> {
+            	TableViewSelectionModel<Song> sm = songTable.getSelectionModel();
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
+                } else if (event.isShiftDown()) {
+                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	if (indices.size() < 1) {
+                		if (indices.contains(row.getIndex())) {
+                    		sm.clearSelection(row.getIndex());
+                    	} else {
+                    		sm.select(row.getItem());
+                    	}
+                	} else {
+                		sm.clearSelection();
+	                	indices.sort((first, second) -> first.compareTo(second));
+	                	int max = indices.get(indices.size() - 1);
+	                	int min = indices.get(0);
+	                	if (min < row.getIndex()) {
+	                		for (int i = min; i <= row.getIndex(); i++) {
+	                			sm.select(i);
+	                		}
+	                	} else {
+	                		for (int i = row.getIndex(); i <= max; i++) {
+	                			sm.select(i);
+	                		}
+	                	}
+                	}
+                	
+                } else if (event.isControlDown()) {
+                	if (sm.getSelectedIndices().contains(row.getIndex())) {
+                		sm.clearSelection(row.getIndex());
+                	} else {
+                		sm.select(row.getItem());
+                	}
                 } else {
-                	songTable.getSelectionModel().select(row.getItem());
+                	if (sm.getSelectedIndices().size() > 1) {
+                		sm.clearSelection();
+                    	sm.select(row.getItem());
+                	} else if (sm.getSelectedIndices().contains(row.getIndex())) {
+                		sm.clearSelection();
+                	} else {
+                		sm.clearSelection();
+                    	sm.select(row.getItem());
+                	}
                 }
             });
             
             row.setOnDragDetected(event -> {
             	Dragboard db = row.startDragAndDrop(TransferMode.ANY);
             	ClipboardContent content = new ClipboardContent();
-                content.putString("Song");
-                db.setContent(content);
-            	MusicPlayer.setDraggedItem(row.getItem());
+            	if (songTable.getSelectionModel().getSelectedIndices().size() > 1) {
+            		content.putString("List");
+                    db.setContent(content);
+                	MusicPlayer.setDraggedItem(songTable.getSelectionModel().getSelectedItems());
+            	} else {
+            		content.putString("Song");
+                    db.setContent(content);
+                	MusicPlayer.setDraggedItem(row.getItem());
+            	}
             	ImageView image = new ImageView(row.snapshot(null, null));
             	Rectangle2D rectangle = new Rectangle2D(0, 0, 250, 50);
             	image.setViewport(rectangle);
-            	db.setDragView(image.snapshot(null, null));
+            	db.setDragView(image.snapshot(null, null), 125, 25);
                 event.consume();
             });
 
@@ -504,7 +564,7 @@ public class ArtistsMainController implements Initializable, SubView {
         	if (oldSelection != null) {
         		oldSelection.setSelected(false);
         	}
-        	if (newSelection != null) {
+        	if (newSelection != null && songTable.getSelectionModel().getSelectedIndices().size() == 1) {
         		newSelection.setSelected(true);
         		selectedSong = newSelection;
         	}
@@ -532,7 +592,7 @@ public class ArtistsMainController implements Initializable, SubView {
         if (selectedAlbum == album) {
 
             albumList.getSelectionModel().clearSelection();
-            showAllSongs(artistList.getSelectionModel().getSelectedItem());
+            showAllSongs(artistList.getSelectionModel().getSelectedItem(), false);
 
         } else {
         	
@@ -564,11 +624,19 @@ public class ArtistsMainController implements Initializable, SubView {
                     songTable.setPrefHeight(frac * height);
             	}
             };
-            songTableLoadAnimation.play();
+            new Thread(() -> {
+            	try {
+					loadedLatch.await();
+					loadedLatch = new CountDownLatch(1);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+            	songTableLoadAnimation.play();
+            }).start();
         }
     }
 
-    private void showAllSongs(Artist artist) {
+    private void showAllSongs(Artist artist, boolean fromMainController) {
 
         ObservableList<Album> albums = FXCollections.observableArrayList();
         ObservableList<Song> songs = FXCollections.observableArrayList();
@@ -622,7 +690,25 @@ public class ArtistsMainController implements Initializable, SubView {
                 songTable.setPrefHeight(frac * height);
         	}
         };
-        songTableLoadAnimation.play();
+        
+        songTableLoadAnimation.setOnFinished(x -> {
+        	loadedLatch.countDown();
+        });
+        
+        new Thread(() -> {
+        	try {
+        		if (fromMainController) {
+        			MusicPlayer.getMainController().getLatch().await();
+        			MusicPlayer.getMainController().resetLatch();
+        		} else {
+        			loadedLatch.await();
+        			loadedLatch = new CountDownLatch(1);
+        		}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			songTableLoadAnimation.play();
+        }).start();
     }
     
     private String removeArticle(String title) {
@@ -667,7 +753,7 @@ public class ArtistsMainController implements Initializable, SubView {
 				e.printStackTrace();
 			}
         }).start();
-        showAllSongs(artist);
+        showAllSongs(artist, true);
         albumList.setPrefWidth(artist.getAlbums().size() * 150 + 2);
         albumList.setMaxWidth(artist.getAlbums().size() * 150 + 2);
         artistLabel.setText(artist.getTitle());
@@ -676,20 +762,12 @@ public class ArtistsMainController implements Initializable, SubView {
     
     public void selectSong(Song song) {
     	
-    	CountDownLatch latch = new CountDownLatch(1);
-        scrollPane.heightProperty().addListener((x, y, z) -> {
-        	if (z.doubleValue() != 0) {
-        		latch.countDown();
-        	}
-        });
-        new Thread(() -> {
+    	new Thread(() -> {
             try {
-				latch.await();
+				loadedLatch.await();
+				loadedLatch = new CountDownLatch(1);
 				Platform.runLater(() -> {
 					songTable.getSelectionModel().select(song);
-					int selectedCell = songTable.getSelectionModel().getSelectedIndex();
-			        double vValue = (selectedCell * 50 + 250) / (songTable.getHeight() + 200 - scrollPane.getHeight());
-			        scrollPane.setVvalue(vValue);
 			        scrollPane.requestFocus();
 				});
 			} catch (Exception e) {

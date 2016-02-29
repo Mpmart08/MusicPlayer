@@ -158,7 +158,7 @@ public class ArtistsController implements Initializable, SubView {
             content.putString("Artist");
             db.setContent(content);
         	MusicPlayer.setDraggedItem(artist);
-        	db.setDragView(cell.snapshot(null, null));
+        	db.setDragView(cell.snapshot(null, null), cell.widthProperty().divide(2).get(), cell.heightProperty().divide(2).get());
             event.consume();
         });
 

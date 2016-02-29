@@ -63,6 +63,7 @@ public class MainController implements Initializable {
     private CustomSliderSkin sliderSkin;
     private Stage volumePopup;
     private VolumePopupController volumePopupController;
+    private CountDownLatch viewLoadedLatch;
 
     @FXML private BorderPane mainWindow;
     @FXML private ScrollPane subViewRoot;
@@ -91,6 +92,8 @@ public class MainController implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	
+    	resetLatch();
     	
     	controlBox.getChildren().remove(2);
     	
@@ -158,7 +161,8 @@ public class MainController implements Initializable {
         loadView("artists");
     } // End initialize()
     
-    private void initializePlaylists() {
+    @SuppressWarnings("unchecked")
+	private void initializePlaylists() {
     	
     	for (Playlist playlist : Library.getPlaylists()) {
     		try {
@@ -180,7 +184,7 @@ public class MainController implements Initializable {
     	            content.putString("Playlist");
     	            db.setContent(content);
     	        	MusicPlayer.setDraggedItem(playlist);
-    	        	db.setDragView(cell.snapshot(null, null));
+    	        	db.setDragView(cell.snapshot(null, null), 125, 25);
     	            event.consume();
     	        });
 				
@@ -220,40 +224,51 @@ public class MainController implements Initializable {
 				});
 				
 				cell.setOnDragDropped(event -> {
-					switch (event.getDragboard().getString()) {
-		            case "Artist":
-		            	Artist artist = (Artist) MusicPlayer.getDraggedItem();
-			            for (Album album : artist.getAlbums()) {
-			            	for (Song song : album.getSongs()) {
-			            		if (!playlist.getSongs().contains(song)) {
+					String dragString = event.getDragboard().getString();
+					new Thread(() -> {
+						switch (dragString) {
+			            case "Artist":
+			            	Artist artist = (Artist) MusicPlayer.getDraggedItem();
+				            for (Album album : artist.getAlbums()) {
+				            	for (Song song : album.getSongs()) {
+				            		if (!playlist.getSongs().contains(song)) {
+						            	playlist.addSong(song);
+				            		}
+					            }
+				            }
+				            break;
+			            case "Album":
+			            	Album album = (Album) MusicPlayer.getDraggedItem();
+				            for (Song song : album.getSongs()) {
+				            	if (!playlist.getSongs().contains(song)) {
 					            	playlist.addSong(song);
 			            		}
 				            }
-			            }
-			            break;
-		            case "Album":
-		            	Album album = (Album) MusicPlayer.getDraggedItem();
-			            for (Song song : album.getSongs()) {
+				            break;
+			            case "Playlist":
+			            	Playlist list = (Playlist) MusicPlayer.getDraggedItem();
+				            for (Song song : list.getSongs()) {
+				            	if (!playlist.getSongs().contains(song)) {
+					            	playlist.addSong(song);
+			            		}
+				            }
+				            break;
+			            case "Song":
+			            	Song song = (Song) MusicPlayer.getDraggedItem();
 			            	if (!playlist.getSongs().contains(song)) {
 				            	playlist.addSong(song);
 		            		}
+				            break;
+			            case "List":
+							ObservableList<Song> songs = (ObservableList<Song>) MusicPlayer.getDraggedItem();
+			            	for (Song s : songs) {
+			            		if (!playlist.getSongs().contains(s)) {
+					            	playlist.addSong(s);
+			            		}
+			            	}
+			            	break;
 			            }
-			            break;
-		            case "Playlist":
-		            	Playlist list = (Playlist) MusicPlayer.getDraggedItem();
-			            for (Song song : list.getSongs()) {
-			            	if (!playlist.getSongs().contains(song)) {
-				            	playlist.addSong(song);
-		            		}
-			            }
-			            break;
-		            case "Song":
-		            	Song song = (Song) MusicPlayer.getDraggedItem();
-		            	if (!playlist.getSongs().contains(song)) {
-			            	playlist.addSong(song);
-	            		}
-			            break;
-		            }
+					}).start();
 					
 					event.consume();
 				});
@@ -347,7 +362,6 @@ public class MainController implements Initializable {
 							&& event.getDragboard().hasString()) {
 						
 						cell.pseudoClassStateChanged(hover, false);
-						//cell.getStyleClass().setAll("sideBarItem");
 					}
 				});
 				
@@ -365,40 +379,45 @@ public class MainController implements Initializable {
 				
 				cell.setOnDragDropped(event -> {
 					Playlist playlist = Library.getPlaylist(label.getText());
-		            switch (event.getDragboard().getString()) {
-		            case "Artist":
-		            	Artist artist = (Artist) MusicPlayer.getDraggedItem();
-			            for (Album album : artist.getAlbums()) {
-			            	for (Song song : album.getSongs()) {
-			            		if (!playlist.getSongs().contains(song)) {
+					String dbString = event.getDragboard().getString();
+					
+					new Thread(() -> {
+						switch (dbString) {
+			            case "Artist":
+			            	Artist artist = (Artist) MusicPlayer.getDraggedItem();
+				            for (Album album : artist.getAlbums()) {
+				            	for (Song song : album.getSongs()) {
+				            		if (!playlist.getSongs().contains(song)) {
+						            	playlist.addSong(song);
+				            		}
+					            }
+				            }
+				            break;
+			            case "Album":
+			            	Album album = (Album) MusicPlayer.getDraggedItem();
+				            for (Song song : album.getSongs()) {
+				            	if (!playlist.getSongs().contains(song)) {
 					            	playlist.addSong(song);
 			            		}
 				            }
-			            }
-			            break;
-		            case "Album":
-		            	Album album = (Album) MusicPlayer.getDraggedItem();
-			            for (Song song : album.getSongs()) {
+				            break;
+			            case "Playlist":
+			            	Playlist list = (Playlist) MusicPlayer.getDraggedItem();
+				            for (Song song : list.getSongs()) {
+				            	if (!playlist.getSongs().contains(song)) {
+					            	playlist.addSong(song);
+			            		}
+				            }
+				            break;
+			            case "Song":
+			            	Song song = (Song) MusicPlayer.getDraggedItem();
 			            	if (!playlist.getSongs().contains(song)) {
 				            	playlist.addSong(song);
 		            		}
+				            break;
 			            }
-			            break;
-		            case "Playlist":
-		            	Playlist list = (Playlist) MusicPlayer.getDraggedItem();
-			            for (Song song : list.getSongs()) {
-			            	if (!playlist.getSongs().contains(song)) {
-				            	playlist.addSong(song);
-		            		}
-			            }
-			            break;
-		            case "Song":
-		            	Song song = (Song) MusicPlayer.getDraggedItem();
-		            	if (!playlist.getSongs().contains(song)) {
-			            	playlist.addSong(song);
-	            		}
-			            break;
-		            }
+					}).start();
+		            
 			        event.consume();
 				});
     			
@@ -501,7 +520,7 @@ public class MainController implements Initializable {
         ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
         Song song = MusicPlayer.getNowPlaying();
         Artist artist = Library.getArtist(song.getArtist());
-        Album album = Library.getAlbum(song.getAlbum());
+        Album album = artist.getAlbums().stream().filter(x -> x.getTitle().equals(song.getAlbum())).findFirst().get();
         artistsMainController.selectArtist(artist);
         artistsMainController.selectAlbum(album);
         artistsMainController.selectSong(song);
@@ -661,6 +680,10 @@ public class MainController implements Initializable {
             	thread.start();
             });
             
+            loadViewAnimation.setOnFinished(x -> {
+            	viewLoadedLatch.countDown();
+            });
+            
             if (subViewRoot.getContent() != null) {
             	if (unloadLettersFinal) {
             		unloadLettersAnimation.play();
@@ -681,6 +704,14 @@ public class MainController implements Initializable {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    public void resetLatch() {
+    	viewLoadedLatch = new CountDownLatch(1);
+    }
+    
+    public CountDownLatch getLatch() {
+    	return viewLoadedLatch;
     }
 
     public void updatePlayPauseIcon(boolean isPlaying) {
