@@ -61,6 +61,11 @@ public class MusicPlayer extends Application {
     private static BorderPane view;
     
     private static Path musicDirectory;
+    
+    // Stores the number of files in library.xml and in the music directory
+    // for comparison when starting up the application and for setting the id of new songs added using Directory Watch. 
+    private static int xmlFileNum;
+    private static int musicDirFileNum;
 
     public static void main(String[] args) {
         Application.launch(MusicPlayer.class);
@@ -170,7 +175,7 @@ public class MusicPlayer extends Application {
             
             // Creates a Directory Watch object to monitor music library for changes.
             @SuppressWarnings("unused")
-			DirectoryWatch watcher = new DirectoryWatch(musicDirectory);
+			DirectoryWatch watcher = new DirectoryWatch(musicDirectory, xmlFileNum);
         });
         
         thread.start();
@@ -482,8 +487,8 @@ public class MusicPlayer extends Application {
 //    		System.out.println("MP473_File exists");
     		
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
-    		int xmlFileNum = xmlMusicDirFileNumFinder();
-    		int musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+    		xmlFileNum = xmlMusicDirFileNumFinder();
+    		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
     		
     		// TODO: DEBUG
     		System.out.println("MP480_XML File Num: " + xmlFileNum);

@@ -10,26 +10,51 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+
+import app.musicplayer.model.Song;
 
 public class DirectoryWatch {
 	
 	private WatchService watcher;
 	private Map<WatchKey, Path> keys;
 	
-	private String path;
 	private boolean trace = false;
+	
+	private boolean fileCreated;
+	private boolean fileDeleted;
+	
+	private String path;
+	
+	// Initializes the variable to store the number of files in library.xml file.
+	// This is used to set the id of the new songs being added to library.xml
+	private int xmlFileNum;
+	
+	// Array list with new songs to be added to library.xml
+	private static ArrayList<Song> newSongs = new ArrayList<Song>();
 	
 	/**
 	 * Creates a Directory Watch object.
 	 */
-	public DirectoryWatch(Path musicDirectory) {
+	public DirectoryWatch(Path musicDirectory, int xmlFileNum) {
+		// Sets the number of files in library.xml
+		this.xmlFileNum = xmlFileNum;
 		try {
 			// Creates new watch service to monitor directory.
 			watcher = FileSystems.getDefault().newWatchService();
@@ -42,7 +67,7 @@ public class DirectoryWatch {
 			this.trace = true;
 			
 			// TODO: DEBUG
-			System.out.println("DW45_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
+			System.out.println("DW66_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
 					" in: " + musicDirectory.getParent());
 			
 			// Sets infinite loop to monitor directory.
@@ -63,6 +88,7 @@ public class DirectoryWatch {
 				}
 				
 				for (WatchEvent<?> event: key.pollEvents()) {
+//					Thread.sleep(500);
 					// Gets event type (create, delete, modify).
 					WatchEvent.Kind<?> kind = event.kind();
 					
@@ -73,7 +99,7 @@ public class DirectoryWatch {
 					Path child = dir.resolve(fileName);
 
 					// 	TODO: DEBUG
-	                System.out.format("DW76_%s: %s\n", kind.name(), child);
+	                System.out.format("DW97_%s: %s\n", kind.name(), child);
 					
 					// TODO: CALL METHODS TO DEAL WITH THESE CASES
 					// If directory is created, register directory and sub directories.
@@ -85,10 +111,21 @@ public class DirectoryWatch {
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						}
-						fileAdd(child);
+						// TODO: RUN IN NEW THREAD?
+						// Adds the new created songs to the new songs array list.
+						fileCreate(child);
+						
 					} else if (kind == ENTRY_DELETE) {
-						System.out.println("DW90_File deleted!");
+						System.out.println("DW118_File deleted!");
 					}
+				}
+				
+				// TODO: EDIT XML FILE, UPDATE SONGS ARRAY LIST IN LIBRARY
+				// Writes the new songs to the xml file once all the watch events have been analyzed.
+				if (fileCreated) {
+					editCreateXMLFile();
+				} else if (fileDeleted) {
+					editDeleteXMLFile();
 				}
 				
 				// Resets the key.
@@ -116,9 +153,7 @@ public class DirectoryWatch {
 		// Registers directory and all its sub-directories with the WatchService.
         Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                throws IOException
-            {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 register(dir);
                 return FileVisitResult.CONTINUE;
             }
@@ -130,28 +165,80 @@ public class DirectoryWatch {
         if (trace) {
             Path prev = keys.get(key);
             if (prev == null) {
-                System.out.format("DW133_Register: %s\n", dir);
+                System.out.format("DW160_Register: %s\n", dir);
             } else {
                 if (!dir.equals(prev)) {
-                    System.out.format("DW136_Update: %s -> %s\n", prev, dir);
+                    System.out.format("DW163_Update: %s -> %s\n", prev, dir);
                 }
             }
         }
         keys.put(key, dir);
 	}
 	
-	private void fileAdd(Path filePath) {
-		// TODO: RETURN SONG PROPERTIES
+	private void fileCreate(Path filePath) {
 		
 		// TODO: DEBUG
-		System.out.println("DW147_File Path: " + filePath);
+		System.out.println("DW173_File Path: " + filePath);
 		
 		File file = filePath.toFile();
 		
-		System.out.println("DW151_File: " + file);
+		System.out.println("DW177_File: " + file);
 		
 		if (file.isFile()) {
-			System.out.println("DW156_New file created!");
+			System.out.println("DW180_New file created: " + file.getName());
+			
+            try {
+            	
+                AudioFile audioFile = AudioFileIO.read(file);
+                Tag tag = audioFile.getTag();
+                AudioHeader header = audioFile.getAudioHeader();
+                
+                // Gets song properties.
+                int id = xmlFileNum++;
+                String title = tag.getFirst(FieldKey.TITLE);
+                // Gets the artist, empty string assigned if song has no artist.
+                String artistTitle = tag.getFirst(FieldKey.ALBUM_ARTIST);
+                if (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) {
+                    artistTitle = tag.getFirst(FieldKey.ARTIST);
+                }
+                String artist = (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) ? "" : artistTitle;
+                String album = tag.getFirst(FieldKey.ALBUM);
+                // Gets the track length (as an int), converts to long and saves it as a duration object.                
+                Duration length = Duration.ofSeconds(Long.valueOf(header.getTrackLength()));
+                // Gets the track number and converts to an int. Assigns 0 if a track number is null.
+                String track = tag.getFirst(FieldKey.TRACK);                
+                int trackNumber = Integer.parseInt((track == null || track.equals("") || track.equals("null")) ? "0" : track);
+                // Gets disc number and converts to int. Assigns 0 if the disc number is null.
+                String disc = tag.getFirst(FieldKey.DISC_NO);
+                int discNumber = Integer.parseInt((disc == null || disc.equals("") || disc.equals("null")) ? "0" : disc);
+                int playCount = 0;
+                LocalDateTime playDate = LocalDateTime.now();
+                String location = Paths.get(file.getAbsolutePath()).toString();
+                
+                // TODO: DEBUG
+                System.out.println("ID: " + id);
+                System.out.println("Title: " + title);
+                System.out.println("Artist: " + artist);
+                System.out.println("Album: " + album);
+                System.out.println("Length: " + length);
+                System.out.println("Track Number: " + trackNumber);
+                System.out.println("Disc Number: " + discNumber);
+                System.out.println("Play Count: " + playCount);
+                System.out.println("Play Date: " + playDate);
+                System.out.println("Location: " + location);
+                // TODO: DEBUG
+                
+                // Creates a new song object for the added song and adds it to the newSongs array list.
+                newSongs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));
+                fileCreated = true;
+                
+                // TODO: DEBUG
+                System.out.println("DW227_New song added to newSongs");
+                // TODO: DEBUG
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
             
 //            Platform.runLater(() -> {
 //            	MusicPlayer.updateLibraryXML(filePath.getParent());
@@ -161,21 +248,16 @@ public class DirectoryWatch {
 //			UpdateMusicDialogController updateDialog = new UpdateMusicDialogController();
 //			updateDialog.setMusicDirectory(filePath);
 //			updateDialog.handleUpdate();
-			
-//            try {
-//				AudioFile audioFile = AudioFileIO.read(file);
-//				Tag tag = audioFile.getTag();
-//				AudioHeader header = audioFile.getAudioHeader();
-//			} catch (Exception ex) {
-//				ex.printStackTrace();
-//			}
-			
+            
 		} else if (file.isDirectory()) {
-			System.out.println("DW156_New folder created!");
+			System.out.println("DW244_New folder created!");
 		} else {
 			System.out.println("Nothing happened.");
 		}
-		
 	}
+	
+	private void editCreateXMLFile() {}
+	
+	private void editDeleteXMLFile() {}
 
 }
