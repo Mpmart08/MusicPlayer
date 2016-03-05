@@ -67,7 +67,7 @@ public class DirectoryWatch {
 			this.trace = true;
 			
 			// TODO: DEBUG
-			System.out.println("DW66_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
+			System.out.println("DW70_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
 					" in: " + musicDirectory.getParent());
 			
 			// Sets infinite loop to monitor directory.
@@ -88,7 +88,6 @@ public class DirectoryWatch {
 				}
 				
 				for (WatchEvent<?> event: key.pollEvents()) {
-//					Thread.sleep(500);
 					// Gets event type (create, delete, modify).
 					WatchEvent.Kind<?> kind = event.kind();
 					
@@ -99,7 +98,7 @@ public class DirectoryWatch {
 					Path child = dir.resolve(fileName);
 
 					// 	TODO: DEBUG
-	                System.out.format("DW97_%s: %s\n", kind.name(), child);
+	                System.out.format("DW101_%s: %s\n", kind.name(), child);
 					
 					// TODO: CALL METHODS TO DEAL WITH THESE CASES
 					// If directory is created, register directory and sub directories.
@@ -113,15 +112,19 @@ public class DirectoryWatch {
 						}
 						// TODO: RUN IN NEW THREAD?
 						// Adds the new created songs to the new songs array list.
-						fileCreate(child);
+						new Thread(() -> {
+							fileCreate(child);
+						}).start();
 						
 					} else if (kind == ENTRY_DELETE) {
-						System.out.println("DW118_File deleted!");
+						System.out.println("DW120_File deleted!");
 					}
 				}
 				
 				// TODO: EDIT XML FILE, UPDATE SONGS ARRAY LIST IN LIBRARY
 				// Writes the new songs to the xml file once all the watch events have been analyzed.
+				//latch.await();
+				
 				if (fileCreated) {
 					editCreateXMLFile();
 				} else if (fileDeleted) {
@@ -165,10 +168,10 @@ public class DirectoryWatch {
         if (trace) {
             Path prev = keys.get(key);
             if (prev == null) {
-                System.out.format("DW160_Register: %s\n", dir);
+                System.out.format("DW171_Register: %s\n", dir);
             } else {
                 if (!dir.equals(prev)) {
-                    System.out.format("DW163_Update: %s -> %s\n", prev, dir);
+                    System.out.format("DW174_Update: %s -> %s\n", prev, dir);
                 }
             }
         }
@@ -178,14 +181,21 @@ public class DirectoryWatch {
 	private void fileCreate(Path filePath) {
 		
 		// TODO: DEBUG
-		System.out.println("DW173_File Path: " + filePath);
+		System.out.println("DW184_File Path: " + filePath);
 		
 		File file = filePath.toFile();
 		
-		System.out.println("DW177_File: " + file);
+		System.out.println("DW188_File: " + file);
 		
 		if (file.isFile()) {
-			System.out.println("DW180_New file created: " + file.getName());
+			// TODO: DEBUG
+			System.out.println("DW192_New file created: " + file.getName());
+			
+			// Infinite loop to wait until file is not in use by another process.
+			while (!file.renameTo(file)) {
+				// TODO: DEBUG
+				System.out.println("DW196_File in use: " + file.getName());
+			}
 			
             try {
             	
@@ -233,7 +243,7 @@ public class DirectoryWatch {
                 fileCreated = true;
                 
                 // TODO: DEBUG
-                System.out.println("DW227_New song added to newSongs");
+                System.out.println("DW246_New song added to newSongs");
                 // TODO: DEBUG
 
 			} catch (Exception ex) {
@@ -250,7 +260,7 @@ public class DirectoryWatch {
 //			updateDialog.handleUpdate();
             
 		} else if (file.isDirectory()) {
-			System.out.println("DW244_New folder created!");
+			System.out.println("DW263_New folder created!");
 		} else {
 			System.out.println("Nothing happened.");
 		}
