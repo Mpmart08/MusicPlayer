@@ -24,6 +24,15 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -31,6 +40,9 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import app.musicplayer.model.Song;
 
@@ -40,9 +52,6 @@ public class DirectoryWatch {
 	private Map<WatchKey, Path> keys;
 	
 	private boolean trace = false;
-	
-	private boolean fileCreated = false;
-	private boolean fileDeleted = false;
 	
 	private String path;
 	
@@ -71,7 +80,7 @@ public class DirectoryWatch {
 			this.trace = true;
 			
 			// TODO: DEBUG
-			System.out.println("DW74_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
+			System.out.println("DW71_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
 					" in: " + musicDirectory.getParent());
 			
 			// Sets infinite loop to monitor directory.
@@ -102,46 +111,41 @@ public class DirectoryWatch {
 					Path child = dir.resolve(fileName);
 
 					// 	TODO: DEBUG
-	                System.out.format("DW105_%s: %s\n", kind.name(), child);
+	                System.out.format("DW102_%s: %s\n", kind.name(), child);
 					
 					// If directory is created, register directory and sub directories with watch service.
-	                // Creates Song objects from the new files and adds them to the newSongs array list.
+	                // If file is created, creates a Song objects from the new file and adds it to the newSongs array list.
 					if (kind == ENTRY_CREATE) {
 						try {
 							if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 								// 	TODO: DEBUG
-				                System.out.println("DW113_Before Register All");
+				                System.out.println("DW110_Before Register All");
 								registerAll(child);
 							} else if (child.toFile().isFile()) {
-								// 	TODO: DEBUG
-				                System.out.println("DW117_It's a file.");
 								// Adds the new created songs to the new songs array list.
 								new Thread(() -> {
 									// 	TODO: DEBUG
-					                System.out.println("DW121_Before File Create");
+					                System.out.println("DW116_Before File Create");
 									fileCreate(child);
+									// 	TODO: DEBUG
+					                System.out.println("DW119_After File Create");
 								}).start();
+								// 	TODO: DEBUG
+				                System.out.println("DW122_After thread start");
 							}
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						}
+						// 	TODO: DEBUG
+		                System.out.println("DW126_After try");
 					} else if (kind == ENTRY_DELETE) {
-						System.out.println("DW129_File deleted!");
+						System.out.println("DW124_File deleted!");
 					}
+					// 	TODO: DEBUG
+	                System.out.println("DW131_After If");
 				}
 				
-				// TODO: DEBUG
-				System.out.println("DW134_After for loop");
-				
-				// Writes the new songs to the xml file once all the watch events have been analyzed.				
-				if (fileCreated) {
-					editCreateXMLFile();
-				} else if (fileDeleted) {
-					editDeleteXMLFile();
-				} else if (fileCreated && fileDeleted) {
-					editCreateXMLFile();
-					editDeleteXMLFile();
-				}
+				System.out.println("After foor loop.");
 				
 				// Resets the key.
 				// If the key is no longer valid, exits loop.
@@ -181,11 +185,11 @@ public class DirectoryWatch {
             Path prev = keys.get(key);
             if (prev == null) {
             	// TODO: DEBUG
-//                System.out.format("DW184_Register: %s\n", dir);
+//                System.out.format("DW168_Register: %s\n", dir);
             } else {
                 if (!dir.equals(prev)) {
                 	// TODO: DEBUG
-//                    System.out.format("DW188_Update: %s -> %s\n", prev, dir);
+//                    System.out.format("DW172_Update: %s -> %s\n", prev, dir);
                 }
             }
         }
@@ -195,20 +199,20 @@ public class DirectoryWatch {
 	private void fileCreate(Path filePath) {
 		
 		// TODO: DEBUG
-		System.out.println("DW198_File Path: " + filePath);
+		System.out.println("DW180_File Path: " + filePath);
 		
 		File file = filePath.toFile();
 
 		// TODO: DEBUG
-		System.out.println("DW203_File: " + file);
+		System.out.println("DW185_File: " + file);
 		
 		// TODO: DEBUG
-		System.out.println("DW207_New file created: " + file.getName());
+		System.out.println("DW188_New file created: " + file.getName());
 		
 		// Infinite loop to wait until file is not in use by another process.
 		while (!file.renameTo(file)) {
 			// TODO: DEBUG
-			System.out.println("DW212_File in use: " + file.getName());
+//			System.out.println("DW193_File in use: " + file.getName());
 		}
 		
         try {
@@ -252,11 +256,14 @@ public class DirectoryWatch {
 //            System.out.println("Location: " + location);
             
             // Creates a new song object for the added song and adds it to the newSongs array list.
-            newSongs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));
-            fileCreated = true;
+            Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
+            newSongs.add(newSong);
             
             // TODO: DEBUG
-            System.out.println("DW260_New song added to newSongs");
+            System.out.println("DW263_New song added to newSongs: " + newSongs.get(0).getTitle());
+            
+            // Adds the new song to the xml file.
+            editCreateXMLFile(newSong);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -264,18 +271,76 @@ public class DirectoryWatch {
 	}
 	
 	// TODO: ADD NEW SONGS TO XML FILE AND TO SONGS ARRAY LIST IN LIBRARY
-	private void editCreateXMLFile() {
+	private void editCreateXMLFile(Song song) {
 		// TODO: DEBUG
-		System.out.println("DW275_Songs in newSongs array: " + newSongs.size());
+		System.out.println("DW276_In editCreateXMLFile()");
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            XPathExpression expr = xpath.compile("/library/songs");
+            Node songsNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Creates a new song element and its sub elements.
+            Element newSong = doc.createElement("song");
+            Element newSongId = doc.createElement("id");
+            Element newSongTitle = doc.createElement("title");
+            Element newSongArtist = doc.createElement("artist");
+            Element newSongAlbum = doc.createElement("album");
+            Element newSongLength = doc.createElement("length");
+            Element newSongTrackNumber = doc.createElement("trackNumber");
+            Element newSongDiscNumber = doc.createElement("discNumber");
+            Element newSongPlayCount = doc.createElement("playCount");
+            Element newSongPlayDate = doc.createElement("playDate");
+            Element newSongLocation = doc.createElement("location");
+
+            // Saves the new song data.
+            newSongId.setTextContent(Integer.toString(song.getId()));
+            newSongTitle.setTextContent(song.getTitle());
+            newSongArtist.setTextContent(song.getArtist());
+            newSongAlbum.setTextContent(song.getAlbum());
+            newSongLength.setTextContent(Long.toString(song.getLengthInSeconds()));
+            newSongTrackNumber.setTextContent(Integer.toString(song.getTrackNumber()));
+            newSongDiscNumber.setTextContent(Integer.toString(song.getDiscNumber()));
+            newSongPlayCount.setTextContent(Integer.toString(song.getPlayCount()));
+            newSongPlayDate.setTextContent(song.getPlayDate().toString());
+            newSongLocation.setTextContent(song.getLocation());
+            
+            // Adds the new song to the xml file.
+            songsNode.appendChild(newSong);
+            // Adds the new song data to the new song.
+            newSong.appendChild(newSongId);
+            newSong.appendChild(newSongTitle);
+            newSong.appendChild(newSongArtist);
+            newSong.appendChild(newSongAlbum);
+            newSong.appendChild(newSongLength);
+            newSong.appendChild(newSongTrackNumber);
+            newSong.appendChild(newSongDiscNumber);
+            newSong.appendChild(newSongPlayCount);
+            newSong.appendChild(newSongPlayDate);
+            newSong.appendChild(newSongLocation);
+            
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
 		} catch (Exception ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
+        
+		// TODO: DEBUG
+		System.out.println("DW343_End of editCreateXMLFile()");
 	}
 	
 	private void editDeleteXMLFile() {}
