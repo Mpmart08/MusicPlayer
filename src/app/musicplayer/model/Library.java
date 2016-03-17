@@ -70,96 +70,8 @@ public final class Library {
     	// If the observable list of songs has not been initialized.
         if (songs == null) {
             songs = new ArrayList<Song>();
-            
-            try {
-
-                XMLInputFactory factory = XMLInputFactory.newInstance();
-                factory.setProperty("javax.xml.stream.isCoalescing", true);
-                FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
-                XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
-
-                String element = "";
-                int id = -1;
-                String title = null;
-                String artist = null;
-                String album = null;
-                Duration length = null;
-                int trackNumber = -1;
-                int discNumber = -1;
-                int playCount = -1;
-                LocalDateTime playDate = null;
-                String location = null;
-
-                while(reader.hasNext()) {
-                    reader.next();
-
-                    if (reader.isWhiteSpace()) {
-                        continue;
-                    } else if (reader.isCharacters()) {
-                        String value = reader.getText();
-                        
-                        switch (element) {
-                            case ID:
-                                id = Integer.parseInt(value);
-                                break;
-                            case TITLE:
-                                title = value;
-                                break;
-                            case ARTIST:
-                                artist = value;
-                                break;
-                            case ALBUM:
-                                album = value;
-                                break;
-                            case LENGTH:
-                                length = Duration.ofSeconds(Long.parseLong(value));
-                                break;
-                            case TRACKNUMBER:
-                                trackNumber = Integer.parseInt(value);
-                                break;
-                            case DISCNUMBER:
-                                discNumber = Integer.parseInt(value);
-                                break;
-                            case PLAYCOUNT:
-                                playCount = Integer.parseInt(value);
-                                break;
-                            case PLAYDATE:
-                                playDate = LocalDateTime.parse(value);
-                                break;
-                            case LOCATION:
-                                location = value;
-                                break;
-                        } // End switch
-                    } else if (reader.isStartElement()) {
-                    	
-                        element = reader.getName().getLocalPart();
-                        
-                    } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("song")) {
-
-                        songs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));
-                        id = -1;
-                        title = null;
-                        artist = null;
-                        album = null;
-                        length = null;
-                        trackNumber = -1;
-                        discNumber = -1;
-                        playCount = -1;
-                        playDate = null;
-                        location = null;
-
-                    } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("songs")) {
-
-                        reader.close();
-                        break;
-                    }
-                } // End while
-                
-                reader.close();
-                
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            // Updates the songs array list.
+            updateSongsList();
         } // End if (songs == null)
         return FXCollections.observableArrayList(songs);
     }
@@ -175,41 +87,8 @@ public final class Library {
             if (songs == null) {
                 getSongs();
             }
-            
-            albums = new ArrayList<Album>();
-            
-            TreeMap<String, List<Song>> albumMap = new TreeMap<String, List<Song>>(
-                songs.stream()
-                    .filter(song -> song.getAlbum() != null)
-                    .collect(Collectors.groupingBy(Song::getAlbum))
-            );
-            
-            int id = 0;
-            
-            for (Map.Entry<String, List<Song>> entry : albumMap.entrySet()) {
-                ArrayList<Song> songs = new ArrayList<Song>();
-
-                for (Song song : entry.getValue()) {
-                    songs.add(song);
-                }
-
-                TreeMap<String, List<Song>> artistMap = new TreeMap<String, List<Song>>(
-                    songs.stream()
-                        .filter(song -> song.getArtist() != null)
-                        .collect(Collectors.groupingBy(Song::getArtist))
-                );
-
-                for (Map.Entry<String, List<Song>> e : artistMap.entrySet()) {
-                    ArrayList<Song> albumSongs = new ArrayList<Song>();
-                    String artist = e.getValue().get(0).getArtist();
-
-                    for (Song s : e.getValue()) {
-                        albumSongs.add(s);
-                    }
-                    
-                    albums.add(new Album(id++, entry.getKey(), artist, albumSongs));
-                }
-            }
+            // Updates the albums array list.
+            updateAlbumsList();
         }
         return FXCollections.observableArrayList(albums);
     } // End getAlbums()
@@ -225,25 +104,8 @@ public final class Library {
             if (albums == null) {
                 getAlbums();
             }
-
-            artists = new ArrayList<Artist>();
-
-            TreeMap<String, List<Album>> artistMap = new TreeMap<String, List<Album>>(
-                albums.stream()
-                    .filter(album -> album.getArtist() != null)
-                    .collect(Collectors.groupingBy(Album::getArtist))
-            );
-
-            for (Map.Entry<String, List<Album>> entry : artistMap.entrySet()) {
-
-                ArrayList<Album> albums = new ArrayList<Album>();
-
-                for (Album album : entry.getValue()) {
-                    albums.add(album);
-                }
-
-                artists.add(new Artist(entry.getKey(), albums));
-            }
+            // Updates the artists array list.
+            updateArtistsList();
         }
         return FXCollections.observableArrayList(artists);
     } // End getArtists()
@@ -608,6 +470,156 @@ public final class Library {
         
         Library.maxProgress = 0;
     	Library.task = null;
+    }
+    
+    public static void updateSongsList() {
+        try {
+
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty("javax.xml.stream.isCoalescing", true);
+            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+
+            String element = "";
+            int id = -1;
+            String title = null;
+            String artist = null;
+            String album = null;
+            Duration length = null;
+            int trackNumber = -1;
+            int discNumber = -1;
+            int playCount = -1;
+            LocalDateTime playDate = null;
+            String location = null;
+
+            while(reader.hasNext()) {
+                reader.next();
+
+                if (reader.isWhiteSpace()) {
+                    continue;
+                } else if (reader.isCharacters()) {
+                    String value = reader.getText();
+                    
+                    switch (element) {
+                        case ID:
+                            id = Integer.parseInt(value);
+                            break;
+                        case TITLE:
+                            title = value;
+                            break;
+                        case ARTIST:
+                            artist = value;
+                            break;
+                        case ALBUM:
+                            album = value;
+                            break;
+                        case LENGTH:
+                            length = Duration.ofSeconds(Long.parseLong(value));
+                            break;
+                        case TRACKNUMBER:
+                            trackNumber = Integer.parseInt(value);
+                            break;
+                        case DISCNUMBER:
+                            discNumber = Integer.parseInt(value);
+                            break;
+                        case PLAYCOUNT:
+                            playCount = Integer.parseInt(value);
+                            break;
+                        case PLAYDATE:
+                            playDate = LocalDateTime.parse(value);
+                            break;
+                        case LOCATION:
+                            location = value;
+                            break;
+                    } // End switch
+                } else if (reader.isStartElement()) {
+                	
+                    element = reader.getName().getLocalPart();
+                    
+                } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("song")) {
+
+                    songs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));
+                    id = -1;
+                    title = null;
+                    artist = null;
+                    album = null;
+                    length = null;
+                    trackNumber = -1;
+                    discNumber = -1;
+                    playCount = -1;
+                    playDate = null;
+                    location = null;
+
+                } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("songs")) {
+
+                    reader.close();
+                    break;
+                }
+            } // End while
+            
+            reader.close();
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public static void updateAlbumsList() {
+        albums = new ArrayList<Album>();
+        
+        TreeMap<String, List<Song>> albumMap = new TreeMap<String, List<Song>>(
+            songs.stream()
+                .filter(song -> song.getAlbum() != null)
+                .collect(Collectors.groupingBy(Song::getAlbum))
+        );
+        
+        int id = 0;
+        
+        for (Map.Entry<String, List<Song>> entry : albumMap.entrySet()) {
+            ArrayList<Song> songs = new ArrayList<Song>();
+
+            for (Song song : entry.getValue()) {
+                songs.add(song);
+            }
+
+            TreeMap<String, List<Song>> artistMap = new TreeMap<String, List<Song>>(
+                songs.stream()
+                    .filter(song -> song.getArtist() != null)
+                    .collect(Collectors.groupingBy(Song::getArtist))
+            );
+
+            for (Map.Entry<String, List<Song>> e : artistMap.entrySet()) {
+                ArrayList<Song> albumSongs = new ArrayList<Song>();
+                String artist = e.getValue().get(0).getArtist();
+
+                for (Song s : e.getValue()) {
+                    albumSongs.add(s);
+                }
+                
+                albums.add(new Album(id++, entry.getKey(), artist, albumSongs));
+            }
+        }
+    }
+    
+    public static void updateArtistsList() {
+        artists = new ArrayList<Artist>();
+
+        TreeMap<String, List<Album>> artistMap = new TreeMap<String, List<Album>>(
+            albums.stream()
+                .filter(album -> album.getArtist() != null)
+                .collect(Collectors.groupingBy(Album::getArtist))
+        );
+
+        for (Map.Entry<String, List<Album>> entry : artistMap.entrySet()) {
+
+            ArrayList<Album> albums = new ArrayList<Album>();
+
+            for (Album album : entry.getValue()) {
+                albums.add(album);
+            }
+
+            artists.add(new Artist(entry.getKey(), albums));
+        }
     }
     
     private static void getMaxProgress(File directory) {
