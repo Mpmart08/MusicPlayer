@@ -72,7 +72,11 @@ public final class Library {
             songs = new ArrayList<Song>();
             // Updates the songs array list.
             updateSongsList();
-        } // End if (songs == null)
+        } else if (songs != null) {
+        	// Empties the song list to avoid duplicates and clears the songs array list.
+        	songs.clear();
+        	updateSongsList();
+        }
         return FXCollections.observableArrayList(songs);
     }
     
@@ -89,6 +93,10 @@ public final class Library {
             }
             // Updates the albums array list.
             updateAlbumsList();
+        } else if (albums != null) {
+        	// Empties the albums list to avoid duplicates and clears the albums array list.
+        	albums.clear();
+        	updateAlbumsList();
         }
         return FXCollections.observableArrayList(albums);
     } // End getAlbums()
@@ -105,6 +113,10 @@ public final class Library {
                 getAlbums();
             }
             // Updates the artists array list.
+            updateArtistsList();
+        } else if (artists != null) {
+        	// Empties the artists list to avoid duplicates and clears the artists array list.
+        	artists.clear();
             updateArtistsList();
         }
         return FXCollections.observableArrayList(artists);

@@ -18,7 +18,6 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,9 +59,6 @@ public class DirectoryWatch {
 	// This is used to set the id of the new songs being added to library.xml
 	private int xmlFileNum;
 	
-	// Array list with new songs to be added to library.xml
-	private static ArrayList<Song> newSongs = new ArrayList<Song>();
-	
 	/**
 	 * Creates a Directory Watch object.
 	 */
@@ -81,7 +77,7 @@ public class DirectoryWatch {
 			this.trace = true;
 			
 			// TODO: DEBUG
-			System.out.println("DW85_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
+			System.out.println("DW80_Watch Service reigstered for directory: " + musicDirectory.getFileName() + 
 					" in: " + musicDirectory.getParent());
 			
 			// Sets infinite loop to monitor directory.
@@ -112,7 +108,7 @@ public class DirectoryWatch {
 					Path child = dir.resolve(fileName);
 
 					// 	TODO: DEBUG
-	                System.out.format("DW116_%s: %s\n", kind.name(), child);
+	                System.out.format("DW111_%s: %s\n", kind.name(), child);
 					
 					// If directory is created, register directory and sub directories with watch service.
 	                // If file is created, creates a Song objects from the new file and adds it to the newSongs array list.
@@ -120,10 +116,15 @@ public class DirectoryWatch {
 						try {
 							if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 								// 	TODO: DEBUG
-				                System.out.println("DW124_Before Register All");
+				                System.out.println("DW119_Before Register All");
 								registerAll(child);
 							} else if (child.toFile().isFile()) {
 								// Adds the new created songs to the new songs array list.
+//								// 	TODO: DEBUG
+//				                System.out.println("DW124_Before File Create");
+//								fileCreate(child);
+//								// 	TODO: DEBUG
+//				                System.out.println("DW127_After File Create");
 								new Thread(() -> {
 									// 	TODO: DEBUG
 					                System.out.println("DW130_Before File Create");
@@ -213,7 +214,7 @@ public class DirectoryWatch {
 		// Infinite loop to wait until file is not in use by another process.
 		while (!file.renameTo(file)) {
 			// TODO: DEBUG
-			System.out.println("DW217_File in use: " + file.getName());
+//			System.out.println("DW217_File in use: " + file.getName());
 		}
 		
         try {
@@ -258,10 +259,9 @@ public class DirectoryWatch {
             
             // Creates a new song object for the added song and adds it to the newSongs array list.
             Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
-            newSongs.add(newSong);
             
             // TODO: DEBUG
-            System.out.println("DW265_New song added to newSongs: " + newSongs.get(0).getTitle());
+            System.out.println("DW264_New song added to newSongs: " + newSong.getTitle());
             
             // Adds the new song to the xml file.
             editCreateXMLFile(newSong);
@@ -276,10 +276,9 @@ public class DirectoryWatch {
 		}
 	}
 	
-	// TODO: ADD NEW SONGS TO XML FILE AND TO SONGS ARRAY LIST IN LIBRARY
 	private void editCreateXMLFile(Song song) {
 		// TODO: DEBUG
-		System.out.println("DW280_In editCreateXMLFile()");
+		System.out.println("DW281_In editCreateXMLFile()");
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -346,7 +345,7 @@ public class DirectoryWatch {
 		}
         
 		// TODO: DEBUG
-		System.out.println("DW347_End of editCreateXMLFile()");
+		System.out.println("DW348_End of editCreateXMLFile()");
 	}
 	
 	private void editDeleteXMLFile() {}
