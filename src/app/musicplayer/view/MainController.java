@@ -579,6 +579,22 @@ public class MainController implements Initializable {
     }
 
     public SubView loadView(String viewName) {
+    	// If new songs have been added to the music directory while the app is running.
+    	if (!Library.getNewSongs().isEmpty()) {
+    		// TODO: DEBUG
+    		System.out.println("MC586_New songs added to library while app was running!");
+    		
+            // Adds the new song to the xml file.
+    		Library.editCreateXMLFile();
+    		
+            // Updates the array lists containing songs, albums, and artists in the library.
+            Library.updateSongsList();
+            Library.updateAlbumsList();
+            Library.updateArtistsList();
+            
+            // Clears the new songs array list to prevent duplicate songs from being added to the library.
+            Library.clearNewSongs();
+    	}
 
         try {
         	

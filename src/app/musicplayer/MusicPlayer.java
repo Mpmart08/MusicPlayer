@@ -482,31 +482,21 @@ public class MusicPlayer extends Application {
     		// music directory can be counted and compared to the data in the xml file.
     		// It is then passed as an argument when creating the directory watch.
         	musicDirectory = xmlMusicDirPathFinder();
-        	
-    		// TODO: DEBUG
-//    		System.out.println("MP473_File exists");
     		
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
     		
     		// TODO: DEBUG
-    		System.out.println("MP480_XML File Num: " + xmlFileNum);
-    		System.out.println("MP481_Music Dir File Num: " + musicDirFileNum);
+    		System.out.println("MP491_XML File Num: " + xmlFileNum);
+    		System.out.println("MP492_Music Dir File Num: " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
     		if (musicDirFileNum != xmlFileNum) {
-    			// TODO: DEBUG
-//    			System.out.println("MP487_Files don't match!");
-    			
     			// Updates the xml file from the saved music directory.
     			updateLibraryXML(musicDirectory);
-    		} else if (musicDirFileNum == xmlFileNum) {
-    			// TODO: DEBUG
-//    			System.out.println("MP493_Files DO match!");
     		}
-    		
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	} else if (!libraryXML.exists()) {
     		createLibraryXML();
@@ -554,7 +544,7 @@ public class MusicPlayer extends Application {
     public static void updateLibraryXML(Path musicDirectory) {
     	
     	// TODO: DEBUG
-    	System.out.println("MP543_In update library xml");
+    	System.out.println("MP547_In update library xml");
     	
     	try {
 			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
@@ -665,17 +655,11 @@ public class MusicPlayer extends Application {
     }
     
     private static int musicDirFileNumFinder(File musicDirectory, int i) {
-    	
-    	// TODO: DEBUG
-//    	System.out.println("MP656_Music Dir: " + musicDirectory.toString());
-    	
-    	// Converts the musicDirectory to a file and lists all the files in an array.
+    	// Lists all the files in the music directory in an array.
         File[] files = musicDirectory.listFiles();
 
         // Loops through the files, increments counter if file is found.
         for (File file : files) {
-        	// TODO: DEBUG
-//        	System.out.println("MP664_File to String: " + file.toString());
             if (file.isFile()) {
             	i++;
             } else if (file.isDirectory()) {
