@@ -541,7 +541,7 @@ public class MusicPlayer extends Application {
 		}
     }
     
-    public static void updateLibraryXML(Path musicDirectory) {
+    private static void updateLibraryXML(Path musicDirectory) {
     	
     	// TODO: DEBUG
     	System.out.println("MP547_In update library xml");
@@ -655,7 +655,7 @@ public class MusicPlayer extends Application {
     }
     
     private static int musicDirFileNumFinder(File musicDirectory, int i) {
-    	// Lists all the files in the music directory in an array.
+    	// Lists all the files in the music directory and stores them in an array.
         File[] files = musicDirectory.listFiles();
 
         // Loops through the files, increments counter if file is found.

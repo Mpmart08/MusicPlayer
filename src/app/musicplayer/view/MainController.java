@@ -594,6 +594,8 @@ public class MainController implements Initializable {
             
             // Clears the new songs array list to prevent duplicate songs from being added to the library.
             Library.clearNewSongs();
+            
+        // Else if new songs have been deleted from the music directory while the app is running.
     	}
 
         try {

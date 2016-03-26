@@ -99,34 +99,18 @@ public class DirectoryWatch {
 					if (kind == ENTRY_CREATE) {
 						try {
 							if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
-								// 	TODO: DEBUG
-				                System.out.println("DW103_Before Register All");
 								registerAll(child);
 							} else if (child.toFile().isFile()) {
-								// Adds the new created songs to the new songs array list.
+								// Adds the created songs to the new songs array list.
 								new Thread(() -> {
-									// 	TODO: DEBUG
-					                System.out.println("DW109_Before File Create");
-									fileCreate(child);
-									// 	TODO: DEBUG
-					                System.out.println("DW112_After File Create");
+									newSongCreate(child);
 								}).start();
-								// 	TODO: DEBUG
-				                System.out.println("DW115_After thread start");
 							}
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						}
-						// 	TODO: DEBUG
-		                System.out.println("DW121_After try");
-					} else if (kind == ENTRY_DELETE) {
-						System.out.println("DW123_File deleted!");
 					}
-					// 	TODO: DEBUG
-	                System.out.println("DW126_After If");
 				}
-				
-				System.out.println("After foor loop.");
 				
 				// Resets the key.
 				// If the key is no longer valid, exits loop.
@@ -166,38 +150,33 @@ public class DirectoryWatch {
             Path prev = keys.get(key);
             if (prev == null) {
             	// TODO: DEBUG
-                System.out.format("DW169_Register: %s\n", dir);
+                System.out.format("DW156_Register: %s\n", dir);
             } else {
                 if (!dir.equals(prev)) {
                 	// TODO: DEBUG
-                    System.out.format("DW173_Update: %s -> %s\n", prev, dir);
+                    System.out.format("DW160_Update: %s -> %s\n", prev, dir);
                 }
             }
         }
         keys.put(key, dir);
 	}
 	
-	private void fileCreate(Path filePath) {
-		
+	private void newSongCreate(Path filePath) {
 		// TODO: DEBUG
-		System.out.println("DW183_File Path: " + filePath);
+		System.out.println("DW169_New Song Create File Path: " + filePath);
 		
 		File file = filePath.toFile();
 
 		// TODO: DEBUG
-		System.out.println("DW188_File: " + file);
+		System.out.println("DW174_File: " + file);
 		
 		// TODO: DEBUG
-		System.out.println("DW191_New file created: " + file.getName());
+		System.out.println("DW177_New file created: " + file.getName());
 		
 		// Infinite loop to wait until file is not in use by another process.
-		while (!file.renameTo(file)) {
-			// TODO: DEBUG
-//			System.out.println("DW217_File in use: " + file.getName());
-		}
+		while (!file.renameTo(file)) {}
 		
         try {
-        	
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
             AudioHeader header = audioFile.getAudioHeader();
@@ -223,18 +202,6 @@ public class DirectoryWatch {
             int playCount = 0;
             LocalDateTime playDate = LocalDateTime.now();
             String location = Paths.get(file.getAbsolutePath()).toString();
-            
-            // TODO: DEBUG
-//            System.out.println("ID: " + id);
-//            System.out.println("Title: " + title);
-//            System.out.println("Artist: " + artist);
-//            System.out.println("Album: " + album);
-//            System.out.println("Length: " + length);
-//            System.out.println("Track Number: " + trackNumber);
-//            System.out.println("Disc Number: " + discNumber);
-//            System.out.println("Play Count: " + playCount);
-//            System.out.println("Play Date: " + playDate);
-//            System.out.println("Location: " + location);
             
             // Creates a new song object for the added song and adds it to the newSongs array list.
             Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);

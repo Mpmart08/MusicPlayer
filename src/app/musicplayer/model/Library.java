@@ -730,9 +730,6 @@ public final class Library {
 		// TODO: DEBUG
 		System.out.println("L721_End of editCreateXMLFile()");
 	}
-	
-	// TODO: IMPLEMENT
-	public static void editDeleteXMLFile() {}
     
     private static void getMaxProgress(File directory) {
     	File[] files = directory.listFiles();
