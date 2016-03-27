@@ -103,7 +103,7 @@ public class DirectoryWatch {
 							} else if (child.toFile().isFile()) {
 								// Adds the created songs to the new songs array list.
 								new Thread(() -> {
-									newSongCreate(child);
+									newSongCreate(child.toFile());
 								}).start();
 							}
 						} catch (IOException ex) {
@@ -161,12 +161,7 @@ public class DirectoryWatch {
         keys.put(key, dir);
 	}
 	
-	private void newSongCreate(Path filePath) {
-		// TODO: DEBUG
-		System.out.println("DW169_New Song Create File Path: " + filePath);
-		
-		File file = filePath.toFile();
-
+	public void newSongCreate(File file) {
 		// TODO: DEBUG
 		System.out.println("DW174_File: " + file);
 		
