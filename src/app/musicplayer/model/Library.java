@@ -439,6 +439,10 @@ public final class Library {
      * @param newSong
      */
     public static void addNewSong(Song newSong) {
+    	// Initializes the array list if it is null.
+    	if (newSongs == null) {
+    		newSongs = new ArrayList<Song>();
+    	}
     	newSongs.add(newSong);
     }
     
@@ -656,80 +660,6 @@ public final class Library {
             artists.add(new Artist(entry.getKey(), albums));
         }
     }
-    
-	public static void editCreateXMLFile() {
-		// TODO: DEBUG
-		System.out.println("L655_In editCreateXMLFile()");
-		
-        try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
-			
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-            
-            XPathExpression expr = xpath.compile("/library/songs");
-            Node songsNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-            
-            // Loops through the songs in the new song array list and adds them to the xml file.
-            for (Song song : newSongs) {
-                // Creates a new song element and its sub elements.
-                Element newSong = doc.createElement("song");
-                Element newSongId = doc.createElement("id");
-                Element newSongTitle = doc.createElement("title");
-                Element newSongArtist = doc.createElement("artist");
-                Element newSongAlbum = doc.createElement("album");
-                Element newSongLength = doc.createElement("length");
-                Element newSongTrackNumber = doc.createElement("trackNumber");
-                Element newSongDiscNumber = doc.createElement("discNumber");
-                Element newSongPlayCount = doc.createElement("playCount");
-                Element newSongPlayDate = doc.createElement("playDate");
-                Element newSongLocation = doc.createElement("location");
-
-                // Saves the new song data.
-                newSongId.setTextContent(Integer.toString(song.getId()));
-                newSongTitle.setTextContent(song.getTitle());
-                newSongArtist.setTextContent(song.getArtist());
-                newSongAlbum.setTextContent(song.getAlbum());
-                newSongLength.setTextContent(Long.toString(song.getLengthInSeconds()));
-                newSongTrackNumber.setTextContent(Integer.toString(song.getTrackNumber()));
-                newSongDiscNumber.setTextContent(Integer.toString(song.getDiscNumber()));
-                newSongPlayCount.setTextContent(Integer.toString(song.getPlayCount()));
-                newSongPlayDate.setTextContent(song.getPlayDate().toString());
-                newSongLocation.setTextContent(song.getLocation());
-                
-                // Adds the new song to the xml file.
-                songsNode.appendChild(newSong);
-                // Adds the new song data to the new song.
-                newSong.appendChild(newSongId);
-                newSong.appendChild(newSongTitle);
-                newSong.appendChild(newSongArtist);
-                newSong.appendChild(newSongAlbum);
-                newSong.appendChild(newSongLength);
-                newSong.appendChild(newSongTrackNumber);
-                newSong.appendChild(newSongDiscNumber);
-                newSong.appendChild(newSongPlayCount);
-                newSong.appendChild(newSongPlayDate);
-                newSong.appendChild(newSongLocation);
-            }
-            
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            File xmlFile = new File(Resources.JAR + "library.xml");
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
-            
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-        
-		// TODO: DEBUG
-		System.out.println("L721_End of editCreateXMLFile()");
-	}
     
     private static void getMaxProgress(File directory) {
     	File[] files = directory.listFiles();

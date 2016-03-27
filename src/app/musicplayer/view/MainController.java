@@ -16,6 +16,7 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.CustomSliderSkin;
 import app.musicplayer.util.Resources;
 import app.musicplayer.util.SubView;
+import app.musicplayer.util.XMLEditor;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
@@ -585,7 +586,7 @@ public class MainController implements Initializable {
     		System.out.println("MC586_New songs added to library while app was running!");
     		
             // Adds the new song to the xml file.
-    		Library.editCreateXMLFile();
+    		XMLEditor.addSongToXML();
     		
             // Updates the array lists containing songs, albums, and artists in the library.
             Library.updateSongsList();
@@ -594,8 +595,6 @@ public class MainController implements Initializable {
             
             // Clears the new songs array list to prevent duplicate songs from being added to the library.
             Library.clearNewSongs();
-            
-        // Else if new songs have been deleted from the music directory while the app is running.
     	}
 
         try {

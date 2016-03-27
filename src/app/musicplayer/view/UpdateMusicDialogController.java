@@ -14,9 +14,9 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
 import app.musicplayer.model.Library;
-import app.musicplayer.util.DirectoryWatch;
 import app.musicplayer.util.ImportMusicTask;
 import app.musicplayer.util.Resources;
+import app.musicplayer.util.XMLEditor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -38,7 +38,7 @@ public class UpdateMusicDialogController {
 	ArrayList<String> xmlSongs = new ArrayList<String> ();
 	ArrayList<String> musicDirSongs = new ArrayList<String> ();
 	
-	
+	// Stores files in the music directory.
 	ArrayList<File> musicDirFiles = new ArrayList<File> ();
 
 	/**
@@ -63,9 +63,6 @@ public class UpdateMusicDialogController {
 	 */
 	public void setMusicDirectory(Path musicDirectory) {
 		this.musicDirectory = musicDirectory.toString();
-		
-		// TODO: DEBUG
-		System.out.println("UMDC48_: " + musicDirectory);
 	}
 	
 	/**
@@ -78,9 +75,8 @@ public class UpdateMusicDialogController {
 	}
 	
 	public void handleUpdate() {
-		
 		// TODO: DEBUG
-		System.out.println("UMDC63_In handle Update");
+		System.out.println("UMDC79_In handle Update");
 		
 	    // Creates a task that is used to update the music library.
         ImportMusicTask<Boolean> task = new ImportMusicTask<Boolean>() {
@@ -95,6 +91,7 @@ public class UpdateMusicDialogController {
 					musicDirFileFinder(new File(musicDirectory));
 					// TODO: DEBUG
 					System.out.println("UMDC93_MUSIC DIR Song Size: " + musicDirSongs.size());
+					System.out.println("UMDC94_MUSIC DIR File Size: " + musicDirFiles.size());
 					
 					// Loops through the xml songs and checks if they are in the music directory.
 					// This checks if songs were deleted from the music directory.
@@ -102,7 +99,7 @@ public class UpdateMusicDialogController {
 						// If they are not, the song was deleted from the music directory.
 						if (!musicDirSongs.contains(song)) {
 							// TODO: DEBUG
-							System.out.println("UMDC108_Song deleted from music directory");
+							System.out.println("UMDC102_Song deleted from music directory");
 							
 							// TODO: DELETE SONG FROM LIBRARY XML
 							// Deletes song from library xml file.
@@ -120,10 +117,17 @@ public class UpdateMusicDialogController {
 						// If the song title is not in the xml file, the song was added to the music directory.
 						if (!xmlSongs.contains(songTitle)) {
 							// TODO: DEBUG
-							System.out.println("UMDC121_Song added to music directory");
+							System.out.println("UMDC120_Song added to music directory");
 							
-							// TODO: ADD SONG TO LIBRARY XML
-							// Adds the song to the library xml file.
+							// Adds the new song the library new songs array.
+							XMLEditor.newSongCreate(file, xmlSongs.size());
+							
+				            // Adds the new song to the xml file.
+							XMLEditor.addSongToXML();
+							
+				            // Clears the new songs array list to prevent duplicate songs
+							// from being added to the library when the first view is loaded.
+				            Library.clearNewSongs();
 						}
 					}
 					
@@ -132,15 +136,6 @@ public class UpdateMusicDialogController {
 					e.printStackTrace();
 					return false;
 				}
-        		
-//		        // Creates library.xml file from user music library.
-//			    try {
-//					Library.importMusic(musicDirectory, this);
-//					return true;
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					return false;
-//				}
         	}
         };
         
@@ -197,10 +192,19 @@ public class UpdateMusicDialogController {
     	// Lists all the files in the music directory and stores them in an array.
         File[] files = musicDirectoryFile.listFiles();
 
-        // Loops through the files and adds each file to the musicDirFiles array list.
+        // Loops through the files.
         for (File file : files) {
             if (file.isFile()) {
+            	// Adds the file to the musicDirFiles array list. 
             	musicDirFiles.add(file);
+            	// Gets the song title and adds it to the musicDirSongs array list.
+            	try {
+                    AudioFile audioFile = AudioFileIO.read(file);
+                    Tag tag = audioFile.getTag();
+                    musicDirSongs.add(tag.getFirst(FieldKey.TITLE));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             } else if (file.isDirectory()) {
             	musicDirFileFinder(file);
             }
