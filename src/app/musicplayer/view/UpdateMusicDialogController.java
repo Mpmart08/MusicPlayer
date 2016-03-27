@@ -34,12 +34,16 @@ public class UpdateMusicDialogController {
 	private boolean musicUpdated = false;
 	private String musicDirectory;
 	
+	// Initializes booleans used to determine if the library.xml file needs to be edited.
+	private boolean addSongs = false;
+	private boolean deleteSongs = false;
+	
 	// Stores song names in library xml file and music directory.
-	ArrayList<String> xmlSongs = new ArrayList<String> ();
-	ArrayList<String> musicDirSongs = new ArrayList<String> ();
+	private ArrayList<String> xmlSongs = new ArrayList<String> ();
+	private ArrayList<String> musicDirSongs = new ArrayList<String> ();
 	
 	// Stores files in the music directory.
-	ArrayList<File> musicDirFiles = new ArrayList<File> ();
+	private ArrayList<File> musicDirFiles = new ArrayList<File> ();
 
 	/**
 	 * Initializes the controller class.
@@ -101,8 +105,10 @@ public class UpdateMusicDialogController {
 							// TODO: DEBUG
 							System.out.println("UMDC102_Song deleted from music directory");
 							
-							// TODO: DELETE SONG FROM LIBRARY XML
-							// Deletes song from library xml file.
+							// Adds the songs that need to be deleted to the array list in XMLEditor.
+							XMLEditor.getSongsToDelete().add(song);
+							
+							deleteSongs = true;
 						}
 					}
 					
@@ -120,15 +126,25 @@ public class UpdateMusicDialogController {
 							System.out.println("UMDC120_Song added to music directory");
 							
 							// Adds the new song the library new songs array.
-							XMLEditor.newSongCreate(file, xmlSongs.size());
+							XMLEditor.createNewSongObject(file, xmlSongs.size());
 							
-				            // Adds the new song to the xml file.
-							XMLEditor.addSongToXML();
-							
-				            // Clears the new songs array list to prevent duplicate songs
-							// from being added to the library when the first view is loaded.
-				            Library.clearNewSongs();
+							addSongs = true;
 						}
+					}
+					
+					// If a song needs to be added to the xml file.
+					if (addSongs) {
+			            // Adds the new song to the xml file.
+						XMLEditor.addSongToXML();
+						
+			            // Clears the new songs array list to prevent duplicate songs
+						// from being added to the library when the first view is loaded.
+			            Library.clearNewSongs();
+			            
+			            // Else if a song needs to be deleted from the xml file.
+					} else if (deleteSongs) {
+						// Deletes song from library xml file.
+						XMLEditor.deleteSongFromXML();
 					}
 					
 					return true;

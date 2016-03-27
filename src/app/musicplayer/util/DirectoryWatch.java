@@ -84,7 +84,7 @@ public class DirectoryWatch {
 							} else if (child.toFile().isFile()) {
 								// Adds the new songs to the library new songs array list.
 								new Thread(() -> {
-									XMLEditor.newSongCreate(child.toFile(), xmlFileNum);
+									XMLEditor.createNewSongObject(child.toFile(), xmlFileNum);
 								}).start();
 							}
 						} catch (IOException ex) {

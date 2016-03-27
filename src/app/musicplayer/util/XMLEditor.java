@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,11 +33,18 @@ import app.musicplayer.model.Song;
 
 public class XMLEditor {
 	
-	// Initializes the variable to store the number of files in library.xml file.
+	// Initializes the variable to store the number of files in library.xml
 	// This is used to set the id of the new songs being added to library.xml
 	private static int xmlFileNum;
 	
-	public static void newSongCreate(File file, int fileNum) {
+	// Initializes array list with song titles of songs to be deleted from library.xml
+	private static ArrayList<String> songsToDelete = new ArrayList<String>();
+	
+	public static ArrayList<String> getSongsToDelete() {
+		return songsToDelete;
+	}
+	
+	public static void createNewSongObject(File file, int fileNum) {
 		// Sets the number of files in library.xml
 		xmlFileNum = fileNum;
 		// TODO: DEBUG
@@ -169,5 +177,11 @@ public class XMLEditor {
         
 		// TODO: DEBUG
 		System.out.println("XMLE171_End of addSongToXML()");
+	}
+	
+	public static void deleteSongFromXML() {
+		// TODO: DEBUG
+		System.out.println("XMLE176_In deleteSongFromXML");
+		System.out.println("XMLE176_Song to Delete: " + songsToDelete.get(0));
 	}
 }
