@@ -134,6 +134,9 @@ public class UpdateMusicDialogController {
 					
 					// If a song needs to be added to the xml file.
 					if (addSongs) {
+						// TODO: DEBUG
+						System.out.println("UMDC138_Add songs");
+						
 			            // Adds the new song to the xml file.
 						XMLEditor.addSongToXML();
 						
@@ -143,8 +146,11 @@ public class UpdateMusicDialogController {
 			            
 			            // Else if a song needs to be deleted from the xml file.
 					} else if (deleteSongs) {
+						// TODO: DEBUG
+						System.out.println("UMDC150_Delete songs");
+						
 						// Deletes song from library xml file.
-						XMLEditor.deleteSongFromXML();
+						XMLEditor.deleteSongFromXML(xmlSongs.size());
 					}
 					
 					return true;

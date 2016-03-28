@@ -48,10 +48,10 @@ public class XMLEditor {
 		// Sets the number of files in library.xml
 		xmlFileNum = fileNum;
 		// TODO: DEBUG
-		System.out.println("XMLE43_File: " + file);
+		System.out.println("XMLE51_File: " + file);
 		
 		// TODO: DEBUG
-		System.out.println("XMLE46_New file created: " + file.getName());
+		System.out.println("XMLE54_New file created: " + file.getName());
 		
 		// Infinite loop to wait until file is not in use by another process.
 		while (!file.renameTo(file)) {}
@@ -87,7 +87,7 @@ public class XMLEditor {
             Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
             
             // TODO: DEBUG
-            System.out.println("XMLE64_New song added to newSongs: " + newSong.getTitle());
+            System.out.println("XMLE90_New song added to newSongs: " + newSong.getTitle());
             
             // Adds the new song to the new songs array list in Library.
             Library.addNewSong(newSong);
@@ -99,7 +99,7 @@ public class XMLEditor {
 	
 	public static void addSongToXML() {
 		// TODO: DEBUG
-		System.out.println("XMLE94_In addSongToXML()");
+		System.out.println("XMLE102_In addSongToXML()");
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -176,12 +176,63 @@ public class XMLEditor {
 		}
         
 		// TODO: DEBUG
-		System.out.println("XMLE171_End of addSongToXML()");
+		System.out.println("XMLE179_End of addSongToXML()");
 	}
 	
-	public static void deleteSongFromXML() {
+	public static void deleteSongFromXML(int currentXMLFileNum) {
+		// Sets the current number of files in library.xml
+		xmlFileNum = currentXMLFileNum;
+		
 		// TODO: DEBUG
-		System.out.println("XMLE176_In deleteSongFromXML");
-		System.out.println("XMLE176_Song to Delete: " + songsToDelete.get(0));
+		System.out.println("XMLE187_In deleteSongFromXML");
+		System.out.println("XMLE188_Song to Delete: " + songsToDelete.get(0));
+		
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            for (String songTitle : songsToDelete) {
+                // Finds the node with the song title marked for removal.
+            	XPathExpression expr = xpath.compile("/library/songs/song[title/text() = \"" + songTitle + "\"]");
+                Node deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+                
+                // TODO: DEBUG
+                if (deleteSongNode == null) {
+                	System.out.println("XMLE205_NULL!");
+                }
+                
+                // Removes the node corresponding to the title of the song.
+                deleteSongNode.getParentNode().removeChild(deleteSongNode);
+
+            	// Decreases the counter for the number of files in the xml file.
+            	xmlFileNum--;
+            }
+            
+            // Creates node to update xml file number.
+            XPathExpression fileNumExpr = xpath.compile("/library/musicLibrary/fileNum");
+            Node fileNum = ((NodeList) fileNumExpr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Updates the fileNum field in the xml file.
+            fileNum.setTextContent(Integer.toString(xmlFileNum));
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+        
+		// TODO: DEBUG
+		System.out.println("XMLE236_End of deleteSongFromXML()");
 	}
 }
