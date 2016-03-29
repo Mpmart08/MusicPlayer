@@ -542,10 +542,6 @@ public class MusicPlayer extends Application {
     }
     
     private static void updateLibraryXML(Path musicDirectory) {
-    	
-    	// TODO: DEBUG
-    	System.out.println("MP547_In update library xml");
-    	
     	try {
 			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
 			BorderPane importView = (BorderPane) loader.load();

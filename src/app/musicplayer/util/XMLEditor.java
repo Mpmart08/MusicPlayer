@@ -47,11 +47,6 @@ public class XMLEditor {
 	public static void createNewSongObject(File file, int fileNum) {
 		// Sets the number of files in library.xml
 		xmlFileNum = fileNum;
-		// TODO: DEBUG
-		System.out.println("XMLE51_File: " + file);
-		
-		// TODO: DEBUG
-		System.out.println("XMLE54_New file created: " + file.getName());
 		
 		// Infinite loop to wait until file is not in use by another process.
 		while (!file.renameTo(file)) {}
@@ -86,9 +81,6 @@ public class XMLEditor {
             // Creates a new song object for the added song and adds it to the newSongs array list.
             Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
             
-            // TODO: DEBUG
-            System.out.println("XMLE90_New song added to newSongs: " + newSong.getTitle());
-            
             // Adds the new song to the new songs array list in Library.
             Library.addNewSong(newSong);
 
@@ -97,10 +89,7 @@ public class XMLEditor {
 		}
 	}
 	
-	public static void addSongToXML() {
-		// TODO: DEBUG
-		System.out.println("XMLE102_In addSongToXML()");
-		
+	public static void addSongToXML() {		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -174,18 +163,11 @@ public class XMLEditor {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-        
-		// TODO: DEBUG
-		System.out.println("XMLE179_End of addSongToXML()");
 	}
 	
 	public static void deleteSongFromXML(int currentXMLFileNum) {
 		// Sets the current number of files in library.xml
 		xmlFileNum = currentXMLFileNum;
-		
-		// TODO: DEBUG
-		System.out.println("XMLE187_In deleteSongFromXML");
-		System.out.println("XMLE188_Song to Delete: " + songsToDelete.get(0));
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -199,11 +181,6 @@ public class XMLEditor {
                 // Finds the node with the song title marked for removal.
             	XPathExpression expr = xpath.compile("/library/songs/song[title/text() = \"" + songTitle + "\"]");
                 Node deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-                
-                // TODO: DEBUG
-                if (deleteSongNode == null) {
-                	System.out.println("XMLE205_NULL!");
-                }
                 
                 // Removes the node corresponding to the title of the song.
                 deleteSongNode.getParentNode().removeChild(deleteSongNode);
@@ -231,8 +208,5 @@ public class XMLEditor {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-        
-		// TODO: DEBUG
-		System.out.println("XMLE236_End of deleteSongFromXML()");
 	}
 }

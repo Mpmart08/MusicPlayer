@@ -582,9 +582,6 @@ public class MainController implements Initializable {
     public SubView loadView(String viewName) {
     	// If new songs have been added to the music directory while the app is running.
     	if (!Library.getNewSongs().isEmpty()) {
-    		// TODO: DEBUG
-    		System.out.println("MC586_New songs added to library while app was running!");
-    		
             // Adds the new song to the xml file.
     		XMLEditor.addSongToXML();
     		

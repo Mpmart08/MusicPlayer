@@ -71,9 +71,6 @@ public class DirectoryWatch {
 					WatchEvent<Path> ev = (WatchEvent<Path>) event;
 					Path fileName = ev.context();
 					Path child = dir.resolve(fileName);
-
-					// 	TODO: DEBUG
-	                System.out.format("DW76_%s: %s\n", kind.name(), child);
 					
 					// If directory is created, register directory and sub directories with watch service.
 	                // If file is created, creates a Song objects from the new file and adds it to the newSongs array list.
