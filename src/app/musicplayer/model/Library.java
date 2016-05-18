@@ -333,14 +333,12 @@ public final class Library {
                 Node playlists = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
                 
                 Element playlist = doc.createElement("playlist");
-                Element id = doc.createElement(ID);
-                Element title = doc.createElement(TITLE);
+                playlist.setAttribute("id", Integer.toString(i));
                 
-                id.setTextContent(Integer.toString(i));
+                Element title = doc.createElement(TITLE);
                 title.setTextContent(text);
                 
                 playlists.appendChild(playlist);
-                playlist.appendChild(id);
                 playlist.appendChild(title);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();

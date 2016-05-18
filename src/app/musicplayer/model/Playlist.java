@@ -69,7 +69,7 @@ public class Playlist {
     			XPathFactory xPathfactory = XPathFactory.newInstance();
     			XPath xpath = xPathfactory.newXPath();
 
-    			XPathExpression expr = xpath.compile("/library/playlists/playlist[id/text() = \"" + this.id + "\"]");
+    			XPathExpression expr = xpath.compile("/library/playlists/playlist[@id=\"" + this.id + "\"]");
     			Node playlist = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 
     			Element songId = doc.createElement("songId");
