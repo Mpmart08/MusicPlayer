@@ -203,4 +203,12 @@ public class PlaylistsController implements Initializable, SubView {
         MusicPlayer.setNowPlaying(song);
         MusicPlayer.play();
     }
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
+    
+    public Playlist getSelectedPlaylist() {
+    	return selectedPlaylist;
+    }
 }

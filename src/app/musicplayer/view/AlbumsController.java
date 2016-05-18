@@ -47,11 +47,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-/**
- * 
- * @version 1.0
- *
- */
 public class AlbumsController implements Initializable, SubView {
 	
     @FXML private ScrollPane gridBox;
@@ -82,7 +77,6 @@ public class AlbumsController implements Initializable, SubView {
     private Song selectedSong;
     
     // ANIMIATIONS
-    
     private Animation collapseAnimation = new Transition() {
         {
             setCycleDuration(Duration.millis(250));

@@ -209,4 +209,6 @@ public class XMLEditor {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static void deleteSongFromPlaylist() {}
 }
