@@ -210,5 +210,41 @@ public class XMLEditor {
 		}
 	}
 	
-	public static void deleteSongFromPlaylist() {}
+	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
+		
+		// TODO: DEBUG
+		System.out.println("XMLE_216: In deleteSongFromPlaylist");
+		System.out.println("XMLE_217: selected playlist: " + selectedPlayListId + " selected song: " + selectedSongId);
+		
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            // Finds the node with the song id for the selected song in the selected play list for removal.
+            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songs/songId[text() = '" + selectedSongId + "']";
+            XPathExpression expr = xpath.compile(query);
+            Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            
+            // Removes the node corresponding to the title of the song.
+            deleteSongNode.getParentNode().removeChild(deleteSongNode);
+            
+            System.out.println("XMLE_230: " + deleteSongNode.getNodeName());
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 }

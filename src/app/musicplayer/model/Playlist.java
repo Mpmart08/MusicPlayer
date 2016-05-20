@@ -69,12 +69,12 @@ public class Playlist {
     			XPathFactory xPathfactory = XPathFactory.newInstance();
     			XPath xpath = xPathfactory.newXPath();
 
-    			XPathExpression expr = xpath.compile("/library/playlists/playlist[@id=\"" + this.id + "\"]");
-    			Node playlist = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+    			XPathExpression expr = xpath.compile("/library/playlists/playlist[@id=\"" + this.id + "\"]/songs");
+    			Node playlistSongs = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 
     			Element songId = doc.createElement("songId");
     			songId.setTextContent(Integer.toString(song.getId()));
-    			playlist.appendChild(songId);
+    			playlistSongs.appendChild(songId);
 
     			TransformerFactory transformerFactory = TransformerFactory.newInstance();
     			Transformer transformer = transformerFactory.newTransformer();

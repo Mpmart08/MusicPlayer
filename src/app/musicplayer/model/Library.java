@@ -334,12 +334,14 @@ public final class Library {
                 
                 Element playlist = doc.createElement("playlist");
                 playlist.setAttribute("id", Integer.toString(i));
+                playlists.appendChild(playlist);
                 
                 Element title = doc.createElement(TITLE);
                 title.setTextContent(text);
-                
-                playlists.appendChild(playlist);
                 playlist.appendChild(title);
+                
+    			Element playlistSongs = doc.createElement("songs");
+    			playlist.appendChild(playlistSongs);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
@@ -349,9 +351,11 @@ public final class Library {
                 File xmlFile = new File(Resources.JAR + "library.xml");
                 StreamResult result = new StreamResult(xmlFile);
                 transformer.transform(source, result);
+                
+                // TODO: DEBUG
+                System.out.println("Library_356: New playlist id = " + i + " New playlist title = " + text);
 
             } catch (Exception ex) {
-
                 ex.printStackTrace();
             }
 

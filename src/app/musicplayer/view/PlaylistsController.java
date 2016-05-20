@@ -175,6 +175,9 @@ public class PlaylistsController implements Initializable, SubView {
     }
 
     public void selectPlaylist(Playlist playlist) {
+    	
+    	// TODO: DEBUG
+    	System.out.println("PlaylistController_180: Selected playlist ID = " + playlist.getId() + " Selected playlist title = " + playlist.getTitle());
 
     	selectedPlaylist = playlist;
         ObservableList<Song> songs = playlist.getSongs();
