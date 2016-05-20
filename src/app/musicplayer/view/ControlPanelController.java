@@ -1,15 +1,9 @@
 package app.musicplayer.view;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.util.Resources;
 import app.musicplayer.util.SubView;
 import app.musicplayer.util.XMLEditor;
 import javafx.event.Event;
@@ -18,9 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 
 public class ControlPanelController implements Initializable {
-	
-	private boolean inPlaylists;
-	private boolean inSelectedPlaylist;
 	
 	@FXML private Pane playButton;
 	@FXML private Pane playlistButton;

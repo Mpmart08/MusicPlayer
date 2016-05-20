@@ -102,7 +102,7 @@ public final class Library {
         	updateAlbumsList();
         }
         return FXCollections.observableArrayList(albums);
-    } // End getAlbums()
+    }
     
     /**
      * Gets a list of artists.
@@ -110,7 +110,6 @@ public final class Library {
      * @return observable list of artists
      */
     public static ObservableList<Artist> getArtists() {
-    	
         if (artists == null) {
             if (albums == null) {
                 getAlbums();
@@ -123,11 +122,13 @@ public final class Library {
             updateArtistsList();
         }
         return FXCollections.observableArrayList(artists);
-    } // End getArtists()
-
+    }
+    
     public static ObservableList<Playlist> getPlaylists() {
-
-       if (playlists == null) {
+    	if (playlists == null) {
+    	   
+    	   // TODO: DEBUG
+    	   System.out.println("Library_132: Null Playlists");
 
             playlists = new ArrayList<Playlist>();
 
@@ -146,19 +147,13 @@ public final class Library {
                 ArrayList<Song> songs = new ArrayList<Song>();
 
                 while(reader.hasNext()) {
-
                     reader.next();
-
                     if (reader.isWhiteSpace()) {
-
                         continue;
-
                     } else if (reader.isCharacters() && isPlaylist) {
-
                         String value = reader.getText();
 
                         switch (element) {
-
                             case ID:
                                 id = Integer.parseInt(value);
                                 break;
@@ -189,12 +184,14 @@ public final class Library {
                         reader.close();
                         break;
                     }
+                    
+                    // TODO: DEBUG
+                    System.out.println("Library_189: Element = " + element + " | ID = " + id + " | title = " + title);
                 }
                 
                 reader.close();
 
             } catch (Exception ex) {
-
                 ex.printStackTrace();
             }
             
