@@ -366,7 +366,11 @@ public final class Library {
     	if (playlists == null) {
     		getPlaylists();
     	}
-    	return playlists.get(id);
+    	// Gets the play list size.
+    	int playListSize = Library.getPlaylists().size();
+    	// The +2 takes into account the two default play lists.
+    	// The -1 is used because size() starts at 1 but indexes start at 0.
+    	return playlists.get(playListSize - (id + 2) - 1);
     }
 
     public static Artist getArtist(String title) {
