@@ -53,7 +53,6 @@ public final class Library {
     private static final String PLAYCOUNT = "playCount";
     private static final String PLAYDATE = "playDate";
     private static final String LOCATION = "location";
-    private static final String SONGID = "songId";
 
     private static ArrayList<Song> songs;
     private static ArrayList<Artist> artists;
@@ -126,12 +125,8 @@ public final class Library {
     
     public static ObservableList<Playlist> getPlaylists() {
     	if (playlists == null) {
-    	   
-    	   // TODO: DEBUG
-    	   System.out.println("Library_132: Null Playlists");
 
             playlists = new ArrayList<Playlist>();
-
             int id = 0;
 
             try {
@@ -150,47 +145,35 @@ public final class Library {
                     reader.next();
                     if (reader.isWhiteSpace()) {
                         continue;
-                    } else if (reader.isCharacters() && isPlaylist) {
-                        String value = reader.getText();
-
-                        switch (element) {
-                            case ID:
-                                id = Integer.parseInt(value);
-                                break;
-                            case TITLE:
-                                title = value;
-                                break;
-                            case SONGID:
-                                songs.add(getSong(Integer.parseInt(value)));
-                                break;
-                        }
-
                     } else if (reader.isStartElement()) {
-
                         element = reader.getName().getLocalPart();
-                        if (element.equals("playlists")) {
+                        
+                        // If the element is a play list, reads the element attributes to retrieve
+                        // the play list id and title.
+                        if (element.equals("playlist")) {
                             isPlaylist = true;
+                            
+                            id = Integer.parseInt(reader.getAttributeValue(0));
+                            title = reader.getAttributeValue(1);
                         }
 
+                    } else if (reader.isCharacters() && isPlaylist) {
+                    	// Retrieves the reader value (song ID), gets the song and adds it to the songs list. 
+                        String value = reader.getText();
+                        songs.add(getSong(Integer.parseInt(value)));
                     } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("playlist")) {
-
+                    	// If the play list id, title, and songs have been retrieved, a new play list is created
+                    	// and the values reset.
                         playlists.add(new Playlist(id, title, songs));
                         id = -1;
                         title = null;
                         songs = new ArrayList<Song>();
-
                     } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("playlists")) {
-
                         reader.close();
                         break;
                     }
-                    
-                    // TODO: DEBUG
-                    System.out.println("Library_189: Element = " + element + " | ID = " + id + " | title = " + title);
                 }
-                
                 reader.close();
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -318,7 +301,6 @@ public final class Library {
     		playlists.add(new Playlist(i, text, new ArrayList<Song>()));
 
             try {
-
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                 Document doc = docBuilder.parse(Resources.JAR + "library.xml");
@@ -331,14 +313,8 @@ public final class Library {
                 
                 Element playlist = doc.createElement("playlist");
                 playlist.setAttribute("id", Integer.toString(i));
+                playlist.setAttribute(TITLE, text);
                 playlists.appendChild(playlist);
-                
-                Element title = doc.createElement(TITLE);
-                title.setTextContent(text);
-                playlist.appendChild(title);
-                
-    			Element playlistSongs = doc.createElement("songs");
-    			playlist.appendChild(playlistSongs);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
@@ -348,10 +324,6 @@ public final class Library {
                 File xmlFile = new File(Resources.JAR + "library.xml");
                 StreamResult result = new StreamResult(xmlFile);
                 transformer.transform(source, result);
-                
-                // TODO: DEBUG
-                System.out.println("Library_356: New playlist id = " + i + " New playlist title = " + text);
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

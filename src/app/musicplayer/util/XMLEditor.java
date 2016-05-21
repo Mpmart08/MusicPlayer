@@ -213,8 +213,7 @@ public class XMLEditor {
 	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
 		
 		// TODO: DEBUG
-		System.out.println("XMLE_216: In deleteSongFromPlaylist");
-		System.out.println("XMLE_217: selected playlist: " + selectedPlayListId + " selected song: " + selectedSongId);
+		System.out.println("XMLE_216: selected playlist: " + selectedPlayListId + " selected song: " + selectedSongId);
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -225,14 +224,17 @@ public class XMLEditor {
             XPath xpath = xPathfactory.newXPath();
             
             // Finds the node with the song id for the selected song in the selected play list for removal.
-            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songs/songId[text() = '" + selectedSongId + "']";
+            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songId[text() = '" + selectedSongId + "']";
             XPathExpression expr = xpath.compile(query);
             Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
             
             // Removes the node corresponding to the title of the song.
             deleteSongNode.getParentNode().removeChild(deleteSongNode);
             
-            System.out.println("XMLE_230: " + deleteSongNode.getNodeName());
+            // TODO: REMOVE SONG FROM LIBRARY
+            for (Song song : Library.getPlaylist(selectedPlayListId).getSongs()) {
+            	System.out.println("XMLE_236: Song in PlayList = " + song.getTitle());
+            }
                     
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
