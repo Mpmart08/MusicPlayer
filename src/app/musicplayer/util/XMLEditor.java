@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,9 +29,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import app.musicplayer.model.Library;
-import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
-import javafx.collections.ObservableList;
 
 public class XMLEditor {
 	
@@ -218,7 +215,7 @@ public class XMLEditor {
 		// TODO: DEBUG
 		System.out.println("");
 		System.out.println("XMLE_216: selected playlist id = " + selectedPlayListId + 
-				" selected playlist title = " + Library.getPlaylist(selectedPlayListId).getTitle() +
+				" | selected playlist title = " + Library.getPlaylist(selectedPlayListId).getTitle() +
 				" | selected song id = " + selectedSongId + " | selected song title = " 
 				+ Library.getSong(selectedSongId).getTitle());
 		

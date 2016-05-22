@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox fx:id="controlBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="90.0" stylesheets="@/app/musicplayer/util/css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ControlPanelController">
+<HBox fx:id="controlBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="90.0" stylesheets="@/app/musicplayer/util/css/MainStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.PlaylistControlPanelController">
    <children>
       <Pane fx:id="playButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#playSong" prefHeight="20.0" prefWidth="20.0" styleClass="controlPane">
          <children>
@@ -15,9 +15,9 @@
             <Insets left="5.0" right="5.0" />
          </HBox.margin>
       </Pane>
-      <Pane fx:id="playlistButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#addToPlaylist" prefHeight="20.0" prefWidth="20.0" styleClass="controlPane">
+      <Pane fx:id="deleteButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#deleteSong" prefHeight="20.0" prefWidth="20.0" styleClass="controlPane">
          <children>
-            <SVGPath content="M 277.00,92.00           C 277.00,92.00 277.00,235.00 277.00,235.00             277.00,235.00 420.00,235.00 420.00,235.00             420.00,235.00 420.00,277.00 420.00,277.00             420.00,277.00 277.00,277.00 277.00,277.00             277.00,277.00 277.00,420.00 277.00,420.00             277.00,420.00 235.00,420.00 235.00,420.00             235.00,420.00 235.00,277.00 235.00,277.00             235.00,277.00 92.00,277.00 92.00,277.00             92.00,277.00 92.00,235.00 92.00,235.00             92.00,235.00 235.00,235.00 235.00,235.00             235.00,235.00 235.00,92.00 235.00,92.00             235.00,92.00 277.00,92.00 277.00,92.00 Z" fill="WHITE" scaleX="0.0375" scaleY="0.0375" styleClass="control" translateX="-245.0" translateY="-245.0" />
+            <SVGPath content="M 112.00,32.00           C 112.00,32.00 112.00,43.00 112.00,43.00             112.00,43.00 16.00,43.00 16.00,43.00             16.00,43.00 16.00,32.00 16.00,32.00             16.00,32.00 112.00,32.00 112.00,32.00 Z           M 112.00,58.00           C 112.00,58.00 112.00,70.00 112.00,70.00             112.00,70.00 16.00,70.00 16.00,70.00             16.00,70.00 16.00,58.00 16.00,58.00             16.00,58.00 112.00,58.00 112.00,58.00 Z           M 112.00,85.00           C 112.00,85.00 112.00,96.00 112.00,96.00             112.00,96.00 16.00,96.00 16.00,96.00             16.00,96.00 16.00,85.00 16.00,85.00             16.00,85.00 112.00,85.00 112.00,85.00 Z" fill="WHITE" scaleX="0.15" scaleY="0.15" styleClass="control" translateX="-53.0" translateY="-53.0" />
          </children>
          <HBox.margin>
             <Insets left="5.0" right="5.0" />

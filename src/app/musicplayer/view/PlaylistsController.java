@@ -183,6 +183,7 @@ public class PlaylistsController implements Initializable, SubView {
         for (Song song : songs) {
             System.out.print(song.getTitle() + " | ");
         }
+        System.out.print("");
         // TODO: DEBUG
         
         tableView.getSelectionModel().clearSelection();

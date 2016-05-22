@@ -5,7 +5,6 @@ import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.util.SubView;
-import app.musicplayer.util.XMLEditor;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +14,6 @@ public class ControlPanelController implements Initializable {
 	
 	@FXML private Pane playButton;
 	@FXML private Pane playlistButton;
-	@FXML private Pane infoButton;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -31,23 +29,6 @@ public class ControlPanelController implements Initializable {
 	
 	@FXML
 	private void addToPlaylist(Event e) {
-		e.consume();
-	}
-	
-	@FXML
-	private void showInfo(Event e) {		
-		// Gets the play lists controller sub view, which keeps track of the currently selected song.
-		// A PlayListsController object will always be returned since this button will only be visible
-		// when the user selects a song while in a play list.
-		PlaylistsController controller = (PlaylistsController) MusicPlayer.getMainController().getSubViewController();
-		
-		// Retrieves play list and song id to search for the song in the xml file.
-		int selectedPlayListId = controller.getSelectedPlaylist().getId();
-		int selectedSongId = controller.getSelectedSong().getId();
-		
-		// Calls methods to delete selected song from play list.
-		XMLEditor.deleteSongFromPlaylist(selectedPlayListId, selectedSongId);
-		
 		e.consume();
 	}
 }
