@@ -2,6 +2,7 @@ package app.musicplayer.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -61,7 +62,6 @@ public class Playlist {
     		songs.add(song);
 
     		try {
-
     			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
     			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
     			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
@@ -86,10 +86,21 @@ public class Playlist {
     			transformer.transform(source, result);
 
     		} catch (Exception ex) {
-
     			ex.printStackTrace();
     		}
     	}
+    }
+    
+    public void updateSongs(int songId) {
+      // Loops through the songs in the play list.
+      // When the song with an ID matching the selectedSongId is found, it is deleted.
+      Iterator<Song> iterator = songs.iterator();
+      while (iterator.hasNext()) {
+          Song song = iterator.next();
+          if (song.getId() == songId) {
+          	iterator.remove();
+          }
+      }
     }
 
     @Override

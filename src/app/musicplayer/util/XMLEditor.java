@@ -235,11 +235,11 @@ public class XMLEditor {
             XPathExpression expr = xpath.compile(query);
             Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
             
-            // Removes the node corresponding to the title of the song.
+            // Removes the node corresponding to the selected song.
             deleteSongNode.getParentNode().removeChild(deleteSongNode);
             
-            // Updates the selected play list song list.
-            Library.getPlaylist(selectedPlayListId).updateSongs();
+            // Updates the selected play list song list to remove the deleted song.
+            Library.getPlaylist(selectedPlayListId).updateSongs(selectedSongId);
                     
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
