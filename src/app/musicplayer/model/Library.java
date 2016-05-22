@@ -130,7 +130,6 @@ public final class Library {
             int id = 0;
 
             try {
-
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 factory.setProperty("javax.xml.stream.isCoalescing", true);
                 FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
@@ -156,7 +155,6 @@ public final class Library {
                             id = Integer.parseInt(reader.getAttributeValue(0));
                             title = reader.getAttributeValue(1);
                         }
-
                     } else if (reader.isCharacters() && isPlaylist) {
                     	// Retrieves the reader value (song ID), gets the song and adds it to the songs list. 
                         String value = reader.getText();

@@ -45,9 +45,6 @@ public class ControlPanelController implements Initializable {
 		int selectedPlayListId = controller.getSelectedPlaylist().getId();
 		int selectedSongId = controller.getSelectedSong().getId();
 		
-		// TODO: DEBUG
-		System.out.println("CPC_58: selected playlist = " + selectedPlayListId + " selected song = " + selectedSongId);
-		
 		// Calls methods to delete selected song from play list.
 		XMLEditor.deleteSongFromPlaylist(selectedPlayListId, selectedSongId);
 		
