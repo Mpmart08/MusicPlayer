@@ -234,9 +234,6 @@ public class XMLEditor {
             
             // Removes the node corresponding to the selected song.
             deleteSongNode.getParentNode().removeChild(deleteSongNode);
-            
-            // Updates the selected play list song list to remove the deleted song.
-            Library.getPlaylist(selectedPlayListId).updateSongs(selectedSongId);
                     
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();

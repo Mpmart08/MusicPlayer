@@ -91,7 +91,7 @@ public class Playlist {
     	}
     }
     
-    public void updateSongs(int songId) {
+    public void removeSong(int songId) {
       // Loops through the songs in the play list.
       // When the song with an ID matching the selectedSongId is found, it is deleted.
       Iterator<Song> iterator = songs.iterator();

@@ -44,8 +44,6 @@ public class ControlPanelTableCell<S, T> extends TableCell<S, T> {
 			} else {
 				fileName = Resources.FXML + "ControlPanel.fxml";
 			}
-			// TODO: DEBUG
-			System.out.println("CPTC_48: fileName = " + fileName);
 			
 			try {
 				Label text = new Label(item.toString());
