@@ -5,18 +5,19 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.PlaylistsController">
+<VBox stylesheets="@../util/css/PlaylistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.PlaylistsController">
    <children>
       <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
          <children>
-            <Label fx:id="playlistTitleLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" visible="false" />
+            <Label fx:id="playlistTitleLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" />
             <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0">
                <HBox.margin>
                   <Insets bottom="10.0" top="10.0" />
-               </HBox.margin></Separator>
+               </HBox.margin>
+            </Separator>
          </children>
       </HBox>
-      <TableView fx:id="tableView" fixedCellSize="50.0" focusTraversable="false" stylesheets="@/app/musicplayer/util/css/SongStyle.css" VBox.vgrow="ALWAYS">
+      <TableView fx:id="tableView" fixedCellSize="50.0" focusTraversable="false" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
             <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />

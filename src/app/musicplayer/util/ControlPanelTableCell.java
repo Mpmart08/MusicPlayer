@@ -44,7 +44,6 @@ public class ControlPanelTableCell<S, T> extends TableCell<S, T> {
 			} else {
 				fileName = Resources.FXML + "ControlPanel.fxml";
 			}
-			
 			try {
 				Label text = new Label(item.toString());
 				text.setTextOverrun(OverrunStyle.CLIP);

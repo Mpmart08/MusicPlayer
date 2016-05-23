@@ -184,7 +184,6 @@ public class PlaylistsController implements Initializable, SubView {
     public void selectPlaylist(Playlist playlist) {
     	// Sets the text on the play list title label.
     	playlistTitleLabel.setText(playlist.getTitle());
-    	playlistTitleLabel.setVisible(true);
     	
     	selectedPlaylist = playlist;
         ObservableList<Song> songs = playlist.getSongs();
