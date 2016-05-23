@@ -5,13 +5,26 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<TableView fx:id="tableView" fixedCellSize="50.0" focusTraversable="false" stylesheets="@/app/musicplayer/util/css/SongStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.PlaylistsController">
-  <columns>
-      <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
-      <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
-      <TableColumn fx:id="artistColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Artist" />
-      <TableColumn fx:id="albumColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Album" />
-      <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
-      <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
-  </columns>
-</TableView>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.PlaylistsController">
+   <children>
+      <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0">
+         <children>
+            <Label fx:id="playlistTitleLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" textOverrun="CLIP" visible="false" />
+            <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="30.0" prefWidth="25.0">
+               <HBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </HBox.margin></Separator>
+         </children>
+      </HBox>
+      <TableView fx:id="tableView" fixedCellSize="50.0" focusTraversable="false" stylesheets="@/app/musicplayer/util/css/SongStyle.css" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="playingColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="50.0" resizable="false" styleClass="playingColumn" />
+            <TableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="firstColumn" text="Title" />
+            <TableColumn fx:id="artistColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Artist" />
+            <TableColumn fx:id="albumColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="textColumn" text="Album" />
+            <TableColumn fx:id="lengthColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Length" />
+            <TableColumn fx:id="playsColumn" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="-1.0" resizable="false" styleClass="numberColumn" text="Plays" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

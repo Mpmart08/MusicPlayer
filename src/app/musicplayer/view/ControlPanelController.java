@@ -29,6 +29,10 @@ public class ControlPanelController implements Initializable {
 	
 	@FXML
 	private void addToPlaylist(Event e) {
+
+		// TODO: DEBUG
+		System.out.println("CPC_34: add to playlist");
+		
 		e.consume();
 	}
 }

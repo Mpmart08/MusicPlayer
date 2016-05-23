@@ -22,6 +22,7 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -44,13 +45,14 @@ public class PlaylistsController implements Initializable, SubView {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    @FXML private Label playlistTitleLabel;
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    	
     	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
     	titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
@@ -180,6 +182,10 @@ public class PlaylistsController implements Initializable, SubView {
     }
 
     public void selectPlaylist(Playlist playlist) {
+    	// Sets the text on the play list title label.
+    	playlistTitleLabel.setText(playlist.getTitle());
+    	playlistTitleLabel.setVisible(true);
+    	
     	selectedPlaylist = playlist;
         ObservableList<Song> songs = playlist.getSongs();
         
@@ -188,6 +194,7 @@ public class PlaylistsController implements Initializable, SubView {
         for (Song song : songs) {
             System.out.print(song.getTitle() + " | ");
         }
+        System.out.println("");
         
         tableView.getSelectionModel().clearSelection();
         

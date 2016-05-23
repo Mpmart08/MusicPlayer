@@ -213,7 +213,6 @@ public class XMLEditor {
 	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
 		
 		// TODO: DEBUG
-		System.out.println("");
 		System.out.println("XMLE_216: selected playlist id = " + selectedPlayListId + 
 				" | selected playlist title = " + Library.getPlaylist(selectedPlayListId).getTitle() +
 				" | selected song id = " + selectedSongId + " | selected song title = " 
