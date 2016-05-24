@@ -34,6 +34,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 public class PlaylistsController implements Initializable, SubView {
@@ -47,6 +48,8 @@ public class PlaylistsController implements Initializable, SubView {
     @FXML private TableColumn<Song, Integer> playsColumn;
     
     @FXML private Label playlistTitleLabel;
+    
+    @FXML private HBox controlBox;
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
@@ -185,21 +188,27 @@ public class PlaylistsController implements Initializable, SubView {
     	// Sets the text on the play list title label.
     	playlistTitleLabel.setText(playlist.getTitle());
     	
+    	// Updates the currently selected play list.
     	selectedPlaylist = playlist;
+    	
+    	// Retrieves the songs in the selected play list.
         ObservableList<Song> songs = playlist.getSongs();
         
         // TODO: DEBUG
-    	System.out.print("PC_182: Songs: ");
+    	System.out.print("PC_199: Songs: ");
         for (Song song : songs) {
             System.out.print(song.getTitle() + " | ");
         }
         System.out.println("");
         
+        // Clears the song table.
         tableView.getSelectionModel().clearSelection();
         
         if (songs.isEmpty()) {
         	songs.add(null);
         }
+        
+        // Populates the song table with the playlist's songs.
         tableView.setItems(songs);
     }
     

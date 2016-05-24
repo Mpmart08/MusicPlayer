@@ -12,7 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 
-public class PlaylistControlPanelController implements Initializable {
+public class ControlPanelPlaylistsController implements Initializable {
 	
 	@FXML private Pane playButton;
 	@FXML private Pane deleteButton;
@@ -41,10 +41,10 @@ public class PlaylistControlPanelController implements Initializable {
 		int selectedSongId = controller.getSelectedSong().getId();
 		
 		// Calls methods to delete selected song from play list in XML file.
-//		XMLEditor.deleteSongFromPlaylist(selectedPlayListId, selectedSongId);
+		XMLEditor.deleteSongFromPlaylist(selectedPlayListId, selectedSongId);
 		
         // Removes the selected song from the playlist's song list in Library.
-//        Library.getPlaylist(selectedPlayListId).removeSong(selectedSongId);
+        Library.getPlaylist(selectedPlayListId).removeSong(selectedSongId);
 		
 		// Deletes the selected row from the table view.
 		controller.deleteSelectedRow();

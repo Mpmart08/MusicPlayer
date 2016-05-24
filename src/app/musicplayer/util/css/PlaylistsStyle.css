@@ -138,3 +138,31 @@
     -fx-border-width: 0 1 0 0;
     -fx-border-color: #c2c2c2;
 }
+
+.controlPane:hover > .control,
+.toggleControlPane:hover > .control {
+    -fx-opacity: 0.5;
+}
+
+.controlPane:pressed > .control,
+.toggleControlPane:pressed > .control {
+    -fx-opacity: 0.25;
+}
+
+.toggleControlPane:active {
+    -fx-background-color: rgb(153, 181, 230);
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 10;
+    -fx-scale-shape: true;
+    -fx-shape: "
+        M 100, 100
+        m -75, 0
+        a 75,75 0 1,0 150,0
+        a 75,75 0 1,0 -150,0
+        ";
+}
+
+.toggleControlPane:active > .control {
+    -fx-fill: black;
+}
