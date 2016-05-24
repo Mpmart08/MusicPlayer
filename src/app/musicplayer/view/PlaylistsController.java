@@ -6,7 +6,10 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
+import app.musicplayer.model.Library;
+import app.musicplayer.model.MostPlayedPlaylist;
 import app.musicplayer.model.Playlist;
+import app.musicplayer.model.RecentlyPlayedPlaylist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
@@ -35,6 +38,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 public class PlaylistsController implements Initializable, SubView {
@@ -48,8 +52,8 @@ public class PlaylistsController implements Initializable, SubView {
     @FXML private TableColumn<Song, Integer> playsColumn;
     
     @FXML private Label playlistTitleLabel;
-    
     @FXML private HBox controlBox;
+    @FXML private Pane deleteButton;
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
@@ -185,21 +189,20 @@ public class PlaylistsController implements Initializable, SubView {
     }
 
     public void selectPlaylist(Playlist playlist) {
+    	// Displays the delete button only if the user has not selected one of the default playlists.
+    	if (!(playlist instanceof MostPlayedPlaylist || playlist instanceof RecentlyPlayedPlaylist)) {
+    		deleteButton.setVisible(true);
+    	}
+    	
     	// Sets the text on the play list title label.
     	playlistTitleLabel.setText(playlist.getTitle());
     	
     	// Updates the currently selected play list.
     	selectedPlaylist = playlist;
+    	Library.setSelectedPlaylist(playlist);
     	
     	// Retrieves the songs in the selected play list.
         ObservableList<Song> songs = playlist.getSongs();
-        
-        // TODO: DEBUG
-    	System.out.print("PC_199: Songs: ");
-        for (Song song : songs) {
-            System.out.print(song.getTitle() + " | ");
-        }
-        System.out.println("");
         
         // Clears the song table.
         tableView.getSelectionModel().clearSelection();
@@ -217,7 +220,6 @@ public class PlaylistsController implements Initializable, SubView {
     
     @Override
     public void play() {
-    	
     	Song song = selectedSong;
         ObservableList<Song> songs = selectedPlaylist.getSongs();
         if (MusicPlayer.isShuffleActive()) {
@@ -243,7 +245,7 @@ public class PlaylistsController implements Initializable, SubView {
         	newPlaylistAnimation.play();
         	
     		// Retrieves the table view items and the selected item.
-        	ObservableList<Song> selectedSong, allSongs;
+        	ObservableList<Song> allSongs, selectedSong;
         	allSongs = tableView.getItems();
         	selectedSong = tableView.getSelectionModel().getSelectedItems();
         	
@@ -252,6 +254,51 @@ public class PlaylistsController implements Initializable, SubView {
     	}
     }
     
+    @FXML
+    private void playPlaylist() {
+    	ObservableList<Song> songs = selectedPlaylist.getSongs();
+    	MusicPlayer.setNowPlayingList(songs);
+    	MusicPlayer.setNowPlaying(songs.get(0));
+    	MusicPlayer.play();
+    }
+    
+    @FXML
+    private void deletePlaylist() {
+    	if (!MusicPlayer.getMainController().deletePlaylistAnimation.getStatus().equals(Status.RUNNING)) {
+    		
+    		// Plays animation to remove play list cell from the main view.
+    		MusicPlayer.getMainController().deletePlaylistAnimation.play();
+        	
+        	// Deletes the play list from the xml file.
+//        	XMLEditor.deletePlaylistFromXML(selectedPlaylist.getId());
+        	
+        	// TODO: DEBUG
+        	System.out.println("PC_268: playlists before delete = ");
+        	for (Playlist p : Library.getPlaylists()) {
+        		System.out.print(p.getTitle() + " | ");
+        	}
+        	System.out.println("");
+        	// TODO: DEBUG
+        	
+        	// Removes the selected playlist from the library so that it is not reloaded.
+        	Library.removePlaylist(selectedPlaylist);
+        	
+        	// TODO: DEBUG
+        	System.out.println("PC_279: playlists after delete = ");
+        	for (Playlist p : Library.getPlaylists()) {
+        		System.out.print(p.getTitle() + " | ");
+        	}
+        	System.out.println("");
+        	// TODO: DEBUG
+        	
+        	// Resets the selected playlist to avoid storing the deleted playlist's data.
+        	selectedPlaylist = null;
+    	}
+    	// Loads the artists view.
+    	MusicPlayer.getMainController().loadView("artists");
+    }
+    
+    // TODO: SET ROW HEIGHT TO 0, PROBLEM IS GETTING ROW FROM INSIDE INITIALIZE
     private Animation newPlaylistAnimation = new Transition() {
     	{
             setCycleDuration(Duration.millis(500));
