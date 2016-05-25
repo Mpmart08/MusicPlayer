@@ -63,6 +63,9 @@ public final class Library {
     
     // Stores new songs added to library when app is running.
     private static ArrayList<Song> newSongs;
+    
+    // Stores the currently selected playlist.
+    private static Playlist selectedPlaylist;
 
     /**
      * Gets a list of songs.
@@ -125,7 +128,7 @@ public final class Library {
     
     public static ObservableList<Playlist> getPlaylists() {
     	if (playlists == null) {
-
+    		
             playlists = new ArrayList<Playlist>();
             int id = 0;
 
@@ -399,12 +402,20 @@ public final class Library {
         return playlists.stream().filter(playlist -> title.equals(playlist.getTitle())).findFirst().get();
     }
     
+    public static Playlist getSelectedPlaylist() {
+    	return selectedPlaylist;
+    }
+    
     public static ObservableList<Song> getNewSongs() {
     	// Initializes the array list if it is null.
     	if (newSongs == null) {
     		newSongs = new ArrayList<Song>();
     	}
     	return FXCollections.observableArrayList(newSongs);
+    }
+    
+    public static void setSelectedPlaylist(Playlist playlist) {
+    	selectedPlaylist = playlist;
     }
     
     /**
@@ -632,6 +643,10 @@ public final class Library {
 
             artists.add(new Artist(entry.getKey(), albums));
         }
+    }
+    
+    public static void removePlaylist(Playlist playlist) {
+    	playlists.remove(playlist);
     }
     
     private static void getMaxProgress(File directory) {
