@@ -468,11 +468,9 @@ public class MainController implements Initializable {
 
     @FXML
     private void selectView(Event e) {
-
         HBox eventSource = ((HBox)e.getSource());
-        
         eventSource.requestFocus();
-
+        
         Optional<Node> previous = sideBar.getChildren().stream()
             .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
 
@@ -596,6 +594,10 @@ public class MainController implements Initializable {
     
     public ScrollPane getScrollPane() {
     	return this.subViewRoot;
+    }
+    
+    public VBox getPlaylistBox() {
+    	return playlistBox;
     }
 
     public SubView loadView(String viewName) {

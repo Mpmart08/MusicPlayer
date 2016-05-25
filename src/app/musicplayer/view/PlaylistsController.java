@@ -15,6 +15,7 @@ import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.SubView;
+import app.musicplayer.util.XMLEditor;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
@@ -25,6 +26,7 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -57,6 +59,9 @@ public class PlaylistsController implements Initializable, SubView {
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
+    
+    // Used to store the individual playlist boxes from the playlistBox. 
+    private HBox cell;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -190,8 +195,8 @@ public class PlaylistsController implements Initializable, SubView {
 
     public void selectPlaylist(Playlist playlist) {
     	// Displays the delete button only if the user has not selected one of the default playlists.
-    	if (!(playlist instanceof MostPlayedPlaylist || playlist instanceof RecentlyPlayedPlaylist)) {
-    		deleteButton.setVisible(true);
+    	if (playlist instanceof MostPlayedPlaylist || playlist instanceof RecentlyPlayedPlaylist) {
+    		deleteButton.setVisible(false);
     	}
     	
     	// Sets the text on the play list title label.
@@ -264,38 +269,39 @@ public class PlaylistsController implements Initializable, SubView {
     
     @FXML
     private void deletePlaylist() {
-    	if (!MusicPlayer.getMainController().deletePlaylistAnimation.getStatus().equals(Status.RUNNING)) {
-    		
-    		// Plays animation to remove play list cell from the main view.
-    		MusicPlayer.getMainController().deletePlaylistAnimation.play();
+    	if (!deletePlaylistAnimation.getStatus().equals(Status.RUNNING)) {        	
+        	// Gets the title of the selected playlist to compare it against the labels of the playlist boxes.
+        	String selectedPlaylistTitle = Library.getSelectedPlaylist().getTitle();
+        	
+        	// Gets the playlist box children to loop through each to find the correct child to remove.
+        	ObservableList<Node> playlistBoxChildren = MusicPlayer.getMainController().getPlaylistBox().getChildren();
+        	
+        	// Initialize i at 1 to ignore the new playlist cell. 
+        	for (int i = 1; i <= playlistBoxChildren.size(); i++) {
+        		// Gets each cell in the playlist box and retrieves the cell's label.
+        		cell = (HBox) playlistBoxChildren.get(i);
+        		Label cellLabel = (Label) cell.getChildren().get(1);
+        		
+        		// Ends the process if the cell's label matches the selected playlist's title.
+        		if (cellLabel.getText().equals(selectedPlaylistTitle)) {
+        			break;
+        		}
+        	}
+        	
+        	deletePlaylistAnimation.play();
         	
         	// Deletes the play list from the xml file.
-//        	XMLEditor.deletePlaylistFromXML(selectedPlaylist.getId());
-        	
-        	// TODO: DEBUG
-        	System.out.println("PC_268: playlists before delete = ");
-        	for (Playlist p : Library.getPlaylists()) {
-        		System.out.print(p.getTitle() + " | ");
-        	}
-        	System.out.println("");
-        	// TODO: DEBUG
+        	XMLEditor.deletePlaylistFromXML(selectedPlaylist.getId());
+    		
+        	// Loads the artists view.
+        	MusicPlayer.getMainController().loadView("artists");
         	
         	// Removes the selected playlist from the library so that it is not reloaded.
         	Library.removePlaylist(selectedPlaylist);
         	
-        	// TODO: DEBUG
-        	System.out.println("PC_279: playlists after delete = ");
-        	for (Playlist p : Library.getPlaylists()) {
-        		System.out.print(p.getTitle() + " | ");
-        	}
-        	System.out.println("");
-        	// TODO: DEBUG
-        	
         	// Resets the selected playlist to avoid storing the deleted playlist's data.
         	selectedPlaylist = null;
     	}
-    	// Loads the artists view.
-    	MusicPlayer.getMainController().loadView("artists");
     }
     
     // TODO: SET ROW HEIGHT TO 0, PROBLEM IS GETTING ROW FROM INSIDE INITIALIZE
@@ -311,6 +317,21 @@ public class PlaylistsController implements Initializable, SubView {
     		} else {
     			row.setPrefHeight(50);
     			row.setOpacity((frac - 0.5) * 2);
+    		}
+        }
+    };
+    
+    public Animation deletePlaylistAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(500));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {        	    		
+    		if (frac < 0.5) {
+    			cell.setPrefHeight(cell.getHeight() - frac * 10);
+    		} else {
+    			cell.setPrefHeight(0);
+    			cell.setOpacity(0);
     		}
         }
     };
