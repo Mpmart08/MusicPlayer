@@ -219,3 +219,8 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
+.context-menu {
+  -fx-background-color: rgb(52, 109, 207);
+  -fx-text-fill: white;
+}
