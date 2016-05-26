@@ -6,10 +6,13 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Playlist;
+import app.musicplayer.model.Song;
 import app.musicplayer.util.SubView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -39,9 +42,6 @@ public class ControlPanelController implements Initializable {
 		double x = mouseEvent.getScreenX();
 		double y = mouseEvent.getScreenY();
 		
-		// TODO: DEBUG
-		System.out.println("CPC_43: get x = " + mouseEvent.getScreenX() + " get y = " + mouseEvent.getScreenY());
-		
 		ObservableList<Playlist> playlists = Library.getPlaylists();
 		
 		// Retrieves all the playlist titles to create menu items.
@@ -58,6 +58,24 @@ public class ControlPanelController implements Initializable {
 		// Creates a menu item for each playlist title and adds it to the context menu.
 		for (String title : playlistTitles) {
 			MenuItem item = new MenuItem(title);
+			
+			item.setOnAction(new EventHandler<ActionEvent>() {
+			    public void handle(ActionEvent e) {
+			        // Retrieves the selected song to add to the desired playlist.
+			        Song selectedSong = MusicPlayer.getMainController().getSubViewController().getSelectedSong();
+			        
+			        // Finds the desired playlist and adds the currently selected song to it.
+			        String targetPlaylistTitle = item.getText();
+			        
+			        // Finds the correct playlist and adds the song to it.
+			        for (Playlist playlist : playlists) {
+			        	if (playlist.getTitle().equals(targetPlaylistTitle)) {
+			        		playlist.addSong(selectedSong);
+			        	}
+			        }
+			    }
+			});
+			
 			contextMenu.getItems().add(item);
 		}
 		
