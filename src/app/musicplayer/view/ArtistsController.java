@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
+import app.musicplayer.model.Song;
 import app.musicplayer.util.SubView;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -34,9 +35,7 @@ public class ArtistsController implements Initializable, SubView {
     @FXML private FlowPane grid;
     
     @Override
-    public void play() {
-    	
-    }
+    public void play() {}
     
     @Override
     public void scroll(char letter) {
@@ -108,6 +107,10 @@ public class ArtistsController implements Initializable, SubView {
             }
 
         }).start();
+    }
+    
+    public Song getSelectedSong() {
+    	return null;
     }
 
     private VBox createCell(Artist artist) {
