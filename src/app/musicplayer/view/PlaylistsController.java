@@ -12,6 +12,10 @@ import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.SubView;
+import javafx.animation.Animation;
+import javafx.animation.Animation.Status;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -29,6 +33,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.util.Duration;
 
 public class PlaylistsController implements Initializable, SubView {
 
@@ -160,7 +165,7 @@ public class PlaylistsController implements Initializable, SubView {
                 event.consume();
             });
 
-            return row ;
+            return row;
         });
         
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -175,9 +180,15 @@ public class PlaylistsController implements Initializable, SubView {
     }
 
     public void selectPlaylist(Playlist playlist) {
-
     	selectedPlaylist = playlist;
         ObservableList<Song> songs = playlist.getSongs();
+        
+        // TODO: DEBUG
+    	System.out.print("PC_182: Songs: ");
+        for (Song song : songs) {
+            System.out.print(song.getTitle() + " | ");
+        }
+        
         tableView.getSelectionModel().clearSelection();
         
         if (songs.isEmpty()) {
@@ -203,4 +214,42 @@ public class PlaylistsController implements Initializable, SubView {
         MusicPlayer.setNowPlaying(song);
         MusicPlayer.play();
     }
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
+    
+    public Playlist getSelectedPlaylist() {
+    	return selectedPlaylist;
+    }
+    
+    public void deleteSelectedRow() {
+    	if (!newPlaylistAnimation.getStatus().equals(Status.RUNNING)) {
+        	newPlaylistAnimation.play();
+        	
+    		// Retrieves the table view items and the selected item.
+        	ObservableList<Song> selectedSong, allSongs;
+        	allSongs = tableView.getItems();
+        	selectedSong = tableView.getSelectionModel().getSelectedItems();
+        	
+        	// Removes the selected item from the table view.
+        	selectedSong.forEach(allSongs::remove);
+    	}
+    }
+    
+    private Animation newPlaylistAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(500));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {
+    		TableRow<Song> row = tableView.getRowFactory().call(tableView);
+    		if (frac < 0.5) {
+    			row.setPrefHeight(frac * 100);
+    		} else {
+    			row.setPrefHeight(50);
+    			row.setOpacity((frac - 0.5) * 2);
+    		}
+        }
+    };
 }

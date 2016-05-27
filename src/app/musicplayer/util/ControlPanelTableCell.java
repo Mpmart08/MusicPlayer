@@ -1,6 +1,8 @@
 package app.musicplayer.util;
 
+import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Song;
+import app.musicplayer.view.PlaylistsController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
@@ -35,10 +37,17 @@ public class ControlPanelTableCell<S, T> extends TableCell<S, T> {
 			song.selectedProperty().removeListener(listener);
 			song.selectedProperty().addListener(listener);
 		} else {
+			String fileName;
+			// Selects the correct control panel based on whether the user is in a playlist or not.
+			if (MusicPlayer.getMainController().getSubViewController() instanceof PlaylistsController) {
+				fileName = Resources.FXML + "PlaylistControlPanel.fxml";
+			} else {
+				fileName = Resources.FXML + "ControlPanel.fxml";
+			}
+			
 			try {
 				Label text = new Label(item.toString());
 				text.setTextOverrun(OverrunStyle.CLIP);
-				String fileName = Resources.FXML + "ControlPanel.fxml";
                 FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
                 HBox controlPanel = (HBox) loader.load();
                 BorderPane cell = new BorderPane();

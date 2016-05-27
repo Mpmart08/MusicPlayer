@@ -209,4 +209,43 @@ public class XMLEditor {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
+		
+		// TODO: DEBUG
+		System.out.println("");
+		System.out.println("XMLE_216: selected playlist id = " + selectedPlayListId + 
+				" | selected playlist title = " + Library.getPlaylist(selectedPlayListId).getTitle() +
+				" | selected song id = " + selectedSongId + " | selected song title = " 
+				+ Library.getSong(selectedSongId).getTitle());
+		
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            // Finds the node with the song id for the selected song in the selected play list for removal.
+            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songId[text() = '" + selectedSongId + "']";
+            XPathExpression expr = xpath.compile(query);
+            Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            
+            // Removes the node corresponding to the selected song.
+            deleteSongNode.getParentNode().removeChild(deleteSongNode);
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 }
