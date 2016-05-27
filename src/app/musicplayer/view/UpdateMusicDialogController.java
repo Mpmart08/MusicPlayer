@@ -101,6 +101,10 @@ public class UpdateMusicDialogController {
 						}
 					}
 					
+					// Initializes counter variable to increment xml song size for new songs that will be added.
+					// This prevents a problem where if more than one song has been added to the library,
+					// they would all have the same id = xmlSong.size() + 1
+					int i = 0;
 					// Loops through the music directory files and checks if the songs are in the library xml file.
 					// This checks if songs were added to the music directory.
 					for (File file : musicDirFiles) {
@@ -112,8 +116,8 @@ public class UpdateMusicDialogController {
 						// If the song title is not in the xml file, the song was added to the music directory.
 						if (!xmlSongs.contains(songTitle)) {
 							// Adds the new song the library new songs array.
-							XMLEditor.createNewSongObject(file, xmlSongs.size());
-							
+							XMLEditor.createNewSongObject(file, xmlSongs.size() + i);
+							i++;
 							addSongs = true;
 						}
 					}
