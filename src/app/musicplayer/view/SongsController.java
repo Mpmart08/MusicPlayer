@@ -321,6 +321,10 @@ public class SongsController implements Initializable, SubView {
         });
     }
     
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
+    
     private int compareSongs(Song x, Song y) {
 			
 			if (x == null && y == null) {

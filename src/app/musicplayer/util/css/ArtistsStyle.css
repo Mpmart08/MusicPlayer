@@ -159,6 +159,7 @@
 
 .table-row-cell:filled:selected .text, .table-row-cell:filled:selected:hover .text {
     -fx-fill: white;
+    /*-fx-fill: red;*/
 }
 
 .table-row-cell:even:filled {

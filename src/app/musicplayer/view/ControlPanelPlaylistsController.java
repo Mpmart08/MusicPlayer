@@ -18,9 +18,7 @@ public class ControlPanelPlaylistsController implements Initializable {
 	@FXML private Pane deleteButton;
 	
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-
-	}
+	public void initialize(URL location, ResourceBundle resources) {}
 	
 	@FXML
 	private void playSong(Event e) {

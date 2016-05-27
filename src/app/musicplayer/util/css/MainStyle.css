@@ -219,3 +219,9 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
+.context-menu {
+	-fx-background-color: #f2f2f2;
+    -fx-border-width: 2;
+    -fx-border-color: #dadada;
+}
