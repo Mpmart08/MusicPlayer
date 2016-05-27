@@ -194,4 +194,8 @@ public class NowPlayingController implements Initializable, SubView {
     
     @Override
     public void scroll(char letter) {}
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
 }

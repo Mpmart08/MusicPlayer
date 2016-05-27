@@ -635,6 +635,53 @@ public class ArtistsMainController implements Initializable, SubView {
             }).start();
         }
     }
+    
+    public void selectArtist(Artist artist) {
+    	
+    	selectedArtist = artist;
+        artistList.getSelectionModel().select(artist);
+        CountDownLatch latch = new CountDownLatch(1);
+        artistListScrollPane.heightProperty().addListener((x, y, z) -> {
+        	if (z.doubleValue() != 0) {
+        		latch.countDown();
+        	}
+        });
+        new Thread(() -> {
+            try {
+				latch.await();
+				int selectedCell = artistList.getSelectionModel().getSelectedIndex();
+	            double vValue = (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
+	            artistListScrollPane.setVvalue(vValue);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }).start();
+        showAllSongs(artist, true);
+        albumList.setPrefWidth(artist.getAlbums().size() * 150 + 2);
+        albumList.setMaxWidth(artist.getAlbums().size() * 150 + 2);
+        artistLabel.setText(artist.getTitle());
+        separator.setVisible(true);
+    }
+    
+    public void selectSong(Song song) {
+    	
+    	new Thread(() -> {
+            try {
+				loadedLatch.await();
+				loadedLatch = new CountDownLatch(1);
+				Platform.runLater(() -> {
+					songTable.getSelectionModel().select(song);
+			        scrollPane.requestFocus();
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }).start();
+    }
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
 
     private void showAllSongs(Artist artist, boolean fromMainController) {
 
@@ -733,46 +780,5 @@ public class ArtistsMainController implements Initializable, SubView {
         }
     }
 
-    public void selectArtist(Artist artist) {
-    	
-    	selectedArtist = artist;
-        artistList.getSelectionModel().select(artist);
-        CountDownLatch latch = new CountDownLatch(1);
-        artistListScrollPane.heightProperty().addListener((x, y, z) -> {
-        	if (z.doubleValue() != 0) {
-        		latch.countDown();
-        	}
-        });
-        new Thread(() -> {
-            try {
-				latch.await();
-				int selectedCell = artistList.getSelectionModel().getSelectedIndex();
-	            double vValue = (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
-	            artistListScrollPane.setVvalue(vValue);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-        }).start();
-        showAllSongs(artist, true);
-        albumList.setPrefWidth(artist.getAlbums().size() * 150 + 2);
-        albumList.setMaxWidth(artist.getAlbums().size() * 150 + 2);
-        artistLabel.setText(artist.getTitle());
-        separator.setVisible(true);
-    }
-    
-    public void selectSong(Song song) {
-    	
-    	new Thread(() -> {
-            try {
-				loadedLatch.await();
-				loadedLatch = new CountDownLatch(1);
-				Platform.runLater(() -> {
-					songTable.getSelectionModel().select(song);
-			        scrollPane.requestFocus();
-				});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-        }).start();
-    }
+
 }

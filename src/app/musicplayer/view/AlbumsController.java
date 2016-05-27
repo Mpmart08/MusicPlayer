@@ -364,6 +364,10 @@ public class AlbumsController implements Initializable, SubView {
             }
         });
 	}
+	
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
 
     private VBox createCell(Album album, int index) {
 
