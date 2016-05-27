@@ -116,6 +116,7 @@ public class MusicPlayer extends Application {
             Library.getAlbums();
             Library.getArtists();
             Library.getPlaylists();
+            
             nowPlayingList = Library.loadPlayingList();
             
             if (nowPlayingList.isEmpty()) {
@@ -313,12 +314,6 @@ public class MusicPlayer extends Application {
         }
     }
 
-    // TODO: COMPLETE
-    /**
-     * 
-     * 
-     * @param seconds
-     */
     public static void seek(int seconds) {
         if (mediaPlayer != null) {
             mediaPlayer.seek(new Duration(seconds * 1000));
@@ -353,10 +348,6 @@ public class MusicPlayer extends Application {
         }
     }
 
-    // TODO: COMPLETE
-    /**
-     * 
-     */
     public static void back() {
         if (timerCounter > 20 || nowPlayingIndex == 0) {
             mainController.initializeTimeSlider();
@@ -486,10 +477,6 @@ public class MusicPlayer extends Application {
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
-    		
-    		// TODO: DEBUG
-    		System.out.println("MP491_XML File Num: " + xmlFileNum);
-    		System.out.println("MP492_Music Dir File Num: " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.

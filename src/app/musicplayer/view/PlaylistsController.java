@@ -6,12 +6,16 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import app.musicplayer.MusicPlayer;
+import app.musicplayer.model.Library;
+import app.musicplayer.model.MostPlayedPlaylist;
 import app.musicplayer.model.Playlist;
+import app.musicplayer.model.RecentlyPlayedPlaylist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
 import app.musicplayer.util.SubView;
+import app.musicplayer.util.XMLEditor;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
@@ -22,6 +26,8 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -33,6 +39,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 public class PlaylistsController implements Initializable, SubView {
@@ -44,13 +52,19 @@ public class PlaylistsController implements Initializable, SubView {
     @FXML private TableColumn<Song, String> albumColumn;
     @FXML private TableColumn<Song, String> lengthColumn;
     @FXML private TableColumn<Song, Integer> playsColumn;
+    
+    @FXML private Label playlistTitleLabel;
+    @FXML private HBox controlBox;
+    @FXML private Pane deleteButton;
 
     private Playlist selectedPlaylist;
     private Song selectedSong;
+    
+    // Used to store the individual playlist boxes from the playlistBox. 
+    private HBox cell;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    	
     	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
     	titleColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.26));
@@ -180,20 +194,29 @@ public class PlaylistsController implements Initializable, SubView {
     }
 
     public void selectPlaylist(Playlist playlist) {
+    	// Displays the delete button only if the user has not selected one of the default playlists.
+    	if (playlist instanceof MostPlayedPlaylist || playlist instanceof RecentlyPlayedPlaylist) {
+    		deleteButton.setVisible(false);
+    	}
+    	
+    	// Sets the text on the play list title label.
+    	playlistTitleLabel.setText(playlist.getTitle());
+    	
+    	// Updates the currently selected play list.
     	selectedPlaylist = playlist;
+    	Library.setSelectedPlaylist(playlist);
+    	
+    	// Retrieves the songs in the selected play list.
         ObservableList<Song> songs = playlist.getSongs();
         
-        // TODO: DEBUG
-    	System.out.print("PC_182: Songs: ");
-        for (Song song : songs) {
-            System.out.print(song.getTitle() + " | ");
-        }
-        
+        // Clears the song table.
         tableView.getSelectionModel().clearSelection();
         
         if (songs.isEmpty()) {
         	songs.add(null);
         }
+        
+        // Populates the song table with the playlist's songs.
         tableView.setItems(songs);
     }
     
@@ -202,7 +225,6 @@ public class PlaylistsController implements Initializable, SubView {
     
     @Override
     public void play() {
-    	
     	Song song = selectedSong;
         ObservableList<Song> songs = selectedPlaylist.getSongs();
         if (MusicPlayer.isShuffleActive()) {
@@ -228,7 +250,7 @@ public class PlaylistsController implements Initializable, SubView {
         	newPlaylistAnimation.play();
         	
     		// Retrieves the table view items and the selected item.
-        	ObservableList<Song> selectedSong, allSongs;
+        	ObservableList<Song> allSongs, selectedSong;
         	allSongs = tableView.getItems();
         	selectedSong = tableView.getSelectionModel().getSelectedItems();
         	
@@ -237,6 +259,52 @@ public class PlaylistsController implements Initializable, SubView {
     	}
     }
     
+    @FXML
+    private void playPlaylist() {
+    	ObservableList<Song> songs = selectedPlaylist.getSongs();
+    	MusicPlayer.setNowPlayingList(songs);
+    	MusicPlayer.setNowPlaying(songs.get(0));
+    	MusicPlayer.play();
+    }
+    
+    @FXML
+    private void deletePlaylist() {
+    	if (!deletePlaylistAnimation.getStatus().equals(Status.RUNNING)) {        	
+        	// Gets the title of the selected playlist to compare it against the labels of the playlist boxes.
+        	String selectedPlaylistTitle = Library.getSelectedPlaylist().getTitle();
+        	
+        	// Gets the playlist box children to loop through each to find the correct child to remove.
+        	ObservableList<Node> playlistBoxChildren = MusicPlayer.getMainController().getPlaylistBox().getChildren();
+        	
+        	// Initialize i at 1 to ignore the new playlist cell. 
+        	for (int i = 1; i <= playlistBoxChildren.size(); i++) {
+        		// Gets each cell in the playlist box and retrieves the cell's label.
+        		cell = (HBox) playlistBoxChildren.get(i);
+        		Label cellLabel = (Label) cell.getChildren().get(1);
+        		
+        		// Ends the process if the cell's label matches the selected playlist's title.
+        		if (cellLabel.getText().equals(selectedPlaylistTitle)) {
+        			break;
+        		}
+        	}
+        	
+        	deletePlaylistAnimation.play();
+        	
+        	// Deletes the play list from the xml file.
+        	XMLEditor.deletePlaylistFromXML(selectedPlaylist.getId());
+    		
+        	// Loads the artists view.
+        	MusicPlayer.getMainController().loadView("artists");
+        	
+        	// Removes the selected playlist from the library so that it is not reloaded.
+        	Library.removePlaylist(selectedPlaylist);
+        	
+        	// Resets the selected playlist to avoid storing the deleted playlist's data.
+        	selectedPlaylist = null;
+    	}
+    }
+    
+    // TODO: SET ROW HEIGHT TO 0, PROBLEM IS GETTING ROW FROM INSIDE INITIALIZE
     private Animation newPlaylistAnimation = new Transition() {
     	{
             setCycleDuration(Duration.millis(500));
@@ -249,6 +317,21 @@ public class PlaylistsController implements Initializable, SubView {
     		} else {
     			row.setPrefHeight(50);
     			row.setOpacity((frac - 0.5) * 2);
+    		}
+        }
+    };
+    
+    public Animation deletePlaylistAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(500));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {        	    		
+    		if (frac < 0.5) {
+    			cell.setPrefHeight(cell.getHeight() - frac * 10);
+    		} else {
+    			cell.setPrefHeight(0);
+    			cell.setOpacity(0);
     		}
         }
     };
