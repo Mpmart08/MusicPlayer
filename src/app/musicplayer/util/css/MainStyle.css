@@ -221,6 +221,7 @@
 }
 
 .context-menu {
-  -fx-background-color: rgb(52, 109, 207);
-  -fx-text-fill: white;
+	-fx-background-color: #f2f2f2;
+    -fx-border-width: 2;
+    -fx-border-color: #dadada;
 }
