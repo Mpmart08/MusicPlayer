@@ -113,7 +113,7 @@ public class PlaylistsController implements Initializable, SubView {
                 }
             });
 
-            row.setOnMouseClicked(event -> {
+            row.setOnMouseClicked(event -> {            	
             	TableViewSelectionModel<Song> sm = tableView.getSelectionModel();
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
@@ -237,6 +237,7 @@ public class PlaylistsController implements Initializable, SubView {
         MusicPlayer.play();
     }
     
+    @Override
     public Song getSelectedSong() {
     	return selectedSong;
     }
@@ -245,18 +246,14 @@ public class PlaylistsController implements Initializable, SubView {
     	return selectedPlaylist;
     }
     
-    public void deleteSelectedRow() {
-    	if (!newPlaylistAnimation.getStatus().equals(Status.RUNNING)) {
-        	newPlaylistAnimation.play();
-        	
-    		// Retrieves the table view items and the selected item.
-        	ObservableList<Song> allSongs, selectedSong;
-        	allSongs = tableView.getItems();
-        	selectedSong = tableView.getSelectionModel().getSelectedItems();
-        	
-        	// Removes the selected item from the table view.
-        	selectedSong.forEach(allSongs::remove);
-    	}
+    public void deleteSelectedRow() {    	
+		// Retrieves the table view items and the selected item.
+    	ObservableList<Song> allSongs, selectedSong;
+    	allSongs = tableView.getItems();
+    	selectedSong = tableView.getSelectionModel().getSelectedItems();
+    	
+    	// Removes the selected item from the table view.
+    	selectedSong.forEach(allSongs::remove);
     }
     
     @FXML
@@ -303,23 +300,6 @@ public class PlaylistsController implements Initializable, SubView {
         	selectedPlaylist = null;
     	}
     }
-    
-    // TODO: SET ROW HEIGHT TO 0, PROBLEM IS GETTING ROW FROM INSIDE INITIALIZE
-    private Animation newPlaylistAnimation = new Transition() {
-    	{
-            setCycleDuration(Duration.millis(500));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {
-    		TableRow<Song> row = tableView.getRowFactory().call(tableView);
-    		if (frac < 0.5) {
-    			row.setPrefHeight(frac * 100);
-    		} else {
-    			row.setPrefHeight(50);
-    			row.setOpacity((frac - 0.5) * 2);
-    		}
-        }
-    };
     
     public Animation deletePlaylistAnimation = new Transition() {
     	{
