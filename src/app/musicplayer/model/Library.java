@@ -648,25 +648,13 @@ public final class Library {
     public static void removePlaylist(Playlist playlist) {
     	playlists.remove(playlist);
     }
-    
-    private static void getMaxProgress(File directory) {
-    	File[] files = directory.listFiles();
-    	
-        for (File file : files) {
-            if (file.isFile() && isSupportedFileType(file.getName())) {
-            	Library.maxProgress++;
-            } else if (file.isDirectory()) {
-            	getMaxProgress(file);
-            }
-        }
-    }
 
-	private static boolean isSupportedFileType(String fileName) {
+	public static boolean isSupportedFileType(String fileName) {
 		
 		String extension = "";
     	int i = fileName.lastIndexOf('.');
     	if (i > 0) {
-    	    extension = fileName.substring(i+1);
+    	    extension = fileName.substring(i+1).toLowerCase();
     	}
     	switch (extension) {
     	// MP3
@@ -700,6 +688,18 @@ public final class Library {
     		return false;
     	}
 	}
+	
+    private static void getMaxProgress(File directory) {
+    	File[] files = directory.listFiles();
+    	
+        for (File file : files) {
+            if (file.isFile() && isSupportedFileType(file.getName())) {
+            	Library.maxProgress++;
+            } else if (file.isDirectory()) {
+            	getMaxProgress(file);
+            }
+        }
+    }
 
     private static int writeXML(File directory, Document doc, Element songs, int i) {
 
