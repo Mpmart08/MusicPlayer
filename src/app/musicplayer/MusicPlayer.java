@@ -478,9 +478,6 @@ public class MusicPlayer extends Application {
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
     		
-    		System.out.println("MP_481: xml file num = " + xmlFileNum);
-    		System.out.println("MP_482: music dir file num = " + musicDirFileNum);
-    		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
     		if (musicDirFileNum != xmlFileNum) {
