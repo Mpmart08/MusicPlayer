@@ -28,6 +28,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 
@@ -83,13 +84,16 @@ public class XMLEditor {
             
             // Adds the new song to the new songs array list in Library.
             Library.addNewSong(newSong);
+            
+    		// Updates the xmlFileNum to account for the new song.
+    		MusicPlayer.setXMLFileNum(id + 1);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
-	public static void addSongToXML() {		
+	public static void addSongToXML() {	
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

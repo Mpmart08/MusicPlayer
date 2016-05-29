@@ -17,6 +17,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.musicplayer.MusicPlayer;
+
 public class DirectoryWatch {
 	
 	private WatchService watcher;
@@ -29,7 +31,7 @@ public class DirectoryWatch {
 	/**
 	 * Creates a Directory Watch object.
 	 */
-	public DirectoryWatch(Path musicDirectory, int xmlFileNum) {
+	public DirectoryWatch(Path musicDirectory) {
 		try {
 			// Creates new watch service to monitor directory.
 			watcher = FileSystems.getDefault().newWatchService();
@@ -80,8 +82,8 @@ public class DirectoryWatch {
 								registerAll(child);
 							} else if (child.toFile().isFile()) {
 								// Adds the new songs to the library new songs array list.
-								new Thread(() -> {
-									XMLEditor.createNewSongObject(child.toFile(), xmlFileNum);
+								new Thread(() -> {									
+									XMLEditor.createNewSongObject(child.toFile(), MusicPlayer.getXMLFileNum());
 								}).start();
 							}
 						} catch (IOException ex) {

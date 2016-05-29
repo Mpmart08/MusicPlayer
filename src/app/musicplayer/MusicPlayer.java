@@ -176,7 +176,7 @@ public class MusicPlayer extends Application {
             
             // Creates a Directory Watch object to monitor music library for changes.
             @SuppressWarnings("unused")
-			DirectoryWatch watcher = new DirectoryWatch(musicDirectory, xmlFileNum);
+			DirectoryWatch watcher = new DirectoryWatch(musicDirectory);
         });
         
         thread.start();
@@ -451,6 +451,14 @@ public class MusicPlayer extends Application {
     	return draggedItem;
     }
     
+    public static int getXMLFileNum() {
+    	return xmlFileNum;
+    }
+    
+    public static void setXMLFileNum(int i) {
+    	xmlFileNum = i;
+    }
+    
     private static void checkLibraryXML() {
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
@@ -487,6 +495,8 @@ public class MusicPlayer extends Application {
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	} else if (!libraryXML.exists()) {
     		createLibraryXML();
+    		// Gets the number of files saved in the xml file.
+    		xmlFileNum = xmlMusicDirFileNumFinder();
     		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
         	musicDirectory = xmlMusicDirPathFinder();
     	}
