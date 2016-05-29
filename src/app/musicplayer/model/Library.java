@@ -696,7 +696,7 @@ public final class Library {
         File[] files = directory.listFiles();
 
         for (File file : files) {
-            if (file.isFile()) {
+            if (file.isFile() && isSupportedFileType(file.getName())) {
                 try {
                     
                     AudioFile audioFile = AudioFileIO.read(file);

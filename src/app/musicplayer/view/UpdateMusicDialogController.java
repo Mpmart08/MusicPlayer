@@ -160,7 +160,6 @@ public class UpdateMusicDialogController {
         // Creates a new thread with the import music task and runs it.
         Thread thread = new Thread(task);
         thread.start();
-
 	}
 	
 	private void xmlSongTitleFinder() {
@@ -200,7 +199,7 @@ public class UpdateMusicDialogController {
 
         // Loops through the files.
         for (File file : files) {
-            if (file.isFile()) {
+            if (file.isFile() && Library.isSupportedFileType(file.getName())) {
             	// Adds the file to the musicDirFiles array list. 
             	musicDirFiles.add(file);
             	// Gets the song title and adds it to the musicDirSongs array list.
