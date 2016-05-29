@@ -20,7 +20,6 @@ import app.musicplayer.model.Album;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
-import app.musicplayer.util.DirectoryWatch;
 import app.musicplayer.util.Resources;
 import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
@@ -173,10 +172,6 @@ public class MusicPlayer extends Application {
             Platform.runLater(() -> {
             	initMain();
             });
-            
-            // Creates a Directory Watch object to monitor music library for changes.
-            @SuppressWarnings("unused")
-			DirectoryWatch watcher = new DirectoryWatch(musicDirectory);
         });
         
         thread.start();
