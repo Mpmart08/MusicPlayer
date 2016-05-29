@@ -77,11 +77,7 @@ public final class Library {
             songs = new ArrayList<Song>();
             // Updates the songs array list.
             updateSongsList();
-        } else if (songs != null) {
-        	// Empties the song list to avoid duplicates and clears the songs array list.
-        	songs.clear();
-        	updateSongsList();
-        }
+        } 
         return FXCollections.observableArrayList(songs);
     }
     
@@ -98,11 +94,7 @@ public final class Library {
             }
             // Updates the albums array list.
             updateAlbumsList();
-        } else if (albums != null) {
-        	// Empties the albums list to avoid duplicates and clears the albums array list.
-        	albums.clear();
-        	updateAlbumsList();
-        }
+        } 
         return FXCollections.observableArrayList(albums);
     }
     
@@ -117,10 +109,6 @@ public final class Library {
                 getAlbums();
             }
             // Updates the artists array list.
-            updateArtistsList();
-        } else if (artists != null) {
-        	// Empties the artists list to avoid duplicates and clears the artists array list.
-        	artists.clear();
             updateArtistsList();
         }
         return FXCollections.observableArrayList(artists);
@@ -418,6 +406,10 @@ public final class Library {
     	selectedPlaylist = playlist;
     }
     
+    public static void addSong(Song song) {
+    	songs.add(song);
+    }
+    
     /**
      * Adds a song to the new song array list.
      * @param newSong
@@ -520,8 +512,10 @@ public final class Library {
 
                 if (reader.isWhiteSpace()) {
                     continue;
+                } else if (reader.isStartElement()) {
+                    element = reader.getName().getLocalPart();
                 } else if (reader.isCharacters()) {
-                    String value = reader.getText();
+                	String value = reader.getText();
                     
                     switch (element) {
                         case ID:
@@ -555,10 +549,6 @@ public final class Library {
                             location = value;
                             break;
                     } // End switch
-                } else if (reader.isStartElement()) {
-                	
-                    element = reader.getName().getLocalPart();
-                    
                 } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("song")) {
 
                     songs.add(new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location));

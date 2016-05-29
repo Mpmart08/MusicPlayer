@@ -603,11 +603,16 @@ public class MainController implements Initializable {
     public SubView loadView(String viewName) {
     	// If new songs have been added to the music directory while the app is running.
     	if (!Library.getNewSongs().isEmpty()) {
+    		
+    		// Adds the new songs to the songs list in library.
+    		for (Song song : Library.getNewSongs()) {    			
+    			Library.addSong(song);
+    		}
+    		
             // Adds the new song to the xml file.
     		XMLEditor.addSongToXML();
     		
-            // Updates the array lists containing songs, albums, and artists in the library.
-            Library.updateSongsList();
+            // Updates the array lists containing albums, and artists in the library.
             Library.updateAlbumsList();
             Library.updateArtistsList();
             
