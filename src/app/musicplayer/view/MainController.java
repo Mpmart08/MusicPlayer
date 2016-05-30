@@ -117,6 +117,8 @@ public class MainController implements Initializable {
     		shuffleButton.pseudoClassStateChanged(active, MusicPlayer.isShuffleActive());
     	});
     	
+    	timeSlider.setFocusTraversable(false);
+    	
         timeSlider.valueChangingProperty().addListener(
             (slider, wasChanging, isChanging) -> {
 
@@ -283,7 +285,8 @@ public class MainController implements Initializable {
     	}
     }
     
-    @FXML
+    @SuppressWarnings("unchecked")
+	@FXML
     private void newPlaylist() {
     	
     	if (!newPlaylistAnimation.getStatus().equals(Status.RUNNING)) {
@@ -351,7 +354,6 @@ public class MainController implements Initializable {
 							&& event.getDragboard().hasString()) {
 						
 						cell.pseudoClassStateChanged(hover, true);
-						//cell.getStyleClass().setAll("sideBarItemSelected");
 					}
 				});
 				
@@ -380,10 +382,9 @@ public class MainController implements Initializable {
 				
 				cell.setOnDragDropped(event -> {
 					Playlist playlist = Library.getPlaylist(label.getText());
-					String dbString = event.getDragboard().getString();
-					
+					String dragString = event.getDragboard().getString();
 					new Thread(() -> {
-						switch (dbString) {
+						switch (dragString) {
 			            case "Artist":
 			            	Artist artist = (Artist) MusicPlayer.getDraggedItem();
 				            for (Album album : artist.getAlbums()) {
@@ -416,10 +417,18 @@ public class MainController implements Initializable {
 				            	playlist.addSong(song);
 		            		}
 				            break;
+			            case "List":
+							ObservableList<Song> songs = (ObservableList<Song>) MusicPlayer.getDraggedItem();
+			            	for (Song s : songs) {
+			            		if (!playlist.getSongs().contains(s)) {
+					            	playlist.addSong(s);
+			            		}
+			            	}
+			            	break;
 			            }
 					}).start();
-		            
-			        event.consume();
+					
+					event.consume();
 				});
     			
     			cell.setPrefHeight(0);
@@ -468,9 +477,11 @@ public class MainController implements Initializable {
 
     @FXML
     private void selectView(Event e) {
+
         HBox eventSource = ((HBox)e.getSource());
-        eventSource.requestFocus();
         
+        eventSource.requestFocus();
+
         Optional<Node> previous = sideBar.getChildren().stream()
             .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
 
@@ -595,7 +606,7 @@ public class MainController implements Initializable {
     public ScrollPane getScrollPane() {
     	return this.subViewRoot;
     }
-    
+
     public VBox getPlaylistBox() {
     	return playlistBox;
     }
