@@ -62,7 +62,7 @@ public final class Library {
     private static ImportMusicTask<Boolean> task;
     
     // Stores new songs added to library when app is running.
-    private static ArrayList<Song> newSongs;
+//    private static ArrayList<Song> newSongs;
     
     // Stores the currently selected playlist.
     private static Playlist selectedPlaylist;
@@ -394,39 +394,12 @@ public final class Library {
     	return selectedPlaylist;
     }
     
-    public static ObservableList<Song> getNewSongs() {
-    	// Initializes the array list if it is null.
-    	if (newSongs == null) {
-    		newSongs = new ArrayList<Song>();
-    	}
-    	return FXCollections.observableArrayList(newSongs);
-    }
-    
     public static void setSelectedPlaylist(Playlist playlist) {
     	selectedPlaylist = playlist;
     }
     
     public static void addSong(Song song) {
     	songs.add(song);
-    }
-    
-    /**
-     * Adds a song to the new song array list.
-     * @param newSong
-     */
-    public static void addNewSong(Song newSong) {
-    	// Initializes the array list if it is null.
-    	if (newSongs == null) {
-    		newSongs = new ArrayList<Song>();
-    	}
-    	newSongs.add(newSong);
-    }
-    
-    /**
-     * Clears the new songs array list to prevent song duplicates.
-     */
-    public static void clearNewSongs() {
-    	newSongs.clear();
     }
 
     public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {

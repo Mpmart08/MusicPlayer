@@ -32,7 +32,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import app.musicplayer.MusicPlayer;
-import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 
 public class XMLEditor {
@@ -40,6 +39,9 @@ public class XMLEditor {
 	// Initializes the variable to store the number of files in library.xml
 	// This is used to set the id of the new songs being added to library.xml
 	private static int xmlFileNum;
+	
+	// Initializes the array list with song objects to add to the xml file.
+	private static ArrayList<Song> songsToAdd = new ArrayList<Song>();
 	
 	// Initializes array list with song titles and ids of songs to be deleted from library.xml
 	private static ArrayList<String> songsToDelete = new ArrayList<String>();
@@ -83,8 +85,8 @@ public class XMLEditor {
             // Creates a new song object for the added song and adds it to the newSongs array list.
             Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
             
-            // Adds the new song to the new songs array list in Library.
-            Library.addNewSong(newSong);
+            // Adds the new song to the songsToAdd array list.
+            songsToAdd.add(newSong);
             
     		// Updates the xmlFileNum to account for the new song.
     		MusicPlayer.setXMLFileNum(id + 1);
@@ -108,7 +110,7 @@ public class XMLEditor {
             Node songsNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
             
             // Loops through the songs in the new song array list and adds them to the xml file.
-            for (Song song : Library.getNewSongs()) {
+            for (Song song : songsToAdd) {
                 // Creates a new song element and its sub elements.
                 Element newSong = doc.createElement("song");
                 Element newSongId = doc.createElement("id");

@@ -132,10 +132,6 @@ public class UpdateMusicDialogController {
 					if (addSongs) {	
 			            // Adds the new song to the xml file.
 						XMLEditor.addSongToXML();
-						
-			            // Clears the new songs array list to prevent duplicate songs
-						// from being added to the library when the first view is loaded.
-			            Library.clearNewSongs();
 					}
 					
 		            // If a song needs to be deleted from the xml file.
