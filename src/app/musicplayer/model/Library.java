@@ -61,9 +61,6 @@ public final class Library {
     private static int maxProgress;
     private static ImportMusicTask<Boolean> task;
     
-    // Stores new songs added to library when app is running.
-//    private static ArrayList<Song> newSongs;
-    
     // Stores the currently selected playlist.
     private static Playlist selectedPlaylist;
 
