@@ -378,10 +378,6 @@ public class MusicPlayer extends Application {
         Library.savePlayingList();
     }
 
-    public static Song getNowPlaying() {
-        return nowPlaying;
-    }
-
     public static void setNowPlaying(Song song) {
 
         if (nowPlayingList.contains(song)) {
@@ -412,6 +408,10 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();
         }
+    }
+    
+    public static Song getNowPlaying() {
+        return nowPlaying;
     }
 
     public static String getTimePassed() {
@@ -446,15 +446,19 @@ public class MusicPlayer extends Application {
     	return draggedItem;
     }
     
-    public static int getXMLFileNum() {
-    	return xmlFileNum;
-    }
-    
     public static void setXMLFileNum(int i) {
     	xmlFileNum = i;
     }
     
+    public static int getXMLFileNum() {
+    	return xmlFileNum;
+    }
+    
     private static void checkLibraryXML() {
+    	
+    	// TODO: DEBUG
+    	System.out.println("MP_460: in check lib");
+    	
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
 		try {
@@ -480,6 +484,9 @@ public class MusicPlayer extends Application {
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+    		
+    		// TODO: DEBUG
+    		System.out.println("MP_489: xmlFileNum = " + xmlFileNum + " | musicDirFileNum = " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
@@ -534,6 +541,10 @@ public class MusicPlayer extends Application {
     }
     
     private static void updateLibraryXML(Path musicDirectory) {
+    	
+    	// TODO: DEBUG
+    	System.out.println("MP_546: in update lib");
+    	
     	try {
 			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
 			BorderPane importView = (BorderPane) loader.load();

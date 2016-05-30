@@ -86,8 +86,14 @@ public class UpdateMusicDialogController {
             		// Finds the song titles in the library xml file and stores them in the librarySongs array list.
 					xmlSongTitleFinder();
 					
+					// TODO: DEBUG
+					System.out.println("UMDC_96: xmlSongTitleFinder size = " + xmlSongs.size());
+					
             		// Finds the song titles in the music directory and stores them in the librarySongs array list.
 					musicDirFileFinder(new File(musicDirectory));
+					
+					// TODO: DEBUG
+					System.out.println("UMDC_90: musicDirFiles size = " + musicDirFiles.size() + " | musicDirSongs size = " + musicDirSongs.size());
 					
 					// Loops through the xml songs and checks if they are in the music directory.
 					// This checks if songs were deleted from the music directory.
@@ -123,16 +129,17 @@ public class UpdateMusicDialogController {
 					}
 					
 					// If a song needs to be added to the xml file.
-					if (addSongs) {						
+					if (addSongs) {	
 			            // Adds the new song to the xml file.
 						XMLEditor.addSongToXML();
 						
 			            // Clears the new songs array list to prevent duplicate songs
 						// from being added to the library when the first view is loaded.
 			            Library.clearNewSongs();
-			            
-			            // Else if a song needs to be deleted from the xml file.
-					} else if (deleteSongs) {						
+					}
+					
+		            // If a song needs to be deleted from the xml file.
+					if (deleteSongs) {
 						// Deletes song from library xml file.
 						XMLEditor.deleteSongFromXML(xmlSongs.size());
 					}
@@ -188,6 +195,9 @@ public class UpdateMusicDialogController {
 			}
 			// Closes xml reader.
 			reader.close();
+			
+			// Adds an empty string to account for songs with no title.
+			xmlSongs.add("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
