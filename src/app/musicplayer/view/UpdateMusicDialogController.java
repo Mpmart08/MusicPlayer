@@ -91,44 +91,36 @@ public class UpdateMusicDialogController {
 					// TODO: DEBUG
 					System.out.println("UMDC_92: musicDirFiles size = " + musicDirFiles.size() + " | musicDirFileNames size = " + musicDirFileNames.size());
 					
-					// Initializes a counter variable to index the xmlSongsFilePaths array to get the
-					// file path of the songs that need to be removed from the xml file.
-					int i = 0;
-					// Loops through xmlSongsFileNames and checks if all the xml songs are in the music directory.
-					// If one of the songs in the xml file is not in the music directory, then it was DELETED.
-					for (String songFileName : xmlSongsFileNames) {
-						// If the songFileName is not in the musicDirFileNames,
-						// then it was deleted from the music directory and needs to be deleted from the xml file.
-						if (!musicDirFileNames.contains(songFileName)) {
-							// Adds the songs that need to be deleted to the array list in XMLEditor.
-							XMLEditor.addSongPathsToDelete(xmlSongsFilePaths.get(i));
-							deleteSongs = true;
-						}
-						i++;
-					}
-					
-					
-					// TODO: CHECK ADD SCENARIO
-					
-					// Initializes counter variable to increment xml song size for new songs that will be added.
-					// This prevents a problem where if more than one song has been added to the library,
-					// they would all have the same id = xmlSong.size() + 1
-					int j = 0;
 					// Initializes a counter variable to index the musicDirFiles array to get the file
 					// corresponding to the song that needs to be added to the xml file.
-					int k = 0;
+					int i = 0;
 					// Loops through musicDirFiles and checks if the song file names are in the library.xml file. 
 					// If not, then the song needs to be ADDED.
 					for (String songFileName : musicDirFileNames) {
 						// If the song file name is not in the xmlSongsFilenames,
 						// then it was added to the music directory and needs to be added to the xml file.
 						if (!xmlSongsFileNames.contains(songFileName)) {
-							// Adds the new song the library new songs array.
-							XMLEditor.createNewSongObject(musicDirFiles.get(k), xmlSongsFileNames.size() + j);
-							j++;
+							// Adds the song file that needs to be added to the array list in XMLEditor.
+							XMLEditor.addSongFilesToAdd(musicDirFiles.get(i));
 							addSongs = true;
 						}
-						k++;
+						i++;
+					}
+					
+					// Initializes a counter variable to index the xmlSongsFilePaths array to get the
+					// file path of the songs that need to be removed from the xml file.
+					int j = 0;
+					// Loops through xmlSongsFileNames and checks if all the xml songs are in the music directory.
+					// If one of the songs in the xml file is not in the music directory, then it was DELETED.
+					for (String songFileName : xmlSongsFileNames) {
+						// If the songFileName is not in the musicDirFileNames,
+						// then it was deleted from the music directory and needs to be deleted from the xml file.
+						if (!musicDirFileNames.contains(songFileName)) {
+							// Adds the songs that needs to be deleted to the array list in XMLEditor.
+							XMLEditor.addSongPathsToDelete(xmlSongsFilePaths.get(j));
+							deleteSongs = true;
+						}
+						j++;
 					}
 					
 					// If a song needs to be added to the xml file.

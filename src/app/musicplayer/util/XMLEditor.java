@@ -36,66 +36,25 @@ import app.musicplayer.model.Song;
 
 public class XMLEditor {
 	
-	// Initializes the variable to store the number of files in library.xml
-	// This is used to set the id of the new songs being added to library.xml
-	private static int xmlFileNum;
+	// Initializes array list with song files of songs to be added to library.xml
+	private static ArrayList<File> songFilesToAdd = new ArrayList<File>();	
 	
-	// Initializes the array list with song objects to add to the xml file.
-	private static ArrayList<Song> songsToAdd = new ArrayList<Song>();
-	
-	// Initializes array list with song titles and ids of songs to be deleted from library.xml
+	// Initializes array list with song paths of songs to be deleted from library.xml
 	private static ArrayList<String> songPathsToDelete = new ArrayList<String>();
+	
+	public static void addSongFilesToAdd(File songFile) {
+		songFilesToAdd.add(songFile);
+	}
 	
 	public static void addSongPathsToDelete(String song) {
 		songPathsToDelete.add(song);
 	}
 	
-	public static void createNewSongObject(File file, int fileNum) {
-		// Sets the number of files in library.xml
-		xmlFileNum = fileNum;
+	public static void addSongToXML() {
 		
-        try {
-            AudioFile audioFile = AudioFileIO.read(file);
-            Tag tag = audioFile.getTag();
-            AudioHeader header = audioFile.getAudioHeader();
-            
-            // Gets song properties.
-            int id = xmlFileNum++;
-            String title = tag.getFirst(FieldKey.TITLE);
-            // Gets the artist, empty string assigned if song has no artist.
-            String artistTitle = tag.getFirst(FieldKey.ALBUM_ARTIST);
-            if (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) {
-                artistTitle = tag.getFirst(FieldKey.ARTIST);
-            }
-            String artist = (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) ? "" : artistTitle;
-            String album = tag.getFirst(FieldKey.ALBUM);
-            // Gets the track length (as an int), converts to long and saves it as a duration object.                
-            Duration length = Duration.ofSeconds(Long.valueOf(header.getTrackLength()));
-            // Gets the track number and converts to an int. Assigns 0 if a track number is null.
-            String track = tag.getFirst(FieldKey.TRACK);                
-            int trackNumber = Integer.parseInt((track == null || track.equals("") || track.equals("null")) ? "0" : track);
-            // Gets disc number and converts to int. Assigns 0 if the disc number is null.
-            String disc = tag.getFirst(FieldKey.DISC_NO);
-            int discNumber = Integer.parseInt((disc == null || disc.equals("") || disc.equals("null")) ? "0" : disc);
-            int playCount = 0;
-            LocalDateTime playDate = LocalDateTime.now();
-            String location = Paths.get(file.getAbsolutePath()).toString();
-            
-            // Creates a new song object for the added song and adds it to the newSongs array list.
-            Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
-            
-            // Adds the new song to the songsToAdd array list.
-            songsToAdd.add(newSong);
-            
-    		// Updates the xmlFileNum to account for the new song.
-    		MusicPlayer.setXMLFileNum(id + 1);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	public static void addSongToXML() {	
+		// Initializes the array list with song objects to add to the xml file.
+		ArrayList<Song> songsToAdd = createNewSongObject();
+		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -150,12 +109,33 @@ public class XMLEditor {
                 newSong.appendChild(newSongLocation);
             }
             
+            // Calculates the new xml file number, taking into account the new songs.
+            int newXMLFileNum = MusicPlayer.getXMLFileNum() + songFilesToAdd.size();
+            
+            // TODO: DEBUG
+            System.out.println("XMLE_116: newXMLFileNum = " + newXMLFileNum);
+            
             // Creates node to update xml file number.
             expr = xpath.compile("/library/musicLibrary/fileNum");
             Node fileNum = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
             
             // Updates the fileNum field in the xml file.
-            fileNum.setTextContent(Integer.toString(xmlFileNum));
+            fileNum.setTextContent(Integer.toString(newXMLFileNum));
+            // Updates the xmlFileNum in MusicPlayer. 
+            MusicPlayer.setXMLFileNum(newXMLFileNum);
+            
+            // Gets 
+            int newLastIdAssigned = songsToAdd.get(songsToAdd.size() - 1).getId();
+            
+            // Creates node to update xml last id assigned.
+            expr = xpath.compile("/library/musicLibrary/lastId");
+            Node lastId = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Updates the last id in the xml file.
+            lastId.setTextContent(Integer.toString(newLastIdAssigned));
+            // Updates the lastId in MusicPlayer.
+        	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
+            
             
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -187,7 +167,7 @@ public class XMLEditor {
             int xmlLastIdAssigned = xmlLastIdAssignedFinder();
             
         	// TODO: DEBUG
-        	System.out.println("XMLE_190: xmlLastIdAssigned = " + xmlLastIdAssigned);
+        	System.out.println("XMLE_158: xmlLastIdAssigned = " + xmlLastIdAssigned);
             
             // Finds the song node corresponding to the last assigned id.
             XPathExpression expr = xpath.compile("/library/songs/song[id/text() = \"" + xmlLastIdAssigned + "\"]");
@@ -210,15 +190,8 @@ public class XMLEditor {
             // If the last node to be deleted was the last song node,
             // then the new last assigned id is found and updated in the MusicPlayer and xml file.
             if (deleteSongNode == lastSongNode) {
-            	// TODO: DEBUG
-            	System.out.println("XMLE_217: last node deleted has las id assigned");
-            	
             	int newLastIdAssigned = xmlNewLastIdAssignedFinder();
-            	
-            	// TODO: DEBUG
-            	System.out.println("XMLE_222: newLastIdAssigned = " + newLastIdAssigned);
-            	
-            	
+
                 // Creates node to update xml last id assigned.
                 expr = xpath.compile("/library/musicLibrary/lastId");
                 Node lastId = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
@@ -227,9 +200,6 @@ public class XMLEditor {
             	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
                 lastId.setTextContent(Integer.toString(newLastIdAssigned));
             }
-            
-            // Clears the song paths to delete list.
-            songPathsToDelete.clear();
             
             // Creates node to update xml file number.
             XPathExpression fileNumExpr = xpath.compile("/library/musicLibrary/fileNum");
@@ -313,6 +283,70 @@ public class XMLEditor {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private static ArrayList<Song> createNewSongObject() {
+		
+		ArrayList<Song> newSongObjects = new ArrayList<>();
+		
+		// Searches the xml file to get the last id assigned.
+		int lastIdAssigned = xmlLastIdAssignedFinder();
+		
+		// TODO: DEBUG
+		System.out.println("XMLE_287: lastIdAssigned = " + lastIdAssigned);
+		
+		// Loops through each song file that needs to be added and creates a song object for each.
+		// Each song object is added to an array list and returned so that they can be added to the xml file.
+		for (File songFile : songFilesToAdd) {
+	        try {
+	            AudioFile audioFile = AudioFileIO.read(songFile);
+	            Tag tag = audioFile.getTag();
+	            AudioHeader header = audioFile.getAudioHeader();
+	            
+	            // Gets song properties.
+	            int id = ++lastIdAssigned;
+	            
+	    		// TODO: DEBUG
+	    		System.out.println("XMLE_301: id for new song = " + id);
+	            
+	            String title = tag.getFirst(FieldKey.TITLE);
+	            // Gets the artist, empty string assigned if song has no artist.
+	            String artistTitle = tag.getFirst(FieldKey.ALBUM_ARTIST);
+	            if (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) {
+	                artistTitle = tag.getFirst(FieldKey.ARTIST);
+	            }
+	            String artist = (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) ? "" : artistTitle;
+	            String album = tag.getFirst(FieldKey.ALBUM);
+	            // Gets the track length (as an int), converts to long and saves it as a duration object.                
+	            Duration length = Duration.ofSeconds(Long.valueOf(header.getTrackLength()));
+	            // Gets the track number and converts to an int. Assigns 0 if a track number is null.
+	            String track = tag.getFirst(FieldKey.TRACK);                
+	            int trackNumber = Integer.parseInt((track == null || track.equals("") || track.equals("null")) ? "0" : track);
+	            // Gets disc number and converts to int. Assigns 0 if the disc number is null.
+	            String disc = tag.getFirst(FieldKey.DISC_NO);
+	            int discNumber = Integer.parseInt((disc == null || disc.equals("") || disc.equals("null")) ? "0" : disc);
+	            int playCount = 0;
+	            LocalDateTime playDate = LocalDateTime.now();
+	            String location = Paths.get(songFile.getAbsolutePath()).toString();
+	            
+	            // Creates a new song object for the added song and adds it to the newSongs array list.
+	            Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
+	            
+	            // Adds the new song to the songsToAdd array list.
+	            newSongObjects.add(newSong);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		
+		// TODO: DEBUG
+		System.out.println("XMLE_334: last id assigned = " + lastIdAssigned);
+		
+		// Updates the lastIdAssigned in MusicPlayer to account for the new songs.
+		MusicPlayer.setLastIdAssigned(lastIdAssigned);
+		
+		// Returns the array list with all the song objects so that they can be added to the xml file.
+		return newSongObjects;
 	}
 	
     private static int xmlLastIdAssignedFinder() {
