@@ -420,9 +420,10 @@ public final class Library {
         library.appendChild(playlists);
         library.appendChild(nowPlayingList);
         
-        // Creates sub sections for music library path and number of files.
+        // Creates sub sections for music library path. number of files, and last song id assigned.
         Element musicLibraryPath = doc.createElement("path");
         Element musicLibraryFileNum = doc.createElement("fileNum");
+        Element lastIdAssigned = doc.createElement("lastId");
         
         // Adds music library path to xml file.
         musicLibraryPath.setTextContent(path);
@@ -441,6 +442,11 @@ public final class Library {
         // Adds the number of files in the music directory to the appropriate section in the xml file.
         musicLibraryFileNum.setTextContent(fileNumber);
         musicLibrary.appendChild(musicLibraryFileNum);
+        
+        // Finds the last id that was assigned to a song and adds it to the xml file.
+        int j = i - 1;
+        lastIdAssigned.setTextContent(Integer.toString(j));
+        musicLibrary.appendChild(lastIdAssigned);
         
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
