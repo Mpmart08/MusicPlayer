@@ -81,16 +81,10 @@ public class UpdateMusicDialogController {
             		// Finds the file name of the songs in the library xml file and 
         			// stores them in the xmlSongsFileNames array list.
 					xmlSongsfileNameFinder();
-					
-					// TODO: DEBUG
-					System.out.println("UMDC_86: xmlSongTitleFinder size = " + xmlSongsFileNames.size());
-					
+
             		// Finds the song titles in the music directory and stores them in the librarySongs array list.
 					musicDirFileFinder(new File(musicDirectory));
-					
-					// TODO: DEBUG
-					System.out.println("UMDC_92: musicDirFiles size = " + musicDirFiles.size() + " | musicDirFileNames size = " + musicDirFileNames.size());
-					
+										
 					// Initializes a counter variable to index the musicDirFiles array to get the file
 					// corresponding to the song that needs to be added to the xml file.
 					int i = 0;

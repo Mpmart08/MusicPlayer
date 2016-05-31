@@ -111,10 +111,7 @@ public class XMLEditor {
             
             // Calculates the new xml file number, taking into account the new songs.
             int newXMLFileNum = MusicPlayer.getXMLFileNum() + songFilesToAdd.size();
-            
-            // TODO: DEBUG
-            System.out.println("XMLE_116: newXMLFileNum = " + newXMLFileNum);
-            
+
             // Creates node to update xml file number.
             expr = xpath.compile("/library/musicLibrary/fileNum");
             Node fileNum = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
@@ -165,10 +162,7 @@ public class XMLEditor {
             
             // Retrieves the last id assigned to a song from the xml file.
             int xmlLastIdAssigned = xmlLastIdAssignedFinder();
-            
-        	// TODO: DEBUG
-        	System.out.println("XMLE_158: xmlLastIdAssigned = " + xmlLastIdAssigned);
-            
+
             // Finds the song node corresponding to the last assigned id.
             XPathExpression expr = xpath.compile("/library/songs/song[id/text() = \"" + xmlLastIdAssigned + "\"]");
             Node lastSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
@@ -292,9 +286,6 @@ public class XMLEditor {
 		// Searches the xml file to get the last id assigned.
 		int lastIdAssigned = xmlLastIdAssignedFinder();
 		
-		// TODO: DEBUG
-		System.out.println("XMLE_287: lastIdAssigned = " + lastIdAssigned);
-		
 		// Loops through each song file that needs to be added and creates a song object for each.
 		// Each song object is added to an array list and returned so that they can be added to the xml file.
 		for (File songFile : songFilesToAdd) {
@@ -305,10 +296,6 @@ public class XMLEditor {
 	            
 	            // Gets song properties.
 	            int id = ++lastIdAssigned;
-	            
-	    		// TODO: DEBUG
-	    		System.out.println("XMLE_301: id for new song = " + id);
-	            
 	            String title = tag.getFirst(FieldKey.TITLE);
 	            // Gets the artist, empty string assigned if song has no artist.
 	            String artistTitle = tag.getFirst(FieldKey.ALBUM_ARTIST);
@@ -338,10 +325,6 @@ public class XMLEditor {
 				ex.printStackTrace();
 			}
 		}
-		
-		// TODO: DEBUG
-		System.out.println("XMLE_334: last id assigned = " + lastIdAssigned);
-		
 		// Updates the lastIdAssigned in MusicPlayer to account for the new songs.
 		MusicPlayer.setLastIdAssigned(lastIdAssigned);
 		
