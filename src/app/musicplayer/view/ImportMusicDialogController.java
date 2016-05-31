@@ -22,12 +22,6 @@ public class ImportMusicDialogController {
 	private boolean musicImported = false;
 
 	/**
-	 * Initializes the controller class.
-	 * This method is automatically called after the FXML file has been loaded.
-	 */
-	public void initialize() {}
-	
-	/**
 	 * Sets the stage of this dialog.
 	 * 
 	 * @param dialogStage

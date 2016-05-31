@@ -44,11 +44,10 @@ public class XMLEditor {
 	private static ArrayList<Song> songsToAdd = new ArrayList<Song>();
 	
 	// Initializes array list with song titles and ids of songs to be deleted from library.xml
-	private static ArrayList<String> songsToDelete = new ArrayList<String>();
-	private static ArrayList<String> songsIdToDelete = new ArrayList<String>();
+	private static ArrayList<String> songPathsToDelete = new ArrayList<String>();
 	
-	public static ArrayList<String> getSongsToDelete() {
-		return songsToDelete;
+	public static void addSongPathsToDelete(String song) {
+		songPathsToDelete.add(song);
 	}
 	
 	public static void createNewSongObject(File file, int fileNum) {
@@ -172,14 +171,10 @@ public class XMLEditor {
 		}
 	}
 	
-	public static void deleteSongFromXML(int currentXMLFileNum) {
-		
-		// TODO: DEBUG
-		System.out.println("XMLE_176: In delete song from xml");
-		
-		// Sets the current number of files in library.xml
-		xmlFileNum = currentXMLFileNum;
-		
+	public static void deleteSongFromXML() {
+		// Gets the currentXMLFileNum.
+		int currentXMLFileNum = MusicPlayer.getXMLFileNum();
+
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -188,14 +183,22 @@ public class XMLEditor {
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
             
-            // Retrieves the id of the songs to delete from the xml file.
-            // This is used to remove the songs from the Now Playing list and the default playlists.
-            songsIdToDeleteFinder();
+            // Retrieves the last id assigned to a song from the xml file.
+            int xmlLastIdAssigned = xmlLastIdAssignedFinder();
             
-            for (String songTitle : songsToDelete) {
+        	// TODO: DEBUG
+        	System.out.println("XMLE_190: xmlLastIdAssigned = " + xmlLastIdAssigned);
+            
+            // Finds the song node corresponding to the last assigned id.
+            XPathExpression expr = xpath.compile("/library/songs/song[id/text() = \"" + xmlLastIdAssigned + "\"]");
+            Node lastSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Loops through the songPathsToDelete array list and removes the nodes from the xml file.
+            Node deleteSongNode = null;
+            for (String songFilePath : songPathsToDelete) {
                 // Finds the node with the song title marked for removal.
-            	XPathExpression expr = xpath.compile("/library/songs/song[title/text() = \"" + songTitle + "\"]");
-                Node deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            	expr = xpath.compile("/library/songs/song[location/text() = \"" + songFilePath + "\"]");
+                deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
                 
                 // Removes the node corresponding to the title of the song.
                 deleteSongNode.getParentNode().removeChild(deleteSongNode);
@@ -204,14 +207,36 @@ public class XMLEditor {
                 currentXMLFileNum--;
             }
             
-            // Clears the songs to delete list.
-            songsToDelete.clear();
+            // If the last node to be deleted was the last song node,
+            // then the new last assigned id is found and updated in the MusicPlayer and xml file.
+            if (deleteSongNode == lastSongNode) {
+            	// TODO: DEBUG
+            	System.out.println("XMLE_217: last node deleted has las id assigned");
+            	
+            	int newLastIdAssigned = xmlNewLastIdAssignedFinder();
+            	
+            	// TODO: DEBUG
+            	System.out.println("XMLE_222: newLastIdAssigned = " + newLastIdAssigned);
+            	
+            	
+                // Creates node to update xml last id assigned.
+                expr = xpath.compile("/library/musicLibrary/lastId");
+                Node lastId = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+                
+                // Updates the lastId in MusicPlayer and in the xml file.
+            	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
+                lastId.setTextContent(Integer.toString(newLastIdAssigned));
+            }
+            
+            // Clears the song paths to delete list.
+            songPathsToDelete.clear();
             
             // Creates node to update xml file number.
             XPathExpression fileNumExpr = xpath.compile("/library/musicLibrary/fileNum");
             Node fileNum = ((NodeList) fileNumExpr.evaluate(doc, XPathConstants.NODESET)).item(0);
             
-            // Updates the fileNum field in the xml file.
+            // Updates the fileNum in MusicPlayer and in the xml file.
+            MusicPlayer.setXMLFileNum(currentXMLFileNum);
             fileNum.setTextContent(Integer.toString(currentXMLFileNum));
                     
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -290,40 +315,82 @@ public class XMLEditor {
 		}
 	}
 	
-	private static void songsIdToDeleteFinder() {
-		
-        String element = "";
-        String songId = "";
-		
-        try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            factory.setProperty("javax.xml.stream.isCoalescing", true);
-            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
-            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
-            
-            while(reader.hasNext()) {
-                reader.next();
-                if (reader.isWhiteSpace()) {
-                    continue;
-                } else if (reader.isStartElement()) {
-                    element = reader.getName().getLocalPart();
-                } else if (reader.isCharacters() && element.equals("id")) {
-                	songId = reader.getText();
-                }
-                else if (reader.isCharacters() && element.equals("title")) {
-                	// Retrieves the song title. 
-                    String songTitle = reader.getText();
-                    
-                    // If the current song is one of the songs to delete, the id is added to
-                    // the songsIdToDelete array list.
-                    if (songsToDelete.contains(songTitle)) {
-                    	songsIdToDelete.add(songId);
-                    }
-                }
-            }
-            reader.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-	}
+    private static int xmlLastIdAssignedFinder() {
+		try {
+			// Creates reader for xml file.
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty("javax.xml.stream.isCoalescing", true);
+			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+			
+			String element = null;
+			String lastId = null;
+			
+			// Loops through xml file looking for the music directory file path.
+			while(reader.hasNext()) {
+			    reader.next();
+			    if (reader.isWhiteSpace()) {
+			        continue;
+			    } else if (reader.isStartElement()) {
+			    	element = reader.getName().getLocalPart();
+			    } else if (reader.isCharacters() && element.equals("lastId")) {
+			    	lastId = reader.getText();               	
+			    	break;
+			    }
+			}
+			// Closes xml reader.
+			reader.close();
+			
+			// Converts the file number to an int and returns the value. 
+			return Integer.parseInt(lastId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+    }
+    
+    private static int xmlNewLastIdAssignedFinder() {
+		try {
+			// Creates reader for xml file.
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty("javax.xml.stream.isCoalescing", true);
+			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+			
+			String element = null;
+			String location = null;
+			
+			String currentSongId = null;
+			String xmlNewLastIdAssigned = null;
+			
+			// Loops through xml file looking for the music directory file path.
+			while(reader.hasNext()) {
+			    reader.next();
+			    if (reader.isWhiteSpace()) {
+			        continue;
+			    } else if (reader.isStartElement()) {
+			    	element = reader.getName().getLocalPart();
+			    } else if (reader.isCharacters() && element.equals("id")) {
+			    	currentSongId = reader.getText();
+			    } else if (reader.isCharacters() && element.equals("location")) {
+			    	location = reader.getText();
+			    	// If the current location is does not correspond to one of the files to be deleted,
+			    	// then the current id is assigned as the newLastIdAssigned.
+			    	if (!songPathsToDelete.contains(location)) {
+			    		xmlNewLastIdAssigned = currentSongId;
+			    	}
+			    } else if (reader.isEndElement() && reader.getName().getLocalPart().equals("songs")) {
+			    	break;
+			    }
+			}
+			// Closes xml reader.
+			reader.close();
+			
+			// Converts the file number to an int and returns the value. 
+			return Integer.parseInt(xmlNewLastIdAssigned);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+    }
 }
