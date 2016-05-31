@@ -61,10 +61,16 @@ public class MusicPlayer extends Application {
     
     private static Path musicDirectory;
     
-    // Stores the number of files in library.xml and in the music directory
-    // for comparison when starting up the application and for setting the id of new songs added using Directory Watch. 
+    // Stores the number of files in library.xml and in the music directory.
+    // These are compared when starting up the application to determine if the xml file needs to be updated
+    // by adding or deleting songs from it.
     private static int xmlFileNum;
     private static int musicDirFileNum;
+    
+    // Stores the last id that was assigned to a song. 
+    // This is important when adding new songs after others have been deleted because the last id assigned
+    // may not necessarily be equal to the number of songs in the xml file if songs have been deleted.
+    private static int lastIdAssigned;
 
     public static void main(String[] args) {
         Application.launch(MusicPlayer.class);
@@ -102,7 +108,10 @@ public class MusicPlayer extends Application {
     		stage.show();
     		
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
-            checkLibraryXML();           
+            checkLibraryXML();
+            
+            // TODO: DEBUG
+            System.out.println("MP_114: xml file num = " + xmlFileNum + " | last id assigned = " + lastIdAssigned);
     		
         } catch (Exception ex) {
         	System.exit(0);
@@ -378,10 +387,6 @@ public class MusicPlayer extends Application {
         Library.savePlayingList();
     }
 
-    public static Song getNowPlaying() {
-        return nowPlaying;
-    }
-
     public static void setNowPlaying(Song song) {
 
         if (nowPlayingList.contains(song)) {
@@ -412,6 +417,10 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();
         }
+    }
+    
+    public static Song getNowPlaying() {
+        return nowPlaying;
     }
 
     public static String getTimePassed() {
@@ -446,12 +455,20 @@ public class MusicPlayer extends Application {
     	return draggedItem;
     }
     
+    public static void setXMLFileNum(int i) {
+    	xmlFileNum = i;
+    }
+    
     public static int getXMLFileNum() {
     	return xmlFileNum;
     }
     
-    public static void setXMLFileNum(int i) {
-    	xmlFileNum = i;
+    public static void setLastIdAssigned(int i) {
+    	lastIdAssigned = i;
+    }
+    
+    public static int getLastIdAssigned() {
+    	return lastIdAssigned;
     }
     
     private static void checkLibraryXML() {
@@ -480,6 +497,9 @@ public class MusicPlayer extends Application {
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+    		
+    		// TODO: DEBUG
+    		System.out.println("MP_489: xmlFileNum = " + xmlFileNum + " | musicDirFileNum = " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.

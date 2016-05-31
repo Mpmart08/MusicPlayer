@@ -8,11 +8,6 @@ import java.util.ArrayList;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-
 import app.musicplayer.model.Library;
 import app.musicplayer.util.ImportMusicTask;
 import app.musicplayer.util.Resources;
@@ -38,19 +33,19 @@ public class UpdateMusicDialogController {
 	private boolean addSongs = false;
 	private boolean deleteSongs = false;
 	
-	// Stores song names in library xml file and music directory.
-	private ArrayList<String> xmlSongs = new ArrayList<String> ();
-	private ArrayList<String> musicDirSongs = new ArrayList<String> ();
+	// Stores the file paths of the xml songs.
+	// This is important if a song has to be removed from the xml file as it is used to find the node to remove. 
+	private ArrayList<String> xmlSongsFilePaths = new ArrayList<String> ();
 	
 	// Stores files in the music directory.
 	private ArrayList<File> musicDirFiles = new ArrayList<File> ();
-
-	/**
-	 * Initializes the controller class.
-	 * This method is automatically called after the FXML file has been loaded.
-	 */
-	public void initialize() {}
 	
+	// Initializes array lists to store the file names of the songs in the xml file
+	// and the filenames of the songs in the music directory.
+	// These array lists will be checked to determine if a song has been added or deleted from the music directory.
+	private ArrayList<String> xmlSongsFileNames = new ArrayList<String> ();
+	private ArrayList<String> musicDirFileNames = new ArrayList<String> ();
+
 	/**
 	 * Sets the stage of this dialog.
 	 * 
@@ -83,58 +78,55 @@ public class UpdateMusicDialogController {
         ImportMusicTask<Boolean> task = new ImportMusicTask<Boolean>() {
         	@Override protected Boolean call() throws Exception {
         		try {
-            		// Finds the song titles in the library xml file and stores them in the librarySongs array list.
-					xmlSongTitleFinder();
-					
+            		// Finds the file name of the songs in the library xml file and 
+        			// stores them in the xmlSongsFileNames array list.
+					xmlSongsfileNameFinder();
+
             		// Finds the song titles in the music directory and stores them in the librarySongs array list.
 					musicDirFileFinder(new File(musicDirectory));
-					
-					// Loops through the xml songs and checks if they are in the music directory.
-					// This checks if songs were deleted from the music directory.
-					for (String song : xmlSongs) {
-						// If they are not, the song was deleted from the music directory.
-						if (!musicDirSongs.contains(song)) {
-							// Adds the songs that need to be deleted to the array list in XMLEditor.
-							XMLEditor.getSongsToDelete().add(song);
-							
-							deleteSongs = true;
-						}
-					}
-					
-					// Initializes counter variable to increment xml song size for new songs that will be added.
-					// This prevents a problem where if more than one song has been added to the library,
-					// they would all have the same id = xmlSong.size() + 1
+										
+					// Initializes a counter variable to index the musicDirFiles array to get the file
+					// corresponding to the song that needs to be added to the xml file.
 					int i = 0;
-					// Loops through the music directory files and checks if the songs are in the library xml file.
-					// This checks if songs were added to the music directory.
-					for (File file : musicDirFiles) {
-	            		// Gets the song title.
-	                    AudioFile audioFile = AudioFileIO.read(file);
-	                    Tag tag = audioFile.getTag();
-	                    String songTitle = tag.getFirst(FieldKey.TITLE);
-	                    
-						// If the song title is not in the xml file, the song was added to the music directory.
-						if (!xmlSongs.contains(songTitle)) {
-							// Adds the new song the library new songs array.
-							XMLEditor.createNewSongObject(file, xmlSongs.size() + i);
-							i++;
+					// Loops through musicDirFiles and checks if the song file names are in the library.xml file. 
+					// If not, then the song needs to be ADDED.
+					for (String songFileName : musicDirFileNames) {
+						// If the song file name is not in the xmlSongsFilenames,
+						// then it was added to the music directory and needs to be added to the xml file.
+						if (!xmlSongsFileNames.contains(songFileName)) {
+							// Adds the song file that needs to be added to the array list in XMLEditor.
+							XMLEditor.addSongFilesToAdd(musicDirFiles.get(i));
 							addSongs = true;
 						}
+						i++;
+					}
+					
+					// Initializes a counter variable to index the xmlSongsFilePaths array to get the
+					// file path of the songs that need to be removed from the xml file.
+					int j = 0;
+					// Loops through xmlSongsFileNames and checks if all the xml songs are in the music directory.
+					// If one of the songs in the xml file is not in the music directory, then it was DELETED.
+					for (String songFileName : xmlSongsFileNames) {
+						// If the songFileName is not in the musicDirFileNames,
+						// then it was deleted from the music directory and needs to be deleted from the xml file.
+						if (!musicDirFileNames.contains(songFileName)) {
+							// Adds the songs that needs to be deleted to the array list in XMLEditor.
+							XMLEditor.addSongPathsToDelete(xmlSongsFilePaths.get(j));
+							deleteSongs = true;
+						}
+						j++;
 					}
 					
 					// If a song needs to be added to the xml file.
-					if (addSongs) {						
+					if (addSongs) {	
 			            // Adds the new song to the xml file.
 						XMLEditor.addSongToXML();
-						
-			            // Clears the new songs array list to prevent duplicate songs
-						// from being added to the library when the first view is loaded.
-			            Library.clearNewSongs();
-			            
-			            // Else if a song needs to be deleted from the xml file.
-					} else if (deleteSongs) {						
+					}
+					
+		            // If a song needs to be deleted from the xml file.
+					if (deleteSongs) {
 						// Deletes song from library xml file.
-						XMLEditor.deleteSongFromXML(xmlSongs.size());
+						XMLEditor.deleteSongFromXML();
 					}
 					
 					return true;
@@ -162,7 +154,7 @@ public class UpdateMusicDialogController {
         thread.start();
 	}
 	
-	private void xmlSongTitleFinder() {
+	private void xmlSongsfileNameFinder() {
 		try {
 			// Creates reader for xml file.
 			XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -171,19 +163,25 @@ public class UpdateMusicDialogController {
 			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 			
 			String element = null;
-			String songTitle = null;
+			String songLocation;
 			
 			// Loops through xml file looking for song titles.
-			// Stores the song title in the xmlSongs array list.
+			// Stores the song title in the xmlSongsFileNames array list.
 			while(reader.hasNext()) {
 			    reader.next();
 			    if (reader.isWhiteSpace()) {
 			        continue;
 			    } else if (reader.isStartElement()) {
 			    	element = reader.getName().getLocalPart();
-			    } else if (reader.isCharacters() && element.equals("title")) {
-			    	songTitle = reader.getText();
-			    	xmlSongs.add(songTitle);
+			    } else if (reader.isCharacters() && element.equals("location")) {
+			    	// Retrieves the song location and adds it to the corresponding array list.
+			    	songLocation = reader.getText();
+			    	xmlSongsFilePaths.add(songLocation);
+			    	
+			    	// Retrieves the file name from the file path and adds it to the xmlSongsFileNames array list.
+			    	int i = songLocation.lastIndexOf("\\");
+			    	String songFileName = songLocation.substring(i + 1, songLocation.length());
+			    	xmlSongsFileNames.add(songFileName);
 			    }
 			}
 			// Closes xml reader.
@@ -202,14 +200,9 @@ public class UpdateMusicDialogController {
             if (file.isFile() && Library.isSupportedFileType(file.getName())) {
             	// Adds the file to the musicDirFiles array list. 
             	musicDirFiles.add(file);
-            	// Gets the song title and adds it to the musicDirSongs array list.
-            	try {
-                    AudioFile audioFile = AudioFileIO.read(file);
-                    Tag tag = audioFile.getTag();
-                    musicDirSongs.add(tag.getFirst(FieldKey.TITLE));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+            	
+            	// Adds the file name to the musicDirFileNames array list.
+            	musicDirFileNames.add(file.getName());
             } else if (file.isDirectory()) {
             	musicDirFileFinder(file);
             }
