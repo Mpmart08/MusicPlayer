@@ -174,8 +174,21 @@ public final class Library {
             	}
             });
             
-            playlists.add(new MostPlayedPlaylist(id++));
-            playlists.add(new RecentlyPlayedPlaylist(id++));
+            // TODO: DEBUG
+            playlists.add(new MostPlayedPlaylist(-2));
+            playlists.add(new RecentlyPlayedPlaylist(-1));
+//            playlists.add(new MostPlayedPlaylist(id++));
+//            playlists.add(new RecentlyPlayedPlaylist(id++));
+        } else {
+            playlists.sort((x, y) -> {
+            	if (x.getId() < y.getId()) {
+            		return 1;
+            	} else if (x.getId() > y.getId()) {
+            		return -1;
+            	} else {
+            		return 0;
+            	}
+            });
         }
         return FXCollections.observableArrayList(playlists);
     }

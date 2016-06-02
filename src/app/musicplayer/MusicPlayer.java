@@ -109,10 +109,6 @@ public class MusicPlayer extends Application {
     		
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
-            
-            // TODO: DEBUG
-            System.out.println("MP_114: xml file num = " + xmlFileNum + " | last id assigned = " + lastIdAssigned);
-    		
         } catch (Exception ex) {
         	System.exit(0);
         	ex.printStackTrace();
@@ -497,9 +493,6 @@ public class MusicPlayer extends Application {
     		// Gets the number of files saved in the xml file and the number of files in the music directory.
     		xmlFileNum = xmlMusicDirFileNumFinder();
     		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
-    		
-    		// TODO: DEBUG
-    		System.out.println("MP_489: xmlFileNum = " + xmlFileNum + " | musicDirFileNum = " + musicDirFileNum);
     		
     		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
     		// Music library has changed; update the xml file.
