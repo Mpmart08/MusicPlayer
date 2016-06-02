@@ -42,13 +42,17 @@ public class ControlPanelController implements Initializable {
 		double x = mouseEvent.getScreenX();
 		double y = mouseEvent.getScreenY();
 		
+        // Retrieves the selected song to add to the desired playlist.
+        Song selectedSong = MusicPlayer.getMainController().getSubViewController().getSelectedSong();
+		
 		ObservableList<Playlist> playlists = Library.getPlaylists();
 		
 		// Retrieves all the playlist titles to create menu items.
 		ObservableList<String> playlistTitles = FXCollections.observableArrayList();
 		for (Playlist playlist : playlists) {
 			String title = playlist.getTitle();
-			if (!(title.equals("Most Played") || title.equals("Recently Played"))) {
+			if (!(title.equals("Most Played") || title.equals("Recently Played")) &&
+					!playlist.getSongs().contains(selectedSong)) {
 				playlistTitles.add(title);
 			}
 		}
@@ -61,8 +65,6 @@ public class ControlPanelController implements Initializable {
 			
 			item.setOnAction(new EventHandler<ActionEvent>() {
 			    public void handle(ActionEvent e) {
-			        // Retrieves the selected song to add to the desired playlist.
-			        Song selectedSong = MusicPlayer.getMainController().getSubViewController().getSelectedSong();
 			        
 			        // Finds the desired playlist and adds the currently selected song to it.
 			        String targetPlaylistTitle = item.getText();

@@ -174,11 +174,8 @@ public final class Library {
             	}
             });
             
-            // TODO: DEBUG
             playlists.add(new MostPlayedPlaylist(-2));
             playlists.add(new RecentlyPlayedPlaylist(-1));
-//            playlists.add(new MostPlayedPlaylist(id++));
-//            playlists.add(new RecentlyPlayedPlaylist(id++));
         } else {
             playlists.sort((x, y) -> {
             	if (x.getId() < y.getId()) {
