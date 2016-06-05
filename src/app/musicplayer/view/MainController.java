@@ -16,7 +16,6 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.CustomSliderSkin;
 import app.musicplayer.util.Resources;
 import app.musicplayer.util.SubView;
-import app.musicplayer.util.XMLEditor;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Interpolator;
@@ -612,25 +611,6 @@ public class MainController implements Initializable {
     }
 
     public SubView loadView(String viewName) {
-    	// If new songs have been added to the music directory while the app is running.
-    	if (!Library.getNewSongs().isEmpty()) {
-    		
-    		// Adds the new songs to the songs list in library.
-    		for (Song song : Library.getNewSongs()) {    			
-    			Library.addSong(song);
-    		}
-    		
-            // Adds the new song to the xml file.
-    		XMLEditor.addSongToXML();
-    		
-            // Updates the array lists containing albums, and artists in the library.
-            Library.updateAlbumsList();
-            Library.updateArtistsList();
-            
-            // Clears the new songs array list to prevent duplicate songs from being added to the library.
-            Library.clearNewSongs();
-    	}
-
         try {
         	
         	boolean loadLetters = false;

@@ -21,10 +21,10 @@ import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.Resources;
+import app.musicplayer.util.XMLEditor;
 import app.musicplayer.view.ImportMusicDialogController;
 import app.musicplayer.view.MainController;
 import app.musicplayer.view.NowPlayingController;
-import app.musicplayer.view.UpdateMusicDialogController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -61,10 +61,16 @@ public class MusicPlayer extends Application {
     
     private static Path musicDirectory;
     
-    // Stores the number of files in library.xml and in the music directory
-    // for comparison when starting up the application and for setting the id of new songs added using Directory Watch. 
+    // Stores the number of files in library.xml and in the music directory.
+    // These are compared when starting up the application to determine if the xml file needs to be updated
+    // by adding or deleting songs from it.
     private static int xmlFileNum;
     private static int musicDirFileNum;
+    
+    // Stores the last id that was assigned to a song. 
+    // This is important when adding new songs after others have been deleted because the last id assigned
+    // may not necessarily be equal to the number of songs in the xml file if songs have been deleted.
+    private static int lastIdAssigned;
 
     public static void main(String[] args) {
         Application.launch(MusicPlayer.class);
@@ -102,8 +108,7 @@ public class MusicPlayer extends Application {
     		stage.show();
     		
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
-            checkLibraryXML();           
-    		
+            checkLibraryXML();
         } catch (Exception ex) {
         	System.exit(0);
         	ex.printStackTrace();
@@ -378,10 +383,6 @@ public class MusicPlayer extends Application {
         Library.savePlayingList();
     }
 
-    public static Song getNowPlaying() {
-        return nowPlaying;
-    }
-
     public static void setNowPlaying(Song song) {
 
         if (nowPlayingList.contains(song)) {
@@ -412,6 +413,10 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeSlider();
             mainController.initializeTimeLabels();
         }
+    }
+    
+    public static Song getNowPlaying() {
+        return nowPlaying;
     }
 
     public static String getTimePassed() {
@@ -446,12 +451,20 @@ public class MusicPlayer extends Application {
     	return draggedItem;
     }
     
+    public static void setXMLFileNum(int i) {
+    	xmlFileNum = i;
+    }
+    
     public static int getXMLFileNum() {
     	return xmlFileNum;
     }
     
-    public static void setXMLFileNum(int i) {
-    	xmlFileNum = i;
+    public static void setLastIdAssigned(int i) {
+    	lastIdAssigned = i;
+    }
+    
+    public static int getLastIdAssigned() {
+    	return lastIdAssigned;
     }
     
     private static void checkLibraryXML() {
@@ -534,43 +547,12 @@ public class MusicPlayer extends Application {
     }
     
     private static void updateLibraryXML(Path musicDirectory) {
-    	try {
-			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "UpdateMusicDialog.fxml"));
-			BorderPane importView = (BorderPane) loader.load();
-			
-			// Create the dialog Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Music Library Update");
-			// Forces user to focus on dialog.
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			// Sets minimal decorations for dialog.
-			dialogStage.initStyle(StageStyle.UTILITY);
-			// Prevents the alert from being re-sizable.
-			dialogStage.setResizable(false);
-			dialogStage.initOwner(stage);
-			
-			// Sets the update music dialog scene in the stage.
-			dialogStage.setScene(new Scene(importView));
-
-			// Set the dialog and music directory in the controller.
-			UpdateMusicDialogController controller = loader.getController();
-			controller.setDialogStage(dialogStage);
-			controller.setMusicDirectory(musicDirectory);
-			
-			// Calls the method to handle the xml file update.
-			controller.handleUpdate();
-			
-	        // Show the dialog and wait until the user closes it.
-	        dialogStage.showAndWait();
-	        
-	        // Checks if the music was updated successfully. Closes the application otherwise.
-	        boolean musicUpdated = controller.isMusicUpdated();
-	        if (!musicUpdated) {
-	        	System.exit(0);
-	        }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    	// Sets the music directory for the XMLEditor.
+    	XMLEditor.setMusicDirectory(musicDirectory);
+    	
+    	// Checks if songs have to be added, deleted, or both to the xml file and
+    	// performs the corresponding operation.
+    	XMLEditor.addDeleteChecker();
     }
     
     private static Path xmlMusicDirPathFinder() {

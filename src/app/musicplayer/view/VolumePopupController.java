@@ -13,11 +13,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
-/**
- * 
- * @version 1.0
- *
- */
 public class VolumePopupController implements Initializable {
 	
 	@FXML private Slider volumeSlider;

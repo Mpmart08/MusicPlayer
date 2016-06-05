@@ -38,14 +38,14 @@
                   <Insets left="25.0" right="25.0" />
                </StackPane.margin>
             </Region>
-            <Slider fx:id="volumeSlider" blockIncrement="1.0" maxWidth="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefWidth="140.0" styleClass="volumeSlider" value="100.0" StackPane.alignment="CENTER">
+            <Slider fx:id="volumeSlider" blockIncrement="1.0" maxWidth="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefWidth="140.0" styleClass="volumeSlider" value="50.0" StackPane.alignment="CENTER">
                <StackPane.margin>
                   <Insets />
                </StackPane.margin>
             </Slider>
          </children>
       </StackPane>
-      <Label fx:id="volumeLabel" alignment="CENTER" ellipsisString="" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" styleClass="volumeLabel" text="100" textOverrun="CLIP">
+      <Label fx:id="volumeLabel" alignment="CENTER" ellipsisString="" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" styleClass="volumeLabel" text="50" textOverrun="CLIP">
          <HBox.margin>
             <Insets />
          </HBox.margin>

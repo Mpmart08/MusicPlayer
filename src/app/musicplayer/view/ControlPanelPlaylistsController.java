@@ -40,7 +40,7 @@ public class ControlPanelPlaylistsController implements Initializable {
 		
 		// Calls methods to delete selected song from play list in XML file.
 		XMLEditor.deleteSongFromPlaylist(selectedPlayListId, selectedSongId);
-		
+
         // Removes the selected song from the playlist's song list in Library.
         Library.getPlaylist(selectedPlayListId).removeSong(selectedSongId);
 		

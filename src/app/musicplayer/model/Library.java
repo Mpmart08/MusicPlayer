@@ -61,9 +61,6 @@ public final class Library {
     private static int maxProgress;
     private static ImportMusicTask<Boolean> task;
     
-    // Stores new songs added to library when app is running.
-    private static ArrayList<Song> newSongs;
-    
     // Stores the currently selected playlist.
     private static Playlist selectedPlaylist;
 
@@ -177,8 +174,18 @@ public final class Library {
             	}
             });
             
-            playlists.add(new MostPlayedPlaylist(id++));
-            playlists.add(new RecentlyPlayedPlaylist(id++));
+            playlists.add(new MostPlayedPlaylist(-2));
+            playlists.add(new RecentlyPlayedPlaylist(-1));
+        } else {
+            playlists.sort((x, y) -> {
+            	if (x.getId() < y.getId()) {
+            		return 1;
+            	} else if (x.getId() > y.getId()) {
+            		return -1;
+            	} else {
+            		return 0;
+            	}
+            });
         }
         return FXCollections.observableArrayList(playlists);
     }
@@ -394,39 +401,12 @@ public final class Library {
     	return selectedPlaylist;
     }
     
-    public static ObservableList<Song> getNewSongs() {
-    	// Initializes the array list if it is null.
-    	if (newSongs == null) {
-    		newSongs = new ArrayList<Song>();
-    	}
-    	return FXCollections.observableArrayList(newSongs);
-    }
-    
     public static void setSelectedPlaylist(Playlist playlist) {
     	selectedPlaylist = playlist;
     }
     
     public static void addSong(Song song) {
     	songs.add(song);
-    }
-    
-    /**
-     * Adds a song to the new song array list.
-     * @param newSong
-     */
-    public static void addNewSong(Song newSong) {
-    	// Initializes the array list if it is null.
-    	if (newSongs == null) {
-    		newSongs = new ArrayList<Song>();
-    	}
-    	newSongs.add(newSong);
-    }
-    
-    /**
-     * Clears the new songs array list to prevent song duplicates.
-     */
-    public static void clearNewSongs() {
-    	newSongs.clear();
     }
 
     public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {
@@ -450,9 +430,10 @@ public final class Library {
         library.appendChild(playlists);
         library.appendChild(nowPlayingList);
         
-        // Creates sub sections for music library path and number of files.
+        // Creates sub sections for music library path. number of files, and last song id assigned.
         Element musicLibraryPath = doc.createElement("path");
         Element musicLibraryFileNum = doc.createElement("fileNum");
+        Element lastIdAssigned = doc.createElement("lastId");
         
         // Adds music library path to xml file.
         musicLibraryPath.setTextContent(path);
@@ -471,6 +452,11 @@ public final class Library {
         // Adds the number of files in the music directory to the appropriate section in the xml file.
         musicLibraryFileNum.setTextContent(fileNumber);
         musicLibrary.appendChild(musicLibraryFileNum);
+        
+        // Finds the last id that was assigned to a song and adds it to the xml file.
+        int j = i - 1;
+        lastIdAssigned.setTextContent(Integer.toString(j));
+        musicLibrary.appendChild(lastIdAssigned);
         
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
