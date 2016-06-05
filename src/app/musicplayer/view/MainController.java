@@ -584,6 +584,15 @@ public class MainController implements Initializable {
     
     public void volumeClick() {
     	if (!volumePopup.isShowing()) {
+    		Stage stage = MusicPlayer.getStage();
+    		if (stage.isMaximized()) {
+    			volumePopup.setX(stage.getWidth() - 270);
+        		volumePopup.setY(stage.getHeight() - 120);
+    		} else {
+    			volumePopup.setX(stage.getX() + stage.getWidth() - 265);
+        		volumePopup.setY(stage.getY() + stage.getHeight() - 115);
+    		}
+    		
     		volumePopup.show();
     		popupShowAnimation.play();
     	}
