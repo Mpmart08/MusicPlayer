@@ -17,7 +17,7 @@
       </Pane>
       <Pane fx:id="deleteButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#deleteSong" prefHeight="20.0" prefWidth="20.0" styleClass="controlPane">
          <children>
-            <SVGPath content="M 112.00,32.00           C 112.00,32.00 112.00,43.00 112.00,43.00             112.00,43.00 16.00,43.00 16.00,43.00             16.00,43.00 16.00,32.00 16.00,32.00             16.00,32.00 112.00,32.00 112.00,32.00 Z           M 112.00,58.00           C 112.00,58.00 112.00,70.00 112.00,70.00             112.00,70.00 16.00,70.00 16.00,70.00             16.00,70.00 16.00,58.00 16.00,58.00             16.00,58.00 112.00,58.00 112.00,58.00 Z           M 112.00,85.00           C 112.00,85.00 112.00,96.00 112.00,96.00             112.00,96.00 16.00,96.00 16.00,96.00             16.00,96.00 16.00,85.00 16.00,85.00             16.00,85.00 112.00,85.00 112.00,85.00 Z" fill="WHITE" scaleX="0.15" scaleY="0.15" styleClass="control" translateX="-53.0" translateY="-53.0" />
+            <SVGPath content="M 420.00,235.00           C 420.00,235.00 420.00,277.00 420.00,277.00             420.00,277.00 92.00,277.00 92.00,277.00             92.00,277.00 92.00,235.00 92.00,235.00             92.00,235.00 420.00,235.00 420.00,235.00 Z" fill="WHITE" scaleX="0.05" scaleY="0.05" styleClass="control" translateX="-245.0" translateY="-245.0" />
          </children>
          <HBox.margin>
             <Insets left="5.0" right="5.0" />
