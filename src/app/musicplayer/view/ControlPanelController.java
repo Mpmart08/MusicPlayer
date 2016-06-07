@@ -62,6 +62,7 @@ public class ControlPanelController implements Initializable {
 		// Creates a menu item for each playlist title and adds it to the context menu.
 		for (String title : playlistTitles) {
 			MenuItem item = new MenuItem(title);
+			item.setStyle("-fx-text-fill: black");
 			
 			item.setOnAction(new EventHandler<ActionEvent>() {
 			    public void handle(ActionEvent e) {
