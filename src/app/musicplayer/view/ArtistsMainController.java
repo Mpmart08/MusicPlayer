@@ -177,131 +177,7 @@ public class ArtistsMainController implements Initializable, SubView {
     private double expandedHeight = 50;
     private double collapsedHeight = 0;
     private CountDownLatch loadedLatch;
-
-    private Animation artistLoadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            subViewRoot.setTranslateY(expandedHeight - curHeight);
-            subViewRoot.setOpacity(frac);
-        }
-    };
     
-    private Animation artistUnloadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
-            subViewRoot.setTranslateY(expandedHeight - curHeight);
-            subViewRoot.setOpacity(1 - frac);
-        }
-    };
-
-    private Animation albumLoadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            songTable.setTranslateY(expandedHeight - curHeight);
-            songTable.setOpacity(frac);
-        }
-    };
-    
-    private Animation albumUnloadAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {
-            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
-            songTable.setTranslateY(expandedHeight - curHeight);
-            songTable.setOpacity(1 - frac);
-            songTable.setMinHeight(1 - frac);
-            songTable.setPrefHeight(1 - frac);
-        }
-    };
-    
-    @Override
-    public void play() {
-    	
-    	Song song = selectedSong;
-        ArrayList<Song> songs = new ArrayList<Song>();
-
-        if (selectedAlbum != null) {
-
-            for (Song s : selectedAlbum.getSongs()) {
-                songs.add(s);
-            }
-
-        } else {
-
-            for (Album album : selectedArtist.getAlbums()) {
-                for (Song s : album.getSongs()) {
-                    songs.add(s);
-                }
-            }
-        }
-        
-        if (MusicPlayer.isShuffleActive()) {
-        	Collections.shuffle(songs);
-        	songs.remove(song);
-        	songs.add(0, song);
-        } else {
-        	Collections.sort(songs, (first, second) -> {
-
-                Album firstAlbum = Library.getAlbum(first.getAlbum());
-                Album secondAlbum = Library.getAlbum(second.getAlbum());
-                if (firstAlbum.compareTo(secondAlbum) != 0) {
-                    return firstAlbum.compareTo(secondAlbum);
-                } else {
-                    return first.compareTo(second);
-                }
-            });
-        }
-
-        MusicPlayer.setNowPlayingList(songs);
-        MusicPlayer.setNowPlaying(song);
-        MusicPlayer.play();
-    }
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    	ObservableList<Artist> artistListItems = artistList.getItems();
-    	
-    	int selectedCell = 0;
-
-    	for (int i = 0; i < artistListItems.size(); i++) {
-    		// Removes article from artist title and compares it to selected letter.
-    		String artistTitle = artistListItems.get(i).getTitle();
-    		char firstLetter = removeArticle(artistTitle).charAt(0);
-    		if (firstLetter < letter) {
-        		selectedCell++;
-    		}
-    	}
-    	
-    	double startVvalue = artistListScrollPane.getVvalue();
-    	double finalVvalue = (double) (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                artistListScrollPane.setVvalue(vValue);
-            }
-        };
-        scrollAnimation.play();
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
@@ -758,6 +634,80 @@ public class ArtistsMainController implements Initializable, SubView {
         }).start();
     }
     
+    @Override
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ArrayList<Song> songs = new ArrayList<Song>();
+
+        if (selectedAlbum != null) {
+
+            for (Song s : selectedAlbum.getSongs()) {
+                songs.add(s);
+            }
+
+        } else {
+
+            for (Album album : selectedArtist.getAlbums()) {
+                for (Song s : album.getSongs()) {
+                    songs.add(s);
+                }
+            }
+        }
+        
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songs);
+        	songs.remove(song);
+        	songs.add(0, song);
+        } else {
+        	Collections.sort(songs, (first, second) -> {
+
+                Album firstAlbum = Library.getAlbum(first.getAlbum());
+                Album secondAlbum = Library.getAlbum(second.getAlbum());
+                if (firstAlbum.compareTo(secondAlbum) != 0) {
+                    return firstAlbum.compareTo(secondAlbum);
+                } else {
+                    return first.compareTo(second);
+                }
+            });
+        }
+
+        MusicPlayer.setNowPlayingList(songs);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
+    
+    @Override
+    public void scroll(char letter) {
+    	
+    	ObservableList<Artist> artistListItems = artistList.getItems();
+    	
+    	int selectedCell = 0;
+
+    	for (int i = 0; i < artistListItems.size(); i++) {
+    		// Removes article from artist title and compares it to selected letter.
+    		String artistTitle = artistListItems.get(i).getTitle();
+    		char firstLetter = removeArticle(artistTitle).charAt(0);
+    		if (firstLetter < letter) {
+        		selectedCell++;
+    		}
+    	}
+    	
+    	double startVvalue = artistListScrollPane.getVvalue();
+    	double finalVvalue = (double) (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                artistListScrollPane.setVvalue(vValue);
+            }
+        };
+        scrollAnimation.play();
+    }
+    
     private String removeArticle(String title) {
 
         String arr[] = title.split(" ", 2);
@@ -779,6 +729,54 @@ public class ArtistsMainController implements Initializable, SubView {
             }
         }
     }
+    
+    private Animation artistLoadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            subViewRoot.setTranslateY(expandedHeight - curHeight);
+            subViewRoot.setOpacity(frac);
+        }
+    };
+    
+    private Animation artistUnloadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
+            subViewRoot.setTranslateY(expandedHeight - curHeight);
+            subViewRoot.setOpacity(1 - frac);
+        }
+    };
 
-
+    private Animation albumLoadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            songTable.setTranslateY(expandedHeight - curHeight);
+            songTable.setOpacity(frac);
+        }
+    };
+    
+    private Animation albumUnloadAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {
+            double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1 - frac);
+            songTable.setTranslateY(expandedHeight - curHeight);
+            songTable.setOpacity(1 - frac);
+            songTable.setMinHeight(1 - frac);
+            songTable.setPrefHeight(1 - frac);
+        }
+    };
 }

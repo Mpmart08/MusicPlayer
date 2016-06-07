@@ -62,6 +62,21 @@ public class PlaylistsController implements Initializable, SubView {
     
     // Used to store the individual playlist boxes from the playlistBox. 
     private HBox cell;
+    
+    public Animation deletePlaylistAnimation = new Transition() {
+    	{
+            setCycleDuration(Duration.millis(500));
+            setInterpolator(Interpolator.EASE_BOTH);
+        }
+        protected void interpolate(double frac) {        	    		
+    		if (frac < 0.5) {
+    			cell.setPrefHeight(cell.getHeight() - frac * 10);
+    		} else {
+    			cell.setPrefHeight(0);
+    			cell.setOpacity(0);
+    		}
+        }
+    };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -192,6 +207,20 @@ public class PlaylistsController implements Initializable, SubView {
         	}
         });
     }
+    
+    @Override
+    public void play() {
+    	Song song = selectedSong;
+        ObservableList<Song> songs = selectedPlaylist.getSongs();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songs);
+        	songs.remove(song);
+        	songs.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songs);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
 
     public void selectPlaylist(Playlist playlist) {
     	// Displays the delete button only if the user has not selected one of the default playlists.
@@ -222,20 +251,6 @@ public class PlaylistsController implements Initializable, SubView {
     
     @Override
     public void scroll(char letter) {};
-    
-    @Override
-    public void play() {
-    	Song song = selectedSong;
-        ObservableList<Song> songs = selectedPlaylist.getSongs();
-        if (MusicPlayer.isShuffleActive()) {
-        	Collections.shuffle(songs);
-        	songs.remove(song);
-        	songs.add(0, song);
-        }
-        MusicPlayer.setNowPlayingList(songs);
-        MusicPlayer.setNowPlaying(song);
-        MusicPlayer.play();
-    }
     
     @Override
     public Song getSelectedSong() {
@@ -300,19 +315,4 @@ public class PlaylistsController implements Initializable, SubView {
         	selectedPlaylist = null;
     	}
     }
-    
-    public Animation deletePlaylistAnimation = new Transition() {
-    	{
-            setCycleDuration(Duration.millis(500));
-            setInterpolator(Interpolator.EASE_BOTH);
-        }
-        protected void interpolate(double frac) {        	    		
-    		if (frac < 0.5) {
-    			cell.setPrefHeight(cell.getHeight() - frac * 10);
-    		} else {
-    			cell.setPrefHeight(0);
-    			cell.setOpacity(0);
-    		}
-        }
-    };
 }

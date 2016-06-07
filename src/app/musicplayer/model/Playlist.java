@@ -31,6 +31,14 @@ public class Playlist {
     private String title;
     private ArrayList<Song> songs;
 
+    /**
+     * Constructor for the Playlist class.
+     * Creates a playlist object.
+     * 
+     * @param id
+     * @param title
+     * @param songs
+     */
     public Playlist(int id, String title, ArrayList<Song> songs) {
         this.id = id;
         this.title = title;
@@ -56,7 +64,6 @@ public class Playlist {
     }
     
     public void addSong(Song song) {
-
     	if (!songs.contains(song)) {
 
     		songs.add(song);

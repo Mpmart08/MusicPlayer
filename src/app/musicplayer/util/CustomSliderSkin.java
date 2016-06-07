@@ -17,12 +17,13 @@ import com.sun.javafx.scene.control.behavior.SliderBehavior;
 import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 
 /**
- * Region/css based skin for Slider
-*/
+ * Region/css based skin for slider.
+ *
+ */
+@SuppressWarnings("restriction")
 public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
 
-    /** Track if slider is vertical/horizontal and cause re layout */
-//    private boolean horizontal;
+    // Track if slider is vertical/horizontal and cause re layout.
     private NumberAxis tickLine = null;
     private double trackToTickGap = 2;
 
@@ -40,35 +41,6 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
     private StackPane thumb;
     private StackPane track;
     private boolean trackClicked = false;
-//    private double visibleAmount = 16;
-    
-    public StackPane getThumb() {
-    	return thumb;
-    }
-    
-    public StackPane getTrack() {
-    	return track;
-    }
-    
-    private Animation thumbPressAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(100));
-        }
-        protected void interpolate(double frac) {
-        	double padding = 10 + frac * 5;
-        	thumb.setStyle("-fx-padding: " + padding + ";");
-        }
-    };
-    
-    private Animation thumbReleaseAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(100));
-        }
-        protected void interpolate(double frac) {
-        	double padding = 15 - frac * 5;
-        	thumb.setStyle("-fx-padding: " + padding + ";");
-        }
-    };
 
     public CustomSliderSkin(Slider slider) {
         super(slider, new SliderBehavior(slider));
@@ -91,7 +63,6 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         thumb.getStyleClass().setAll("thumb");
         track = new StackPane();
         track.getStyleClass().setAll("track");
-//        horizontal = getSkinnable().isVertical();
 
         getChildren().clear();
         getChildren().addAll(track, thumb);
@@ -150,18 +121,8 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
             }
         });
     }
-
-    StringConverter<Number> stringConverterWrapper = new StringConverter<Number>() {
-        Slider slider = getSkinnable();
-        @Override public String toString(Number object) {
-            return(object != null) ? slider.getLabelFormatter().toString(object.doubleValue()) : "";
-        }
-        @Override public Number fromString(String string) {
-            return slider.getLabelFormatter().fromString(string);
-        }
-    };
     
-     private void setShowTickMarks(boolean ticksVisible, boolean labelsVisible) {
+    private void setShowTickMarks(boolean ticksVisible, boolean labelsVisible) {
         showTickMarks = (ticksVisible || labelsVisible);
         Slider slider = getSkinnable();
         if (showTickMarks) {
@@ -175,7 +136,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
                 tickLine.setTickMarkVisible(ticksVisible);
                 tickLine.setTickLabelsVisible(labelsVisible);
                 tickLine.setMinorTickVisible(ticksVisible);
-                // add 1 to the slider minor tick count since the axis draws one
+                // Add 1 to the slider minor tick count since the axis draws one
                 // less minor ticks than the number given.
                 tickLine.setMinorTickCount(Math.max(slider.getMinorTickCount(),0) + 1);
                 if (slider.getLabelFormatter() != null) {
@@ -192,11 +153,28 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         else  {
             getChildren().clear();
             getChildren().addAll(track, thumb);
-//            tickLine = null;
         }
 
         getSkinnable().requestLayout();
+    }    
+    
+    public StackPane getThumb() {
+    	return thumb;
     }
+    
+    public StackPane getTrack() {
+    	return track;
+    }
+
+    StringConverter<Number> stringConverterWrapper = new StringConverter<Number>() {
+        Slider slider = getSkinnable();
+        @Override public String toString(Number object) {
+            return(object != null) ? slider.getLabelFormatter().toString(object.doubleValue()) : "";
+        }
+        @Override public Number fromString(String string) {
+            return slider.getLabelFormatter().fromString(string);
+        }
+    };
 
     @Override protected void handleControlPropertyChanged(String p) {
         super.handleControlPropertyChanged(p);
@@ -207,7 +185,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
             }
             getSkinnable().requestLayout();
         } else if ("VALUE".equals(p)) {
-            // only animate thumb if the track was clicked - not if the thumb is dragged
+            // Only animate thumb if the track was clicked, not if the thumb is dragged
             positionThumb(trackClicked);
         } else if ("MIN".equals(p) ) {
             if (showTickMarks && tickLine != null) {
@@ -418,5 +396,24 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
             return Double.MAX_VALUE;
         }
     }
+    
+    private Animation thumbPressAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(100));
+        }
+        protected void interpolate(double frac) {
+        	double padding = 10 + frac * 5;
+        	thumb.setStyle("-fx-padding: " + padding + ";");
+        }
+    };
+    
+    private Animation thumbReleaseAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(100));
+        }
+        protected void interpolate(double frac) {
+        	double padding = 15 - frac * 5;
+        	thumb.setStyle("-fx-padding: " + padding + ";");
+        }
+    };
 }
-

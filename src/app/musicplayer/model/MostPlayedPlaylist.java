@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 public class MostPlayedPlaylist extends Playlist {
 
     public MostPlayedPlaylist(int id) {
-
         super(id, "Most Played");
     }
 

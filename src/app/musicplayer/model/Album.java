@@ -33,7 +33,8 @@ public final class Album implements Comparable<Album> {
     private SimpleObjectProperty<Image> artworkProperty;
 
     /**
-     * Creates an album object and obtains it's artwork.
+     * Constructor for the Album class. 
+     * Creates an album object and obtains the album artwork.
      * 
      * @param id
      * @param title
@@ -48,8 +49,6 @@ public final class Album implements Comparable<Album> {
         this.artworkProperty = new SimpleObjectProperty<Image>(getArtwork());
     }
 
-    // GETTERS
-    
     /**
      * Gets album ID.
      * 
@@ -81,11 +80,9 @@ public final class Album implements Comparable<Album> {
     }
 
     public Image getArtwork() {
-    	
         if (this.artwork == null) {
         	
             try {
-            	
                 String location = this.songs.get(0).getLocation();
                 AudioFile audioFile = AudioFileIO.read(new File(location));
                 Tag tag = audioFile.getTag();
@@ -94,12 +91,10 @@ public final class Album implements Comparable<Album> {
                 this.artwork = new Image(in, 300, 300, true, true);
                 
                 if (this.artwork.isError()) {
-                	
                 	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
                 }
                 
             } catch (Exception ex) {
-            	
             	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
             } 
         }
@@ -171,7 +166,6 @@ public final class Album implements Comparable<Album> {
 
     @Override
     public int compareTo(Album other) {
-
         String first = removeArticle(this.title);
         String second = removeArticle(other.title);
 

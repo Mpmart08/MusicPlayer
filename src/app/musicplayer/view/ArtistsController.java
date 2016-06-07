@@ -35,46 +35,6 @@ public class ArtistsController implements Initializable, SubView {
     @FXML private FlowPane grid;
     
     @Override
-    public void play() {}
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    	int index = 0;
-    	double cellHeight = 0;
-    	ObservableList<Node> children = grid.getChildren();
-    	
-    	for (int i = 0; i < children.size(); i++) {
-    		
-    		VBox cell = (VBox) children.get(i);
-    		cellHeight = cell.getHeight();
-    		Label label = (Label) cell.getChildren().get(1);
-    		char firstLetter = removeArticle(label.getText()).charAt(0);
-    		if (firstLetter < letter) {
-    			index++;
-    		}
-    	}
-    	
-    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
-    	
-    	double row = (index / 5) * cellHeight;
-    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
-    	double startVvalue = scrollpane.getVvalue();
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollpane.setVvalue(vValue);
-            }
-        };
-        
-        scrollAnimation.play();
-    }
-
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         ObservableList<Artist> artists = Library.getArtists();
@@ -109,10 +69,6 @@ public class ArtistsController implements Initializable, SubView {
         }).start();
     }
     
-    public Song getSelectedSong() {
-    	return null;
-    }
-
     private VBox createCell(Artist artist) {
 
         VBox cell = new VBox();
@@ -168,6 +124,46 @@ public class ArtistsController implements Initializable, SubView {
         return cell;
     }
     
+    @Override
+    public void play() {}
+    
+    @Override
+    public void scroll(char letter) {
+    	
+    	int index = 0;
+    	double cellHeight = 0;
+    	ObservableList<Node> children = grid.getChildren();
+    	
+    	for (int i = 0; i < children.size(); i++) {
+    		
+    		VBox cell = (VBox) children.get(i);
+    		cellHeight = cell.getHeight();
+    		Label label = (Label) cell.getChildren().get(1);
+    		char firstLetter = removeArticle(label.getText()).charAt(0);
+    		if (firstLetter < letter) {
+    			index++;
+    		}
+    	}
+    	
+    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
+    	
+    	double row = (index / 5) * cellHeight;
+    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
+    	double startVvalue = scrollpane.getVvalue();
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollpane.setVvalue(vValue);
+            }
+        };
+        
+        scrollAnimation.play();
+    }
+    
     private String removeArticle(String title) {
 
         String arr[] = title.split(" ", 2);
@@ -188,5 +184,9 @@ public class ArtistsController implements Initializable, SubView {
                     return title;
             }
         }
+    }
+    
+    public Song getSelectedSong() {
+    	return null;
     }
 }

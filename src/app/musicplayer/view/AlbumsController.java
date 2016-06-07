@@ -76,119 +76,6 @@ public class AlbumsController implements Initializable, SubView {
     
     private Song selectedSong;
     
-    // ANIMIATIONS
-    private Animation collapseAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setOnFinished(x -> collapseAlbumDetail());
-        }
-        protected void interpolate(double frac) {
-        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
-            songBox.setPrefHeight(curHeight);
-            songBox.setOpacity(1.0 - frac);
-            songTable.setMinHeight(1 - frac);
-            songTable.setPrefHeight(1 - frac);
-        }
-    };
-
-    private Animation expandAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-        }
-        protected void interpolate(double frac) {
-        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            songBox.setPrefHeight(curHeight);
-            songBox.setOpacity(frac);
-        }
-    };
-    
-    private Animation tableCollapseAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-            setOnFinished(x -> collapseAlbumDetail());
-        }
-        protected void interpolate(double frac) {
-        	double curLocation = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
-            artistLabel.setTranslateY(curLocation);
-            albumLabel.setTranslateY(curLocation);
-            verticalSeparator.setTranslateY(curLocation);
-        	songTable.setTranslateY(curLocation);
-        	artistLabel.setOpacity(1.0 - frac);
-            albumLabel.setOpacity(1.0 - frac);
-            verticalSeparator.setOpacity(1.0 - frac);
-        	songTable.setOpacity(1.0 - frac);
-        }
-    };
-
-    private Animation tableExpandAnimation = new Transition() {
-        {
-            setCycleDuration(Duration.millis(250));
-        }
-        protected void interpolate(double frac) {
-        	double curLocation = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
-        	artistLabel.setTranslateY(curLocation);
-            albumLabel.setTranslateY(curLocation);
-            verticalSeparator.setTranslateY(curLocation);
-            songTable.setTranslateY(curLocation);
-            artistLabel.setOpacity(frac);
-            albumLabel.setOpacity(frac);
-            verticalSeparator.setOpacity(frac);
-        	songTable.setOpacity(frac);
-        }
-    };
-    
-    @Override
-    public void play() {
-    	
-    	Song song = selectedSong;
-        ObservableList<Song> songList = songTable.getItems();
-        if (MusicPlayer.isShuffleActive()) {
-        	Collections.shuffle(songList);
-        	songList.remove(song);
-        	songList.add(0, song);
-        }
-        MusicPlayer.setNowPlayingList(songList);
-        MusicPlayer.setNowPlaying(song);
-        MusicPlayer.play();
-    }
-    
-    @Override
-    public void scroll(char letter) {
-    	
-	    int index = 0;
-    	double cellHeight = 0;
-    	ObservableList<Node> children = grid.getChildren();
-    	
-    	for (int i = 0; i < children.size(); i++) {
-    		
-    		VBox cell = (VBox) children.get(i);
-    		cellHeight = cell.getHeight();
-    		if (cell.getChildren().size() > 1) {
-    			Label label = (Label) cell.getChildren().get(1);
-        		char firstLetter = removeArticle(label.getText()).charAt(0);
-        		if (firstLetter < letter) {
-        			index++;
-        		}	
-    		}
-    	}
-    	
-    	double row = (index / 5) * cellHeight;
-    	double finalVvalue = row / (grid.getHeight() - gridBox.getHeight());
-    	double startVvalue = gridBox.getVvalue();
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                gridBox.setVvalue(vValue);
-            }
-        };
-        
-        scrollAnimation.play();
-    }
-	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
@@ -365,10 +252,6 @@ public class AlbumsController implements Initializable, SubView {
         });
 	}
 	
-    public Song getSelectedSong() {
-    	return selectedSong;
-    }
-
     private VBox createCell(Album album, int index) {
 
         VBox cell = new VBox();
@@ -516,7 +399,7 @@ public class AlbumsController implements Initializable, SubView {
     	songBox.setVisible(false);
     }
     
-    private void populateSongTable(VBox cell, Album selectedAlbum) {    	
+    private void populateSongTable(VBox cell, Album selectedAlbum) { 	
     	// Retrieves albums songs and stores them as an observable list.
     	ObservableList<Song> albumSongs = FXCollections.observableArrayList(selectedAlbum.getSongs());
     	
@@ -548,6 +431,58 @@ public class AlbumsController implements Initializable, SubView {
         songTableLoadAnimation.play();
     }
     
+    @Override
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ObservableList<Song> songList = songTable.getItems();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songList);
+        	songList.remove(song);
+        	songList.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songList);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
+    }
+    
+    @Override
+    public void scroll(char letter) {
+    	
+	    int index = 0;
+    	double cellHeight = 0;
+    	ObservableList<Node> children = grid.getChildren();
+    	
+    	for (int i = 0; i < children.size(); i++) {
+    		
+    		VBox cell = (VBox) children.get(i);
+    		cellHeight = cell.getHeight();
+    		if (cell.getChildren().size() > 1) {
+    			Label label = (Label) cell.getChildren().get(1);
+        		char firstLetter = removeArticle(label.getText()).charAt(0);
+        		if (firstLetter < letter) {
+        			index++;
+        		}	
+    		}
+    	}
+    	
+    	double row = (index / 5) * cellHeight;
+    	double finalVvalue = row / (grid.getHeight() - gridBox.getHeight());
+    	double startVvalue = gridBox.getVvalue();
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                gridBox.setVvalue(vValue);
+            }
+        };
+        
+        scrollAnimation.play();
+    }
+    
     private String removeArticle(String title) {
 
         String arr[] = title.split(" ", 2);
@@ -569,4 +504,70 @@ public class AlbumsController implements Initializable, SubView {
             }
         }
     }
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
+    }
+    
+    // Animation to display song table when an album is clicked and the song table is collapsed.
+    private Animation expandAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+        }
+        protected void interpolate(double frac) {
+        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            songBox.setPrefHeight(curHeight);
+            songBox.setOpacity(frac);
+        }
+    };
+    
+    // Animation to hide song table when an album is clicked and the song table is expanded.
+    private Animation collapseAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setOnFinished(x -> collapseAlbumDetail());
+        }
+        protected void interpolate(double frac) {
+        	double curHeight = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
+            songBox.setPrefHeight(curHeight);
+            songBox.setOpacity(1.0 - frac);
+            songTable.setMinHeight(1 - frac);
+            songTable.setPrefHeight(1 - frac);
+        }
+    };
+    
+    private Animation tableCollapseAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+            setOnFinished(x -> collapseAlbumDetail());
+        }
+        protected void interpolate(double frac) {
+        	double curLocation = collapsedHeight + (expandedHeight - collapsedHeight) * (frac);
+            artistLabel.setTranslateY(curLocation);
+            albumLabel.setTranslateY(curLocation);
+            verticalSeparator.setTranslateY(curLocation);
+        	songTable.setTranslateY(curLocation);
+        	artistLabel.setOpacity(1.0 - frac);
+            albumLabel.setOpacity(1.0 - frac);
+            verticalSeparator.setOpacity(1.0 - frac);
+        	songTable.setOpacity(1.0 - frac);
+        }
+    };
+
+    private Animation tableExpandAnimation = new Transition() {
+        {
+            setCycleDuration(Duration.millis(250));
+        }
+        protected void interpolate(double frac) {
+        	double curLocation = collapsedHeight + (expandedHeight - collapsedHeight) * (1.0 - frac);
+        	artistLabel.setTranslateY(curLocation);
+            albumLabel.setTranslateY(curLocation);
+            verticalSeparator.setTranslateY(curLocation);
+            songTable.setTranslateY(curLocation);
+            artistLabel.setOpacity(frac);
+            albumLabel.setOpacity(frac);
+            verticalSeparator.setOpacity(frac);
+        	songTable.setOpacity(frac);
+        }
+    };
 }

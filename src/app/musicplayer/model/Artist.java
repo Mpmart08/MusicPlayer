@@ -28,20 +28,18 @@ public final class Artist implements Comparable<Artist> {
     private SimpleObjectProperty<Image> artistImageProperty;
 
     /**
-     * Creates an artist object.
+     * Constructor for the Artist class.
+     * Creates an artist object and obtains the artist artwork.
      * 
-     * @param title
-     * @param albums
+     * @param title Artist name
+     * @param albums List of artist albums
      */
     public Artist(String title, ArrayList<Album> albums) {
-
         this.title = title;
         this.albums = albums;
         this.artistImageProperty = new SimpleObjectProperty<Image>(getArtistImage());
     }
 
-    // GETTERS
-    
     /**
      * Gets the artist title.
      * @return artist title
@@ -80,10 +78,10 @@ public final class Artist implements Comparable<Artist> {
                 file.delete();
                 artistImage = new Image(Resources.IMG + "artistsIcon.png");
             }
-        } // End if(artistImage == null)
+        }
         
         return artistImage;
-    } // End getArtistImage()
+    }
     
     public void downloadArtistImage() {
     	try {
@@ -132,7 +130,6 @@ public final class Artist implements Comparable<Artist> {
 
     @Override
     public int compareTo(Artist other) {
-
         String first = removeArticle(this.title);
         String second = removeArticle(other.title);
 

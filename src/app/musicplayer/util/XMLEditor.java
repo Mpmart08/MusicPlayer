@@ -122,68 +122,6 @@ public class XMLEditor {
 		
 	}
 	
-	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
-        try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
-			
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-            
-            // Finds the node with the song id for the selected song in the selected play list for removal.
-            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songId[text() = '" + selectedSongId + "']";
-            XPathExpression expr = xpath.compile(query);
-            Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
-            
-            // Removes the node corresponding to the selected song.
-            deleteSongNode.getParentNode().removeChild(deleteSongNode);
-                    
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            File xmlFile = new File(Resources.JAR + "library.xml");
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
-            
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	public static void deletePlaylistFromXML(int selectedPlayListId) {		
-        try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
-			
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-            
-            // Finds the node with the play list id for removal.
-            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']";
-            XPathExpression expr = xpath.compile(query);
-            Node deleteplaylistNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
-            
-            // Removes the node corresponding to the selected song.
-            deleteplaylistNode.getParentNode().removeChild(deleteplaylistNode);
-                    
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            File xmlFile = new File(Resources.JAR + "library.xml");
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
-            
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
 	private static void xmlSongsFilePathFinder() {
 		try {
 			// Creates reader for xml file.
@@ -310,7 +248,7 @@ public class XMLEditor {
             // Updates the xmlFileNum in MusicPlayer. 
             MusicPlayer.setXMLFileNum(newXMLFileNum);
             
-            // Gets 
+            // Gets the new last id assigned after adding all the new songs.
             int newLastIdAssigned = songsToAdd.get(songsToAdd.size() - 1).getId();
             
             // Creates node to update xml last id assigned.
@@ -323,75 +261,6 @@ public class XMLEditor {
         	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
             
             
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            File xmlFile = new File(Resources.JAR + "library.xml");
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
-            
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	private static void deleteSongFromXML() {
-		// Gets the currentXMLFileNum.
-		int currentXMLFileNum = MusicPlayer.getXMLFileNum();
-
-        try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
-			
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-            
-            // Retrieves the last id assigned to a song from the xml file.
-            int xmlLastIdAssigned = xmlLastIdAssignedFinder();
-
-            // Finds the song node corresponding to the last assigned id.
-            XPathExpression expr = xpath.compile("/library/songs/song[id/text() = \"" + xmlLastIdAssigned + "\"]");
-            Node lastSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-            
-            // Loops through the songPathsToDelete array list and removes the nodes from the xml file.
-            Node deleteSongNode = null;
-            for (String songFilePath : songPathsToDelete) {
-                // Finds the node with the song title marked for removal.
-            	expr = xpath.compile("/library/songs/song[location/text() = \"" + songFilePath + "\"]");
-                deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-                
-                // Removes the node corresponding to the title of the song.
-                deleteSongNode.getParentNode().removeChild(deleteSongNode);
-
-            	// Decreases the counter for the number of files in the xml file.
-                currentXMLFileNum--;
-            }
-            
-            // If the last node to be deleted was the last song node,
-            // then the new last assigned id is found and updated in the MusicPlayer and xml file.
-            if (deleteSongNode == lastSongNode) {
-            	int newLastIdAssigned = xmlNewLastIdAssignedFinder();
-
-                // Creates node to update xml last id assigned.
-                expr = xpath.compile("/library/musicLibrary/lastId");
-                Node lastId = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-                
-                // Updates the lastId in MusicPlayer and in the xml file.
-            	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
-                lastId.setTextContent(Integer.toString(newLastIdAssigned));
-            }
-            
-            // Creates node to update xml file number.
-            XPathExpression fileNumExpr = xpath.compile("/library/musicLibrary/fileNum");
-            Node fileNum = ((NodeList) fileNumExpr.evaluate(doc, XPathConstants.NODESET)).item(0);
-            
-            // Updates the fileNum in MusicPlayer and in the xml file.
-            MusicPlayer.setXMLFileNum(currentXMLFileNum);
-            fileNum.setTextContent(Integer.toString(currentXMLFileNum));
-                    
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
@@ -492,7 +361,76 @@ public class XMLEditor {
 			return 0;
 		}
     }
-    
+	
+	private static void deleteSongFromXML() {
+		// Gets the currentXMLFileNum.
+		int currentXMLFileNum = MusicPlayer.getXMLFileNum();
+
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            // Retrieves the last id assigned to a song from the xml file.
+            int xmlLastIdAssigned = xmlLastIdAssignedFinder();
+
+            // Finds the song node corresponding to the last assigned id.
+            XPathExpression expr = xpath.compile("/library/songs/song[id/text() = \"" + xmlLastIdAssigned + "\"]");
+            Node lastSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Loops through the songPathsToDelete array list and removes the nodes from the xml file.
+            Node deleteSongNode = null;
+            for (String songFilePath : songPathsToDelete) {
+                // Finds the node with the song title marked for removal.
+            	expr = xpath.compile("/library/songs/song[location/text() = \"" + songFilePath + "\"]");
+                deleteSongNode = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+                
+                // Removes the node corresponding to the title of the song.
+                deleteSongNode.getParentNode().removeChild(deleteSongNode);
+
+            	// Decreases the counter for the number of files in the xml file.
+                currentXMLFileNum--;
+            }
+            
+            // If the last node to be deleted was the last song node,
+            // then the new last assigned id is found and updated in the MusicPlayer and xml file.
+            if (deleteSongNode == lastSongNode) {
+            	int newLastIdAssigned = xmlNewLastIdAssignedFinder();
+
+                // Creates node to update xml last id assigned.
+                expr = xpath.compile("/library/musicLibrary/lastId");
+                Node lastId = ((NodeList) expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+                
+                // Updates the lastId in MusicPlayer and in the xml file.
+            	MusicPlayer.setLastIdAssigned(newLastIdAssigned);
+                lastId.setTextContent(Integer.toString(newLastIdAssigned));
+            }
+            
+            // Creates node to update xml file number.
+            XPathExpression fileNumExpr = xpath.compile("/library/musicLibrary/fileNum");
+            Node fileNum = ((NodeList) fileNumExpr.evaluate(doc, XPathConstants.NODESET)).item(0);
+            
+            // Updates the fileNum in MusicPlayer and in the xml file.
+            MusicPlayer.setXMLFileNum(currentXMLFileNum);
+            fileNum.setTextContent(Integer.toString(currentXMLFileNum));
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
     private static int xmlNewLastIdAssignedFinder() {
 		try {
 			// Creates reader for xml file.
@@ -537,4 +475,66 @@ public class XMLEditor {
 			return 0;
 		}
     }
+	
+	public static void deleteSongFromPlaylist(int selectedPlayListId, int selectedSongId) {
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            // Finds the node with the song id for the selected song in the selected play list for removal.
+            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']/songId[text() = '" + selectedSongId + "']";
+            XPathExpression expr = xpath.compile(query);
+            Node deleteSongNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            
+            // Removes the node corresponding to the selected song.
+            deleteSongNode.getParentNode().removeChild(deleteSongNode);
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void deletePlaylistFromXML(int selectedPlayListId) {		
+        try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(Resources.JAR + "library.xml");
+			
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            
+            // Finds the node with the play list id for removal.
+            String query = "/library/playlists/playlist[@id='" + selectedPlayListId + "']";
+            XPathExpression expr = xpath.compile(query);
+            Node deleteplaylistNode = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            
+            // Removes the node corresponding to the selected song.
+            deleteplaylistNode.getParentNode().removeChild(deleteplaylistNode);
+                    
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            File xmlFile = new File(Resources.JAR + "library.xml");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+            
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 }

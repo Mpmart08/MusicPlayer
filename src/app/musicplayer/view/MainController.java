@@ -161,11 +161,103 @@ public class MainController implements Initializable {
         
         // Loads the default view: artists.
         loadView("artists");
-    } // End initialize()
+    }
+    
+    public void resetLatch() {
+    	viewLoadedLatch = new CountDownLatch(1);
+    }
+    
+    public CountDownLatch getLatch() {
+    	return viewLoadedLatch;
+    }
+    
+    private void createVolumePopup() {
+    	try {
+    		
+    		Stage stage = MusicPlayer.getStage();
+        	FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "VolumePopup.fxml"));
+        	HBox view = (HBox) loader.load();
+        	volumePopupController = loader.getController();
+        	Stage popup = new Stage();
+        	popup.setScene(new Scene(view));
+        	popup.initStyle(StageStyle.UNDECORATED);
+        	popup.initOwner(stage);
+        	popup.setX(stage.getWidth() - 270);
+        	popup.setY(stage.getHeight() - 120);
+        	popup.focusedProperty().addListener((x, wasFocused, isFocused) -> {
+        		if (wasFocused && !isFocused) {
+        			popupHideAnimation.play();
+        		}
+        	});
+        	popupHideAnimation.setOnFinished(x -> {
+        		popup.hide();
+        	});
+        	
+        	popup.show();
+        	popup.hide();
+        	volumePopup = popup;
+        	
+    	} catch (Exception ex) {
+    		
+    		ex.printStackTrace();
+    	}
+    }
+    
+    public void updateNowPlayingButton() {
+
+        Song song = MusicPlayer.getNowPlaying();
+        if (song != null) {
+            nowPlayingTitle.setText(song.getTitle());
+            nowPlayingArtist.setText(song.getArtist());
+            nowPlayingArtwork.setImage(song.getArtwork());
+        } else {
+            nowPlayingTitle.setText("");
+            nowPlayingArtist.setText("");
+            nowPlayingArtwork.setImage(null);
+        }
+    }
+
+    public void initializeTimeSlider() {
+
+        Song song = MusicPlayer.getNowPlaying();
+        if (song != null) {
+            timeSlider.setMin(0);
+            timeSlider.setMax(song.getLengthInSeconds() * 4);
+            timeSlider.setValue(0);
+            timeSlider.setBlockIncrement(1);
+        } else {
+            timeSlider.setMin(0);
+            timeSlider.setMax(1);
+            timeSlider.setValue(0);
+            timeSlider.setBlockIncrement(1);
+        }
+    }
+
+    public void updateTimeSlider() {
+
+        timeSlider.increment();
+    }
+
+    public void initializeTimeLabels() {
+
+        Song song = MusicPlayer.getNowPlaying();
+        if (song != null) {
+            timePassed.setText("0:00");
+            timeRemaining.setText(song.getLength());
+        } else {
+            timePassed.setText("");
+            timeRemaining.setText("");
+        }
+    }
+
+    public void updateTimeLabels() {
+
+        timePassed.setText(MusicPlayer.getTimePassed());
+        timeRemaining.setText(MusicPlayer.getTimeRemaining());
+    }
     
     @SuppressWarnings("unchecked")
 	private void initializePlaylists() {
-    	
     	for (Playlist playlist : Library.getPlaylists()) {
     		try {
     			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "PlaylistCell.fxml"));
@@ -282,6 +374,38 @@ public class MainController implements Initializable {
 				e.printStackTrace();
 			}
     	}
+    }
+    
+    @FXML
+    private void selectView(Event e) {
+
+        HBox eventSource = ((HBox)e.getSource());
+        
+        eventSource.requestFocus();
+
+        Optional<Node> previous = sideBar.getChildren().stream()
+            .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+
+        if (previous.isPresent()) {
+            HBox previousItem = (HBox) previous.get();
+            previousItem.getStyleClass().setAll("sideBarItem");
+        } else {
+        	previous = playlistBox.getChildren().stream()
+                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+        	if (previous.isPresent()) {
+                HBox previousItem = (HBox) previous.get();
+                previousItem.getStyleClass().setAll("sideBarItem");
+            }
+        }
+
+        ObservableList<String> styles = eventSource.getStyleClass();
+
+        if (styles.get(0).equals("sideBarItem")) {
+            styles.setAll("sideBarItemSelected");
+            loadView(eventSource.getId());
+        } else if (styles.get(0).equals("bottomBarItem")) {
+            loadView(eventSource.getId());
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -447,7 +571,6 @@ public class MainController implements Initializable {
     }
     
     private String checkDuplicatePlaylist(String text, int i) {
-    	
     	for (Playlist playlist : Library.getPlaylists()) {
     		if (playlist.getTitle().equals(text)) {
     			
@@ -473,152 +596,7 @@ public class MainController implements Initializable {
     	
     	return text;
     }
-
-    @FXML
-    private void selectView(Event e) {
-
-        HBox eventSource = ((HBox)e.getSource());
-        
-        eventSource.requestFocus();
-
-        Optional<Node> previous = sideBar.getChildren().stream()
-            .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-
-        if (previous.isPresent()) {
-            HBox previousItem = (HBox) previous.get();
-            previousItem.getStyleClass().setAll("sideBarItem");
-        } else {
-        	previous = playlistBox.getChildren().stream()
-                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-        	if (previous.isPresent()) {
-                HBox previousItem = (HBox) previous.get();
-                previousItem.getStyleClass().setAll("sideBarItem");
-            }
-        }
-
-        ObservableList<String> styles = eventSource.getStyleClass();
-
-        if (styles.get(0).equals("sideBarItem")) {
-            styles.setAll("sideBarItemSelected");
-            loadView(eventSource.getId());
-        } else if (styles.get(0).equals("bottomBarItem")) {
-            loadView(eventSource.getId());
-        }
-    }
     
-    @FXML
-    private void navigateToCurrentSong() {
-    	
-    	Optional<Node> previous = sideBar.getChildren().stream()
-                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-
-        if (previous.isPresent()) {
-            HBox previousItem = (HBox) previous.get();
-            previousItem.getStyleClass().setAll("sideBarItem");
-        } else {
-        	previous = playlistBox.getChildren().stream()
-                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-        	if (previous.isPresent()) {
-                HBox previousItem = (HBox) previous.get();
-                previousItem.getStyleClass().setAll("sideBarItem");
-            }
-        }
-        
-        sideBar.getChildren().get(2).getStyleClass().setAll("sideBarItemSelected");
-        
-        ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
-        Song song = MusicPlayer.getNowPlaying();
-        Artist artist = Library.getArtist(song.getArtist());
-        Album album = artist.getAlbums().stream().filter(x -> x.getTitle().equals(song.getAlbum())).findFirst().get();
-        artistsMainController.selectArtist(artist);
-        artistsMainController.selectAlbum(album);
-        artistsMainController.selectSong(song);
-    }
-
-    @FXML
-    private void slideSideBar(Event e) {
-
-    	sideBar.requestFocus();
-    	
-        if (isSideBarExpanded) {
-            collapseSideBar();
-        } else {
-            expandSideBar();
-        }
-    }
-
-    @FXML
-    public void playPause() {
-
-    	sideBar.requestFocus();
-    	
-        if (MusicPlayer.isPlaying()) {
-            MusicPlayer.pause();
-        } else {
-            MusicPlayer.play();
-        }
-    }
-
-    @FXML
-    private void back() {
-
-    	sideBar.requestFocus();
-        MusicPlayer.back();
-    }
-
-    @FXML
-    private void skip() {
-
-    	sideBar.requestFocus();
-        MusicPlayer.skip();
-    }
-    
-    @FXML
-    private void letterClicked(Event e) {
-    	
-    	sideBar.requestFocus();
-    	Label eventSource = ((Label)e.getSource());
-    	char letter = eventSource.getText().charAt(0);
-    	subViewController.scroll(letter);
-    }
-    
-    public void volumeClick() {
-    	if (!volumePopup.isShowing()) {
-    		Stage stage = MusicPlayer.getStage();
-    		if (stage.isMaximized()) {
-    			volumePopup.setX(stage.getWidth() - 270);
-        		volumePopup.setY(stage.getHeight() - 120);
-    		} else {
-    			volumePopup.setX(stage.getX() + stage.getWidth() - 265);
-        		volumePopup.setY(stage.getY() + stage.getHeight() - 115);
-    		}
-    		
-    		volumePopup.show();
-    		popupShowAnimation.play();
-    	}
-    }
-    
-    public Slider getVolumeSlider() {
-    	return volumePopupController.getSlider();
-    }
-    
-    public boolean isTimeSliderPressed() {
-    	return sliderSkin.getThumb().isPressed() || sliderSkin.getTrack().isPressed();
-    }
-    
-    public SubView getSubViewController() {
-    	
-    	return subViewController;
-    }
-    
-    public ScrollPane getScrollPane() {
-    	return this.subViewRoot;
-    }
-
-    public VBox getPlaylistBox() {
-    	return playlistBox;
-    }
-
     public SubView loadView(String viewName) {
         try {
         	
@@ -727,77 +705,46 @@ public class MainController implements Initializable {
         }
     }
     
-    public void resetLatch() {
-    	viewLoadedLatch = new CountDownLatch(1);
+    @FXML
+    private void navigateToCurrentSong() {
+    	
+    	Optional<Node> previous = sideBar.getChildren().stream()
+                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+
+        if (previous.isPresent()) {
+            HBox previousItem = (HBox) previous.get();
+            previousItem.getStyleClass().setAll("sideBarItem");
+        } else {
+        	previous = playlistBox.getChildren().stream()
+                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+        	if (previous.isPresent()) {
+                HBox previousItem = (HBox) previous.get();
+                previousItem.getStyleClass().setAll("sideBarItem");
+            }
+        }
+        
+        sideBar.getChildren().get(2).getStyleClass().setAll("sideBarItemSelected");
+        
+        ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
+        Song song = MusicPlayer.getNowPlaying();
+        Artist artist = Library.getArtist(song.getArtist());
+        Album album = artist.getAlbums().stream().filter(x -> x.getTitle().equals(song.getAlbum())).findFirst().get();
+        artistsMainController.selectArtist(artist);
+        artistsMainController.selectAlbum(album);
+        artistsMainController.selectSong(song);
+    }
+
+    @FXML
+    private void slideSideBar(Event e) {
+    	sideBar.requestFocus();
+    	
+        if (isSideBarExpanded) {
+            collapseSideBar();
+        } else {
+            expandSideBar();
+        }
     }
     
-    public CountDownLatch getLatch() {
-    	return viewLoadedLatch;
-    }
-
-    public void updatePlayPauseIcon(boolean isPlaying) {
-
-    	controlBox.getChildren().remove(1);
-    	if (isPlaying) {
-           	controlBox.getChildren().add(1, pauseButton);
-        } else {
-          	controlBox.getChildren().add(1, playButton);
-        }
-    }
-
-    public void updateNowPlayingButton() {
-
-        Song song = MusicPlayer.getNowPlaying();
-        if (song != null) {
-            nowPlayingTitle.setText(song.getTitle());
-            nowPlayingArtist.setText(song.getArtist());
-            nowPlayingArtwork.setImage(song.getArtwork());
-        } else {
-            nowPlayingTitle.setText("");
-            nowPlayingArtist.setText("");
-            nowPlayingArtwork.setImage(null);
-        }
-    }
-
-    public void initializeTimeSlider() {
-
-        Song song = MusicPlayer.getNowPlaying();
-        if (song != null) {
-            timeSlider.setMin(0);
-            timeSlider.setMax(song.getLengthInSeconds() * 4);
-            timeSlider.setValue(0);
-            timeSlider.setBlockIncrement(1);
-        } else {
-            timeSlider.setMin(0);
-            timeSlider.setMax(1);
-            timeSlider.setValue(0);
-            timeSlider.setBlockIncrement(1);
-        }
-    }
-
-    public void updateTimeSlider() {
-
-        timeSlider.increment();
-    }
-
-    public void initializeTimeLabels() {
-
-        Song song = MusicPlayer.getNowPlaying();
-        if (song != null) {
-            timePassed.setText("0:00");
-            timeRemaining.setText(song.getLength());
-        } else {
-            timePassed.setText("");
-            timeRemaining.setText("");
-        }
-    }
-
-    public void updateTimeLabels() {
-
-        timePassed.setText(MusicPlayer.getTimePassed());
-        timeRemaining.setText(MusicPlayer.getTimeRemaining());
-    }
-
     private void collapseSideBar() {
         if (expandAnimation.statusProperty().get() == Animation.Status.STOPPED
             && collapseAnimation.statusProperty().get() == Animation.Status.STOPPED) {
@@ -814,44 +761,91 @@ public class MainController implements Initializable {
         }
     }
 
-    private void setSlideDirection() {
-        isSideBarExpanded = !isSideBarExpanded;
+    @FXML
+    public void playPause() {
+
+    	sideBar.requestFocus();
+    	
+        if (MusicPlayer.isPlaying()) {
+            MusicPlayer.pause();
+        } else {
+            MusicPlayer.play();
+        }
+    }
+
+    @FXML
+    private void back() {
+
+    	sideBar.requestFocus();
+        MusicPlayer.back();
+    }
+
+    @FXML
+    private void skip() {
+
+    	sideBar.requestFocus();
+        MusicPlayer.skip();
     }
     
-    private void createVolumePopup() {
+    @FXML
+    private void letterClicked(Event e) {
     	
-    	try {
-    		
+    	sideBar.requestFocus();
+    	Label eventSource = ((Label)e.getSource());
+    	char letter = eventSource.getText().charAt(0);
+    	subViewController.scroll(letter);
+    }
+    
+    public void volumeClick() {
+    	if (!volumePopup.isShowing()) {
     		Stage stage = MusicPlayer.getStage();
-        	FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "VolumePopup.fxml"));
-        	HBox view = (HBox) loader.load();
-        	volumePopupController = loader.getController();
-        	Stage popup = new Stage();
-        	popup.setScene(new Scene(view));
-        	popup.initStyle(StageStyle.UNDECORATED);
-        	popup.initOwner(stage);
-        	popup.setX(stage.getWidth() - 270);
-        	popup.setY(stage.getHeight() - 120);
-        	popup.focusedProperty().addListener((x, wasFocused, isFocused) -> {
-        		if (wasFocused && !isFocused) {
-        			popupHideAnimation.play();
-        		}
-        	});
-        	popupHideAnimation.setOnFinished(x -> {
-        		popup.hide();
-        	});
-        	
-        	popup.show();
-        	popup.hide();
-        	volumePopup = popup;
-        	
-    	} catch (Exception ex) {
+    		if (stage.isMaximized()) {
+    			volumePopup.setX(stage.getWidth() - 270);
+        		volumePopup.setY(stage.getHeight() - 120);
+    		} else {
+    			volumePopup.setX(stage.getX() + stage.getWidth() - 265);
+        		volumePopup.setY(stage.getY() + stage.getHeight() - 115);
+    		}
     		
-    		ex.printStackTrace();
+    		volumePopup.show();
+    		popupShowAnimation.play();
     	}
     }
     
-    // ANIMATIONS
+    public Slider getVolumeSlider() {
+    	return volumePopupController.getSlider();
+    }
+    
+    public boolean isTimeSliderPressed() {
+    	return sliderSkin.getThumb().isPressed() || sliderSkin.getTrack().isPressed();
+    }
+    
+    public SubView getSubViewController() {
+    	
+    	return subViewController;
+    }
+    
+    public ScrollPane getScrollPane() {
+    	return this.subViewRoot;
+    }
+
+    public VBox getPlaylistBox() {
+    	return playlistBox;
+    }
+
+    public void updatePlayPauseIcon(boolean isPlaying) {
+
+    	controlBox.getChildren().remove(1);
+    	if (isPlaying) {
+           	controlBox.getChildren().add(1, pauseButton);
+        } else {
+          	controlBox.getChildren().add(1, playButton);
+        }
+    }
+
+    private void setSlideDirection() {
+        isSideBarExpanded = !isSideBarExpanded;
+    }
     
     private Animation popupShowAnimation = new Transition() {
     	{

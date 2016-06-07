@@ -63,7 +63,7 @@ public class MusicPlayer extends Application {
     
     // Stores the number of files in library.xml and in the music directory.
     // These are compared when starting up the application to determine if the xml file needs to be updated
-    // by adding or deleting songs from it.
+    // by adding song to it or deleting them.
     private static int xmlFileNum;
     private static int musicDirFileNum;
     
@@ -182,291 +182,6 @@ public class MusicPlayer extends Application {
         thread.start();
     }
     
-    /**
-     * Initializes the main layout.
-     */
-    public void initMain() {
-    	try {
-    		// Load main layout from fxml file.
-    		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "Main.fxml"));
-    		view = (BorderPane) loader.load();
-    		
-    		// Shows the scene containing the layout.
-    		double width = stage.getScene().getWidth();
-    		double height = stage.getScene().getHeight();
-
-    		view.setPrefWidth(width);
-    		view.setPrefHeight(height);
-    		
-    		Scene scene = new Scene(view);
-    		stage.setScene(scene);
-    		
-    		// Gives the controller access to the music player main application.
-    		mainController = loader.getController();
-    		mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
-    		
-    	} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-    }
-
-    private static class SongSkipper implements Runnable {
-        @Override
-        public void run() {
-            skip();
-        }
-    }
-
-    private static class TimeUpdater extends TimerTask {
-        private int length = (int) getNowPlaying().getLengthInSeconds() * 4;
-
-        @Override
-        public void run() {
-            Platform.runLater(() -> {
-                if (timerCounter < length) {
-                    if (++timerCounter % 4 == 0) {
-                        mainController.updateTimeLabels();
-                        secondsPlayed++;
-                    }
-                    if (!mainController.isTimeSliderPressed()) {
-                    	mainController.updateTimeSlider();
-                    }
-                }
-            });
-        } // End run()
-    }// End TimeUpdater
-    
-    public static Stage getStage() {
-    	return stage;
-    }
-    
-    public static void toggleLoop() {
-    	
-    	isLoopActive = !isLoopActive;
-    }
-    
-    public static void toggleShuffle() {
-    	
-    	isShuffleActive = !isShuffleActive;
-    	
-    	if (isShuffleActive) {
-    		Collections.shuffle(nowPlayingList);
-    	} else {
-    		Collections.sort(nowPlayingList, (first, second) -> {
-    			int result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = first.compareTo(second);
-    			return result;
-    		});
-    	}
-    	
-    	nowPlayingIndex = nowPlayingList.indexOf(nowPlaying);
-    	
-    	if (mainController.getSubViewController() instanceof NowPlayingController) {
-    		mainController.loadView("nowPlaying");
-    	}
-    }
-    
-    public static void mute(boolean isMuted) {
-    	
-    	MusicPlayer.isMuted = !isMuted;
-    	if (mediaPlayer != null) {
-    		mediaPlayer.setMute(!isMuted);
-    	}
-    }
-    
-    public static boolean isLoopActive() {
-    	
-    	return isLoopActive;
-    }
-    
-    public static boolean isShuffleActive() {
-    	
-    	return isShuffleActive;
-    }
-
-    /**
-     * Plays selected song.
-     */
-    public static void play() {
-        if (mediaPlayer != null && !isPlaying()) {
-            mediaPlayer.play();
-            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
-            mainController.updatePlayPauseIcon(true);
-        }
-    }
-
-    /**
-     * Pauses selected song.
-     */
-    public static void pause() {
-        if (isPlaying()) {
-            mediaPlayer.pause();
-            timer.cancel();
-            timer = new Timer();
-            mainController.updatePlayPauseIcon(false);
-        }
-    }
-
-    public static void seek(int seconds) {
-        if (mediaPlayer != null) {
-            mediaPlayer.seek(new Duration(seconds * 1000));
-            timerCounter = seconds * 4;
-            mainController.updateTimeLabels();
-        }
-    }
-
-    /**
-     * Skips song.
-     */
-    public static void skip() {
-        if (nowPlayingIndex < nowPlayingList.size() - 1) {
-        	boolean isPlaying = isPlaying();
-        	mainController.updatePlayPauseIcon(isPlaying);
-            setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
-            if (isPlaying) {
-            	play();
-            }
-        } else if (isLoopActive) {
-        	boolean isPlaying = isPlaying();
-        	mainController.updatePlayPauseIcon(isPlaying);
-        	nowPlayingIndex = 0;
-        	setNowPlaying(nowPlayingList.get(nowPlayingIndex));
-        	if (isPlaying) {
-            	play();
-            }
-        } else {
-        	mainController.updatePlayPauseIcon(false);
-            nowPlayingIndex = 0;
-            setNowPlaying(nowPlayingList.get(nowPlayingIndex));
-        }
-    }
-
-    public static void back() {
-        if (timerCounter > 20 || nowPlayingIndex == 0) {
-            mainController.initializeTimeSlider();
-            seek(0);
-        } else {
-        	boolean isPlaying = isPlaying();
-            setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
-            if (isPlaying) {
-            	play();
-            }
-        }
-    }
-
-    /**
-     * Checks if a song is playing.
-     */
-    public static boolean isPlaying() {
-        return mediaPlayer != null && MediaPlayer.Status.PLAYING.equals(mediaPlayer.getStatus());
-    }
-    
-    // GETTERS AND SETTERS
-
-    /**
-     * Gets currently playing song list.
-     * @return arraylist of songs
-     */
-    public static ArrayList<Song> getNowPlayingList() {
-        return nowPlayingList == null ? new ArrayList<Song>() : new ArrayList<Song>(nowPlayingList);
-    }
-
-    public static void setNowPlayingList(List<Song> list) {
-        nowPlayingList = new ArrayList<Song>(list);
-        Library.savePlayingList();
-    }
-
-    public static void setNowPlaying(Song song) {
-
-        if (nowPlayingList.contains(song)) {
-
-            updatePlayCount();
-            nowPlayingIndex = nowPlayingList.indexOf(song);
-            if (nowPlaying != null) {
-                nowPlaying.setPlaying(false);
-            }
-            nowPlaying = song;
-            nowPlaying.setPlaying(true);
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-            }
-            if (timer != null) {
-                timer.cancel();
-            }
-            timer = new Timer();
-            timerCounter = 0;
-            secondsPlayed = 0;
-            String path = song.getLocation();
-            Media media = new Media(Paths.get(path).toUri().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
-            mediaPlayer.setOnEndOfMedia(new SongSkipper());
-            mediaPlayer.setMute(isMuted);
-            mainController.updateNowPlayingButton();
-            mainController.initializeTimeSlider();
-            mainController.initializeTimeLabels();
-        }
-    }
-    
-    public static Song getNowPlaying() {
-        return nowPlaying;
-    }
-
-    public static String getTimePassed() {
-        int secondsPassed = timerCounter / 4;
-        int minutes = secondsPassed / 60;
-        int seconds = secondsPassed % 60;
-        return Integer.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds));
-    }
-
-    public static String getTimeRemaining() {
-        long secondsPassed = timerCounter / 4;
-        long totalSeconds = getNowPlaying().getLengthInSeconds();
-        long secondsRemaining = totalSeconds - secondsPassed;
-        long minutes = secondsRemaining / 60;
-        long seconds = secondsRemaining % 60;
-        return Long.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Long.toString(seconds));
-    }
-
-    /**
-     * Gets main controller object.
-     * @return MainController
-     */
-    public static MainController getMainController() {
-        return mainController;
-    }
-    
-    public static void setDraggedItem(Object item) {
-    	draggedItem = item;
-    }
-    
-    public static Object getDraggedItem() {
-    	return draggedItem;
-    }
-    
-    public static void setXMLFileNum(int i) {
-    	xmlFileNum = i;
-    }
-    
-    public static int getXMLFileNum() {
-    	return xmlFileNum;
-    }
-    
-    public static void setLastIdAssigned(int i) {
-    	lastIdAssigned = i;
-    }
-    
-    public static int getLastIdAssigned() {
-    	return lastIdAssigned;
-    }
-    
     private static void checkLibraryXML() {
     	// Finds the jar file and the path of its parent folder.
     	File musicPlayerJAR = null;
@@ -508,51 +223,6 @@ public class MusicPlayer extends Application {
     		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
         	musicDirectory = xmlMusicDirPathFinder();
     	}
-    }
-    
-    private static void createLibraryXML() {    	
-    	try {
-			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
-			BorderPane importView = (BorderPane) loader.load();
-			
-			// Create the dialog Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Music Player Configuration");
-			// Forces user to focus on dialog.
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			// Sets minimal decorations for dialog.
-			dialogStage.initStyle(StageStyle.UTILITY);
-			// Prevents the alert from being re-sizable.
-			dialogStage.setResizable(false);
-			dialogStage.initOwner(stage);
-			
-			// Sets the import music dialog scene in the stage.
-			dialogStage.setScene(new Scene(importView));
-
-			// Set the dialog into the controller.
-			ImportMusicDialogController controller = loader.getController();
-			controller.setDialogStage(dialogStage);
-			
-	        // Show the dialog and wait until the user closes it.
-	        dialogStage.showAndWait();
-	        
-	        // Checks if the music was imported successfully. Closes the application otherwise.
-	        boolean musicImported = controller.isMusicImported();
-	        if (!musicImported) {
-	        	System.exit(0);
-	        }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-    
-    private static void updateLibraryXML(Path musicDirectory) {
-    	// Sets the music directory for the XMLEditor.
-    	XMLEditor.setMusicDirectory(musicDirectory);
-    	
-    	// Checks if songs have to be added, deleted, or both to the xml file and
-    	// performs the corresponding operation.
-    	XMLEditor.addDeleteChecker();
     }
     
     private static Path xmlMusicDirPathFinder() {
@@ -638,7 +308,286 @@ public class MusicPlayer extends Application {
         }
     	return i;
     }
+    
+    private static void updateLibraryXML(Path musicDirectory) {
+    	// Sets the music directory for the XMLEditor.
+    	XMLEditor.setMusicDirectory(musicDirectory);
+    	
+    	// Checks if songs have to be added, deleted, or both to the xml file and
+    	// performs the corresponding operation.
+    	XMLEditor.addDeleteChecker();
+    }
+    
+    private static void createLibraryXML() {    	
+    	try {
+			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
+			BorderPane importView = (BorderPane) loader.load();
+			
+			// Create the dialog Stage.
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Music Player Configuration");
+			// Forces user to focus on dialog.
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			// Sets minimal decorations for dialog.
+			dialogStage.initStyle(StageStyle.UTILITY);
+			// Prevents the alert from being re-sizable.
+			dialogStage.setResizable(false);
+			dialogStage.initOwner(stage);
+			
+			// Sets the import music dialog scene in the stage.
+			dialogStage.setScene(new Scene(importView));
 
+			// Set the dialog into the controller.
+			ImportMusicDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			
+	        // Show the dialog and wait until the user closes it.
+	        dialogStage.showAndWait();
+	        
+	        // Checks if the music was imported successfully. Closes the application otherwise.
+	        boolean musicImported = controller.isMusicImported();
+	        if (!musicImported) {
+	        	System.exit(0);
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    /**
+     * Initializes the main layout.
+     */
+    public void initMain() {
+    	try {
+    		// Load main layout from fxml file.
+    		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "Main.fxml"));
+    		view = (BorderPane) loader.load();
+    		
+    		// Shows the scene containing the layout.
+    		double width = stage.getScene().getWidth();
+    		double height = stage.getScene().getHeight();
+
+    		view.setPrefWidth(width);
+    		view.setPrefHeight(height);
+    		
+    		Scene scene = new Scene(view);
+    		stage.setScene(scene);
+    		
+    		// Gives the controller access to the music player main application.
+    		mainController = loader.getController();
+    		mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
+    		
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    }
+
+    private static class SongSkipper implements Runnable {
+        @Override
+        public void run() {
+            skip();
+        }
+    }
+
+    private static class TimeUpdater extends TimerTask {
+        private int length = (int) getNowPlaying().getLengthInSeconds() * 4;
+
+        @Override
+        public void run() {
+            Platform.runLater(() -> {
+                if (timerCounter < length) {
+                    if (++timerCounter % 4 == 0) {
+                        mainController.updateTimeLabels();
+                        secondsPlayed++;
+                    }
+                    if (!mainController.isTimeSliderPressed()) {
+                    	mainController.updateTimeSlider();
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * Plays selected song.
+     */
+    public static void play() {
+        if (mediaPlayer != null && !isPlaying()) {
+            mediaPlayer.play();
+            timer.scheduleAtFixedRate(new TimeUpdater(), 0, 250);
+            mainController.updatePlayPauseIcon(true);
+        }
+    }
+    
+    /**
+     * Checks if a song is playing.
+     */
+    public static boolean isPlaying() {
+        return mediaPlayer != null && MediaPlayer.Status.PLAYING.equals(mediaPlayer.getStatus());
+    }
+
+    /**
+     * Pauses selected song.
+     */
+    public static void pause() {
+        if (isPlaying()) {
+            mediaPlayer.pause();
+            timer.cancel();
+            timer = new Timer();
+            mainController.updatePlayPauseIcon(false);
+        }
+    }
+
+    public static void seek(int seconds) {
+        if (mediaPlayer != null) {
+            mediaPlayer.seek(new Duration(seconds * 1000));
+            timerCounter = seconds * 4;
+            mainController.updateTimeLabels();
+        }
+    }
+
+    /**
+     * Skips song.
+     */
+    public static void skip() {
+        if (nowPlayingIndex < nowPlayingList.size() - 1) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
+            if (isPlaying) {
+            	play();
+            }
+        } else if (isLoopActive) {
+        	boolean isPlaying = isPlaying();
+        	mainController.updatePlayPauseIcon(isPlaying);
+        	nowPlayingIndex = 0;
+        	setNowPlaying(nowPlayingList.get(nowPlayingIndex));
+        	if (isPlaying) {
+            	play();
+            }
+        } else {
+        	mainController.updatePlayPauseIcon(false);
+            nowPlayingIndex = 0;
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex));
+        }
+    }
+
+    public static void back() {
+        if (timerCounter > 20 || nowPlayingIndex == 0) {
+            mainController.initializeTimeSlider();
+            seek(0);
+        } else {
+        	boolean isPlaying = isPlaying();
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
+            if (isPlaying) {
+            	play();
+            }
+        }
+    }
+    
+    public static void mute(boolean isMuted) {
+    	MusicPlayer.isMuted = !isMuted;
+    	if (mediaPlayer != null) {
+    		mediaPlayer.setMute(!isMuted);
+    	}
+    }
+    
+    public static void toggleLoop() {
+    	isLoopActive = !isLoopActive;
+    }
+    
+    public static boolean isLoopActive() {
+    	return isLoopActive;
+    }
+    
+    public static void toggleShuffle() {
+    	
+    	isShuffleActive = !isShuffleActive;
+    	
+    	if (isShuffleActive) {
+    		Collections.shuffle(nowPlayingList);
+    	} else {
+    		Collections.sort(nowPlayingList, (first, second) -> {
+    			int result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
+    			if (result != 0) {
+    				return result;
+    			}
+    			result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
+    			if (result != 0) {
+    				return result;
+    			}
+    			result = first.compareTo(second);
+    			return result;
+    		});
+    	}
+    	
+    	nowPlayingIndex = nowPlayingList.indexOf(nowPlaying);
+    	
+    	if (mainController.getSubViewController() instanceof NowPlayingController) {
+    		mainController.loadView("nowPlaying");
+    	}
+    }
+    
+    public static boolean isShuffleActive() {
+    	return isShuffleActive;
+    }
+    
+    public static Stage getStage() {
+    	return stage;
+    }
+    
+    /**
+     * Gets main controller object.
+     * @return MainController
+     */
+    public static MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * Gets currently playing song list.
+     * @return arraylist of now playing songs
+     */
+    public static ArrayList<Song> getNowPlayingList() {
+        return nowPlayingList == null ? new ArrayList<Song>() : new ArrayList<Song>(nowPlayingList);
+    }
+
+    public static void setNowPlayingList(List<Song> list) {
+        nowPlayingList = new ArrayList<Song>(list);
+        Library.savePlayingList();
+    }
+
+    public static void setNowPlaying(Song song) {
+        if (nowPlayingList.contains(song)) {
+
+            updatePlayCount();
+            nowPlayingIndex = nowPlayingList.indexOf(song);
+            if (nowPlaying != null) {
+                nowPlaying.setPlaying(false);
+            }
+            nowPlaying = song;
+            nowPlaying.setPlaying(true);
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+            }
+            if (timer != null) {
+                timer.cancel();
+            }
+            timer = new Timer();
+            timerCounter = 0;
+            secondsPlayed = 0;
+            String path = song.getLocation();
+            Media media = new Media(Paths.get(path).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
+            mediaPlayer.setOnEndOfMedia(new SongSkipper());
+            mediaPlayer.setMute(isMuted);
+            mainController.updateNowPlayingButton();
+            mainController.initializeTimeSlider();
+            mainController.initializeTimeLabels();
+        }
+    }
+    
     private static void updatePlayCount() {
         if (nowPlaying != null) {
             int length = (int) nowPlaying.getLengthInSeconds();
@@ -646,5 +595,49 @@ public class MusicPlayer extends Application {
                 nowPlaying.played();
             }
         }
+    }
+    
+    public static Song getNowPlaying() {
+        return nowPlaying;
+    }
+
+    public static String getTimePassed() {
+        int secondsPassed = timerCounter / 4;
+        int minutes = secondsPassed / 60;
+        int seconds = secondsPassed % 60;
+        return Integer.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Integer.toString(seconds));
+    }
+
+    public static String getTimeRemaining() {
+        long secondsPassed = timerCounter / 4;
+        long totalSeconds = getNowPlaying().getLengthInSeconds();
+        long secondsRemaining = totalSeconds - secondsPassed;
+        long minutes = secondsRemaining / 60;
+        long seconds = secondsRemaining % 60;
+        return Long.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Long.toString(seconds));
+    }
+    
+    public static void setDraggedItem(Object item) {
+    	draggedItem = item;
+    }
+    
+    public static Object getDraggedItem() {
+    	return draggedItem;
+    }
+    
+    public static int getXMLFileNum() {
+    	return xmlFileNum;
+    }
+    
+    public static void setXMLFileNum(int i) {
+    	xmlFileNum = i;
+    }
+    
+    public static int getLastIdAssigned() {
+    	return lastIdAssigned;
+    }
+    
+    public static void setLastIdAssigned(int i) {
+    	lastIdAssigned = i;
     }
 }

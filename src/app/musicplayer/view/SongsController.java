@@ -54,110 +54,6 @@ public class SongsController implements Initializable, SubView {
     private Song selectedSong;
     
     @Override
-    public void play() {
-    	
-    	Song song = selectedSong;
-        ObservableList<Song> songList = tableView.getItems();
-        if (MusicPlayer.isShuffleActive()) {
-        	Collections.shuffle(songList);
-        	songList.remove(song);
-        	songList.add(0, song);
-        }
-        MusicPlayer.setNowPlayingList(songList);
-        MusicPlayer.setNowPlaying(song);
-        MusicPlayer.play();
-    }
-    
-    @Override
-    public void scroll(char letter) {
-    	
-    	if (tableView.getSortOrder().size() > 0) {
-    		currentSortColumn = tableView.getSortOrder().get(0).getId();
-    		currentSortOrder = tableView.getSortOrder().get(0).getSortType().toString().toLowerCase();
-    	}
-    	
-    	// Retrieves songs from table.
-    	ObservableList<Song> songTableItems = tableView.getItems();
-    	// Initializes counter for cells. Used to determine what cell to scroll to.
-    	int selectedCell = 0;
-    	int selectedLetterCount = 0;
-    	
-    	// Retrieves the table view scroll bar.
-    	if (scrollBar == null) {
-    		scrollBar = (ScrollBar) tableView.lookup(".scroll-bar");
-    	}
-    	
-    	if (currentSortColumn.equals("titleColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Gets song title and compares first letter to selected letter.
-        		String songTitle = songTableItems.get(i).getTitle();
-        		try {
-					char firstLetter = songTitle.charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-//					System.out.println("Null Song Title");
-				}
-        		
-        	}
-    	} else if (currentSortColumn.equals("artistColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from song artist and compares it to selected letter.
-        		String songArtist = songTableItems.get(i).getArtist();
-        		try {
-					char firstLetter = removeArticle(songArtist).charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-					System.out.println("Null Song Artist");
-				}
-        	}
-    	} else if (currentSortColumn.equals("albumColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from song album and compares it to selected letter.
-        		String songAlbum = songTableItems.get(i).getAlbum();
-        		try {
-					char firstLetter = removeArticle(songAlbum).charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-					System.out.println("Null Song Album");
-				}
-        	}
-    	}
-    	
-    	double startVvalue = scrollBar.getValue();
-    	double finalVvalue;
-    	
-    	if ("descending".equals(currentSortOrder)) {
-    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount) * 50 - scrollBar.getHeight()) /
-    				(songTableItems.size() * 50 - scrollBar.getHeight()));
-    	} else {
-    		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
-    	}
-    	
-    	Animation scrollAnimation = new Transition() {
-            {
-                setCycleDuration(Duration.millis(500));
-            }
-            protected void interpolate(double frac) {
-                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollBar.setValue(vValue);
-            }
-        };
-        scrollAnimation.play();
-    }
-
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
     	tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -321,33 +217,131 @@ public class SongsController implements Initializable, SubView {
         });
     }
     
-    public Song getSelectedSong() {
-    	return selectedSong;
+    private int compareSongs(Song x, Song y) {
+    	if (x == null && y == null) {
+    		return 0;
+    	} else if (x == null) {
+    		return 1;
+    	} else if (y == null) {
+    		return -1;
+    	}
+    	if (x.getTitle() == null && y.getTitle() == null) {
+    		// Both are equal.
+    		return 0;
+    	} else if (x.getTitle() == null) {
+    		// Null is after other strings.
+    		return 1;
+		} else if (y.getTitle() == null) {
+			// All other strings are before null.
+			return -1;
+		} else  /*(x.getTitle() != null && y.getTitle() != null)*/ {
+			return x.getTitle().compareTo(y.getTitle());
+		}
+	}
+    
+    @Override
+    public void play() {
+    	
+    	Song song = selectedSong;
+        ObservableList<Song> songList = tableView.getItems();
+        if (MusicPlayer.isShuffleActive()) {
+        	Collections.shuffle(songList);
+        	songList.remove(song);
+        	songList.add(0, song);
+        }
+        MusicPlayer.setNowPlayingList(songList);
+        MusicPlayer.setNowPlaying(song);
+        MusicPlayer.play();
     }
     
-    private int compareSongs(Song x, Song y) {
-			
-			if (x == null && y == null) {
-				return 0;
-			} else if (x == null) {
-				return 1;
-			} else if (y == null) {
-				return -1;
-			}
-			
-			if (x.getTitle() == null && y.getTitle() == null) {
-				// Both are equal.
-				return 0;
-			} else if (x.getTitle() == null) {
-				// Null is after other strings.
-				return 1;
-			} else if (y.getTitle() == null) {
-				// All other strings are before null.
-				return -1;
-			} else  /*(x.getTitle() != null && y.getTitle() != null)*/ {
-				return x.getTitle().compareTo(y.getTitle());
-			}
-	}
+    @Override
+    public void scroll(char letter) {
+    	
+    	if (tableView.getSortOrder().size() > 0) {
+    		currentSortColumn = tableView.getSortOrder().get(0).getId();
+    		currentSortOrder = tableView.getSortOrder().get(0).getSortType().toString().toLowerCase();
+    	}
+    	
+    	// Retrieves songs from table.
+    	ObservableList<Song> songTableItems = tableView.getItems();
+    	// Initializes counter for cells. Used to determine what cell to scroll to.
+    	int selectedCell = 0;
+    	int selectedLetterCount = 0;
+    	
+    	// Retrieves the table view scroll bar.
+    	if (scrollBar == null) {
+    		scrollBar = (ScrollBar) tableView.lookup(".scroll-bar");
+    	}
+    	
+    	if (currentSortColumn.equals("titleColumn")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Gets song title and compares first letter to selected letter.
+        		String songTitle = songTableItems.get(i).getTitle();
+        		try {
+					char firstLetter = songTitle.charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
+					}
+				} catch (NullPointerException npe) {
+//					System.out.println("Null Song Title");
+				}
+        		
+        	}
+    	} else if (currentSortColumn.equals("artistColumn")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from song artist and compares it to selected letter.
+        		String songArtist = songTableItems.get(i).getArtist();
+        		try {
+					char firstLetter = removeArticle(songArtist).charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
+					}
+				} catch (NullPointerException npe) {
+					System.out.println("Null Song Artist");
+				}
+        	}
+    	} else if (currentSortColumn.equals("albumColumn")) {
+        	for (int i = 0; i < songTableItems.size(); i++) {
+        		// Removes article from song album and compares it to selected letter.
+        		String songAlbum = songTableItems.get(i).getAlbum();
+        		try {
+					char firstLetter = removeArticle(songAlbum).charAt(0);
+					if (firstLetter < letter) {
+						selectedCell++;
+					} else if (firstLetter == letter) {
+						selectedLetterCount ++;
+					}
+				} catch (NullPointerException npe) {
+					System.out.println("Null Song Album");
+				}
+        	}
+    	}
+    	
+    	double startVvalue = scrollBar.getValue();
+    	double finalVvalue;
+    	
+    	if ("descending".equals(currentSortOrder)) {
+    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount) * 50 - scrollBar.getHeight()) /
+    				(songTableItems.size() * 50 - scrollBar.getHeight()));
+    	} else {
+    		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
+    	}
+    	
+    	Animation scrollAnimation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(500));
+            }
+            protected void interpolate(double frac) {
+                double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
+                scrollBar.setValue(vValue);
+            }
+        };
+        scrollAnimation.play();
+    }
     
     private String removeArticle(String title) {
 
@@ -369,5 +363,9 @@ public class SongsController implements Initializable, SubView {
                     return title;
             }
         }
+    }
+    
+    public Song getSelectedSong() {
+    	return selectedSong;
     }
 }
