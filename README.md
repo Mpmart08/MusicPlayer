@@ -2,6 +2,8 @@
 
 MusicPlayer is an open source music player for Windows.
 
+![MusicPlayer](https://cloud.githubusercontent.com/assets/9737241/15847521/d1f4d14c-2c43-11e6-87be-7c6e24109a1e.PNG)
+
 
 ## Features
 
@@ -72,5 +74,3 @@ The project was built in eclipse with the following directory structure.
 * `releases`: Contains the JAR file for the latest release
 
 * `src`: Contains project source code
-
-* `screenshots`: Contains screenshots used in the README
