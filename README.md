@@ -69,8 +69,13 @@ case "ram":
 
 The project was built in eclipse with the following directory structure.
 
-* `lib`: Contains jaudiotagger library
+* `lib`: Contains [jaudiotagger](https://bitbucket.org/ijabz/jaudiotagger/overview) library used for audio metatagging.
 
 * `releases`: Contains the JAR file for the latest release
 
 * `src`: Contains project source code
+
+
+## License
+
+Code released under the MIT license. See [LICENSE](https://github.com/Mpmart08/MusicPlayer/blob/master/LICENSE) for details.
