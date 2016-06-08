@@ -225,3 +225,11 @@
     -fx-border-width: 2;
     -fx-border-color: #dadada;
 }
+
+.menu-item:focused {
+    -fx-background-color: #dadada;
+}
+
+.menu-item:pressed {
+    -fx-background-color: #c2c2c2;
+}
