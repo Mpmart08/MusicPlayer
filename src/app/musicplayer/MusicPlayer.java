@@ -3,6 +3,8 @@ package app.musicplayer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,6 +83,14 @@ public class MusicPlayer extends Application {
     	
     	// Suppresses warning caused by converting music library data into xml file. 
         LogManager.getLogManager().reset();
+        PrintStream dummyStream = new PrintStream(new OutputStream() {
+            public void write(int b) {
+                //do nothing
+            }
+        });
+        System.setOut(dummyStream);
+        System.setErr(dummyStream);
+        
         timer = new Timer();
         timerCounter = 0;
         secondsPlayed = 0;

@@ -178,9 +178,12 @@ public class XMLEditor {
 	}
 	
 	private static void addSongToXML() {
-		
 		// Initializes the array list with song objects to add to the xml file.
 		ArrayList<Song> songsToAdd = createNewSongObject();
+		
+		if (songsToAdd.size() == 0) {
+			return;
+		}
 		
         try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
