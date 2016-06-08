@@ -78,4 +78,4 @@ The project was built in eclipse with the following directory structure.
 
 ## License
 
-Code released under the MIT license. See [LICENSE](https://github.com/Mpmart08/MusicPlayer/blob/master/LICENSE) for details.
+Code released under the MIT license. See [LICENSE](https://github.com/Mpmart08/MusicPlayer/blob/master/LICENSE.txt) for details.
