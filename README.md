@@ -29,7 +29,7 @@ MusicPlayer is an open source music player for Windows.
 
 4. Create a desktop shortcut for `MusicPlayer.jar`.
 
-5. Download `MusicPlayer_Icon.png` from the `releases` directory and set it as the icon for the desktop shortcut.
+5. Download `MusicPlayer_Icon.ico` from the `releases` directory and set it as the icon for the desktop shortcut.
 
 
 ## Supported File Types
