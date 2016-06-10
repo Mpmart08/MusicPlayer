@@ -120,8 +120,8 @@ public class MusicPlayer extends Application {
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
         } catch (Exception ex) {
-        	System.exit(0);
         	ex.printStackTrace();
+        	System.exit(0);
         }
         
         Thread thread = new Thread(() -> {
@@ -215,16 +215,29 @@ public class MusicPlayer extends Application {
     		// It is then passed as an argument when creating the directory watch.
         	musicDirectory = xmlMusicDirPathFinder();
     		
-    		// Gets the number of files saved in the xml file and the number of files in the music directory.
-    		xmlFileNum = xmlMusicDirFileNumFinder();
-    		musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+        	// Try/catch block to deal with case where music directory has been renamed.
+    		try {
+    			// Gets the number of files in the music directory and the number of files saved in the xml file.
+    			// These values will be compared to determine if the xml file needs to be updated.
+				musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0); 
+	    		xmlFileNum = xmlMusicDirFileNumFinder();
+				
+				// If the number of files stored in the xml file is not the same as the number of files in the music directory.
+				// Music library has changed; update the xml file.
+				if (musicDirFileNum != xmlFileNum) {
+					// Updates the xml file from the saved music directory.
+					updateLibraryXML(musicDirectory);
+				}
+				// NullPointerException thrown by musicDirFileNumFinder().
+				// It occurs if the music directory has been renamed
+			} catch (NullPointerException npe) {
+	    		createLibraryXML();
+	    		// Gets the number of files saved in the xml file.
+	    		xmlFileNum = xmlMusicDirFileNumFinder();
+	    		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
+	        	musicDirectory = xmlMusicDirPathFinder();
+			}
     		
-    		// If the number of files stored in the xml file is not the same as the number of files in the music directory.
-    		// Music library has changed; update the xml file.
-    		if (musicDirFileNum != xmlFileNum) {
-    			// Updates the xml file from the saved music directory.
-    			updateLibraryXML(musicDirectory);
-    		}
         	// If the library.xml file does not exist, the file is created from the user specified music library location.
     	} else if (!libraryXML.exists()) {
     		createLibraryXML();
