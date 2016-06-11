@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 
+import com.melloware.jintellitype.IntellitypeListener;
+import com.melloware.jintellitype.JIntellitype;
+
 import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Album;
 import app.musicplayer.model.Artist;
@@ -51,10 +54,6 @@ import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
-import com.melloware.jintellitype.HotkeyListener;
-import com.melloware.jintellitype.IntellitypeListener;
-import com.melloware.jintellitype.JIntellitype;
 
 public class MainController implements Initializable, IntellitypeListener {
 
