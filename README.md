@@ -1,6 +1,6 @@
 # MusicPlayer
 
-MusicPlayer is an open source music player for Windows.
+MusicPlayer is an open source music player for Mac and Windows.
 
 ![MusicPlayer](https://cloud.githubusercontent.com/assets/9737241/15847521/d1f4d14c-2c43-11e6-87be-7c6e24109a1e.PNG)
 
@@ -41,27 +41,9 @@ case "mp3":
 // MP4
 case "mp4":
 case "m4a":
-case "m4p":
-case "m4b":
-case "m4r":
 case "m4v":
-// OGG VORBIS
-case "ogg":
-case "oga":
-case "ogx":
-case "ogm":
-case "spx":
-case "opus":
-// FLAC
-case "flac":
 // WAV
 case "wav":
-case "wave":
-// WMA
-case "wma":
-// REAL
-case "ra":
-case "ram":
 ```
 
 

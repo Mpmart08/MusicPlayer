@@ -227,27 +227,9 @@ public final class Library {
     	// MP4
     	case "mp4":
     	case "m4a":
-    	case "m4p":
-    	case "m4b":
-    	case "m4r":
     	case "m4v":
-    	// OGG VORBIS
-    	case "ogg":
-    	case "oga":
-    	case "ogx":
-    	case "ogm":
-    	case "spx":
-    	case "opus":
-    	// FLAC
-    	case "flac":
     	// WAV
     	case "wav":
-    	case "wave":
-    	// WMA
-    	case "wma":
-    	// REAL
-    	case "ra":
-    	case "ram":
     		return true;
     	default:
     		return false;
