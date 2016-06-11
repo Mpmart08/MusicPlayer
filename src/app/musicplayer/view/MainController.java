@@ -52,7 +52,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class MainController implements Initializable {
+import com.melloware.jintellitype.HotkeyListener;
+import com.melloware.jintellitype.IntellitypeListener;
+import com.melloware.jintellitype.JIntellitype;
+
+public class MainController implements Initializable, IntellitypeListener {
 
 	private boolean isSideBarExpanded = true;
     private double expandedWidth = 250;
@@ -159,8 +163,29 @@ public class MainController implements Initializable {
         initializeTimeLabels();
         initializePlaylists();
         
+        // register media keys on Windows
+        JIntellitype.getInstance().addIntellitypeListener(this);
+        
         // Loads the default view: artists.
         loadView("artists");
+    }
+    
+    @Override
+    public void onIntellitype(int key) {
+    	// skip/play/pause/back using Windows media keys
+    	Platform.runLater(() -> {
+    		switch (key) {
+        	case JIntellitype.APPCOMMAND_MEDIA_NEXTTRACK:
+        		skip();
+        		break;
+        	case JIntellitype.APPCOMMAND_MEDIA_PLAY_PAUSE:
+        		playPause();
+        		break;
+        	case JIntellitype.APPCOMMAND_MEDIA_PREVIOUSTRACK:
+        		back();
+        		break;
+        	}
+    	});
     }
     
     public void resetLatch() {
