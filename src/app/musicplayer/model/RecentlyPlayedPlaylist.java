@@ -20,7 +20,6 @@ public class RecentlyPlayedPlaylist extends Playlist {
         try {
 			return FXCollections.observableArrayList(songs.subList(0, 100));
 		} catch (Exception e) {
-			e.printStackTrace();
 			return FXCollections.observableArrayList(songs.subList(0, Library.getSongs().size() - 1));
 		}
     }

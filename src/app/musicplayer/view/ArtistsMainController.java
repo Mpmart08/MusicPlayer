@@ -44,6 +44,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
@@ -444,6 +445,13 @@ public class ArtistsMainController implements Initializable, SubView {
         	if (newSelection != null && songTable.getSelectionModel().getSelectedIndices().size() == 1) {
         		newSelection.setSelected(true);
         		selectedSong = newSelection;
+        	}
+        });
+        
+        // Plays selected song when enter key is pressed.
+        songTable.setOnKeyPressed(event -> {
+        	if (event.getCode().equals(KeyCode.ENTER)) {
+        		play();
         	}
         });
         

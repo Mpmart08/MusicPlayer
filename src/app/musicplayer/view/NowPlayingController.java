@@ -27,6 +27,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 
@@ -174,6 +175,13 @@ public class NowPlayingController implements Initializable, SubView {
         	if (newSelection != null && tableView.getSelectionModel().getSelectedIndices().size() == 1) {
         		newSelection.setSelected(true);
         		selectedSong = newSelection;
+        	}
+        });
+        
+        // Plays selected song when enter key is pressed.
+        tableView.setOnKeyPressed(event -> {
+        	if (event.getCode().equals(KeyCode.ENTER)) {
+        		play();
         	}
         });
     }
