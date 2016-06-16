@@ -131,6 +131,7 @@ public class AlbumsController implements Initializable, SubView {
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         
         songTable.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	songTable.requestFocus();
         	event.consume();
         });
         

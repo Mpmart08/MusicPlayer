@@ -70,6 +70,7 @@ public class NowPlayingController implements Initializable, SubView {
         playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
         
         tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	tableView.requestFocus();
         	event.consume();
         });
 

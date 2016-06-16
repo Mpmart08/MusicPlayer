@@ -82,6 +82,7 @@ public class SongsController implements Initializable, SubView {
         playsColumn.setSortable(false);
         
         tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	tableView.requestFocus();
         	event.consume();
         });
         

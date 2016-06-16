@@ -219,6 +219,7 @@ public class ArtistsMainController implements Initializable, SubView {
         });
         
         songTable.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        	songTable.requestFocus();
         	event.consume();
         });
 
