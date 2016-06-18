@@ -8,14 +8,14 @@ import javafx.collections.ObservableList;
 
 public class MostPlayedPlaylist extends Playlist {
 
-    public MostPlayedPlaylist(int id) {
+    MostPlayedPlaylist(int id) {
         super(id, "Most Played");
     }
 
     @Override
     public ObservableList<Song> getSongs() {
 
-        ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
+        ArrayList<Song> songs = new ArrayList<>(Library.getSongs());
         Collections.sort(songs, (x, y) -> Integer.compare(y.getPlayCount(), x.getPlayCount()));
         try {
 			return FXCollections.observableArrayList(songs.subList(0, 100));

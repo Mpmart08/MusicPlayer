@@ -35,7 +35,7 @@ public final class Album implements Comparable<Album> {
     /**
      * Constructor for the Album class. 
      * Creates an album object and obtains the album artwork.
-     * 
+     *
      * @param id
      * @param title
      * @param artist
@@ -46,12 +46,12 @@ public final class Album implements Comparable<Album> {
         this.title = title;
         this.artist = artist;
         this.songs = songs;
-        this.artworkProperty = new SimpleObjectProperty<Image>(getArtwork());
+        this.artworkProperty = new SimpleObjectProperty<>(getArtwork());
     }
 
     /**
      * Gets album ID.
-     * 
+     *
      * @return album ID
      */
     public int getId() {
@@ -60,7 +60,7 @@ public final class Album implements Comparable<Album> {
 
     /**
      * Gets album title
-     * 
+     *
      * @return album title
      */
     public String getTitle() {
@@ -72,16 +72,16 @@ public final class Album implements Comparable<Album> {
     }
 
     public ArrayList<Song> getSongs() {
-        return new ArrayList<Song>(this.songs);
+        return new ArrayList<>(this.songs);
     }
-    
+
     public ObjectProperty<Image> artworkProperty() {
-    	return this.artworkProperty;
+        return this.artworkProperty;
     }
 
     public Image getArtwork() {
         if (this.artwork == null) {
-        	
+
             try {
                 String location = this.songs.get(0).getLocation();
                 AudioFile audioFile = AudioFileIO.read(new File(location));
@@ -89,14 +89,14 @@ public final class Album implements Comparable<Album> {
                 byte[] bytes = tag.getFirstArtwork().getBinaryData();
                 ByteArrayInputStream in = new ByteArrayInputStream(bytes);
                 this.artwork = new Image(in, 300, 300, true, true);
-                
+
                 if (this.artwork.isError()) {
-                	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
+                    this.artwork = new Image(Resources.IMG + "albumsIcon.png");
                 }
-                
+
             } catch (Exception ex) {
-            	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
-            } 
+                this.artwork = new Image(Resources.IMG + "albumsIcon.png");
+            }
         }
         return this.artwork;
     }
@@ -105,10 +105,10 @@ public final class Album implements Comparable<Album> {
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             URL xmlData = new URL(Resources.APIBASE
-                + "method=album.getinfo"
-                + "&artist=" + URLEncoder.encode(this.artist, "UTF-8")
-                + "&album=" + URLEncoder.encode(this.title, "UTF-8")
-                + "&api_key=" + Resources.APIKEY);
+                    + "method=album.getinfo"
+                    + "&artist=" + URLEncoder.encode(this.artist, "UTF-8")
+                    + "&album=" + URLEncoder.encode(this.title, "UTF-8")
+                    + "&api_key=" + Resources.APIKEY);
 
             XMLStreamReader reader = factory.createXMLStreamReader(xmlData.openStream(), "UTF-8");
 
@@ -117,15 +117,15 @@ public final class Album implements Comparable<Album> {
                 reader.next();
 
                 if (reader.isStartElement()
-                    && reader.getName().getLocalPart().equals("image")
-                    && reader.getAttributeValue(0).equals("extralarge")) {
+                        && reader.getName().getLocalPart().equals("image")
+                        && reader.getAttributeValue(0).equals("extralarge")) {
 
                     reader.next();
 
                     if (reader.hasText()) {
                         BufferedImage bufferedImage = ImageIO.read(new URL(reader.getText()));
                         BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
-                            bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                                bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
                         newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
                         File file = File.createTempFile("temp", "temp");
                         ImageIO.write(newBufferedImage, "jpg", file);
@@ -151,14 +151,14 @@ public final class Album implements Comparable<Album> {
             byte[] bytes = tag.getFirstArtwork().getBinaryData();
             ByteArrayInputStream in = new ByteArrayInputStream(bytes);
             this.artwork = new Image(in, 300, 300, true, true);
-            
+
             if (this.artwork.isError()) {
-            	
-            	this.artwork = new Image(Resources.IMG + "albumsIcon.png");
+
+                this.artwork = new Image(Resources.IMG + "albumsIcon.png");
             }
-            
+
             this.artworkProperty.setValue(artwork);
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
