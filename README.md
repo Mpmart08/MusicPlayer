@@ -18,6 +18,7 @@ MusicPlayer is an open source music player for Mac and Windows.
 
 ##### Compatible with Media Keys on Keyboard
 * The `Play/Pause`, `Next`, and `Previous` media keys can be used to play, pause, or skip songs.
+* Please note that this feature is only available on Windows.
 
 
 ## Installation Instructions
