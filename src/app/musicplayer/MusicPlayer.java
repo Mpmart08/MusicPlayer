@@ -29,7 +29,6 @@ import app.musicplayer.view.MainController;
 import app.musicplayer.view.NowPlayingController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -40,7 +39,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class MusicPlayer extends Application {
@@ -59,15 +57,11 @@ public class MusicPlayer extends Application {
     private static Object draggedItem;
 
     private static Stage stage;
-    private static BorderPane view;
 
-    private static Path musicDirectory;
-
-    // Stores the number of files in library.xml and in the music directory.
-    // These are compared when starting up the application to determine if the xml file needs to be updated
-    // by adding song to it or deleting them.
+    // Stores the number of files in library.xml.
+    // This will then be compared to the number of files in the music directory when starting up the application to
+    // determine if the xml file needs to be updated by adding or deleting songs.
     private static int xmlFileNum;
-    private static int musicDirFileNum;
 
     // Stores the last id that was assigned to a song.
     // This is important when adding new songs after others have been deleted because the last id assigned
@@ -98,18 +92,15 @@ public class MusicPlayer extends Application {
         MusicPlayer.stage = stage;
         MusicPlayer.stage.setTitle("Music Player");
         MusicPlayer.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Icon.png").toString()));
-        MusicPlayer.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
+        MusicPlayer.stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
         });
 
         try {
             // Load main layout from fxml file.
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
-            VBox view = (VBox) loader.load();
+            VBox view = loader.load();
 
             // Shows the scene containing the layout.
             Scene scene = new Scene(view);
@@ -168,15 +159,11 @@ public class MusicPlayer extends Application {
             if (!imgFolder.exists()) {
 
                 Thread thread1 = new Thread(() -> {
-                    for (Artist artist : Library.getArtists()) {
-                        artist.downloadArtistImage();
-                    }
+                    Library.getArtists().forEach(Artist::downloadArtistImage);
                 });
 
                 Thread thread2 = new Thread(() -> {
-                    for (Album album : Library.getAlbums()) {
-                        album.downloadArtwork();
-                    }
+                    Library.getAlbums().forEach(Album::downloadArtwork);
                 });
 
                 thread1.start();
@@ -184,9 +171,7 @@ public class MusicPlayer extends Application {
             }
 
             // Calls the function to initialize the main layout.
-            Platform.runLater(() -> {
-                initMain();
-            });
+            Platform.runLater(this::initMain);
         });
 
         thread.start();
@@ -209,6 +194,7 @@ public class MusicPlayer extends Application {
         File libraryXML = new File(Resources.JAR + "library.xml");
 
         // If the file exists, check if the music directory has changed.
+        Path musicDirectory;
         if (libraryXML.exists()) {
             // Gets music directory path from xml file so that the number of files in the
             // music directory can be counted and compared to the data in the xml file.
@@ -219,7 +205,7 @@ public class MusicPlayer extends Application {
             try {
                 // Gets the number of files in the music directory and the number of files saved in the xml file.
                 // These values will be compared to determine if the xml file needs to be updated.
-                musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+                int musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
                 xmlFileNum = xmlMusicDirFileNumFinder();
 
                 // If the number of files stored in the xml file is not the same as the number of files in the music directory.
@@ -274,9 +260,7 @@ public class MusicPlayer extends Application {
             // Closes xml reader.
             reader.close();
 
-            // Gets the directory and watches for file creation, deletion, or modification.
-            Path directory = Paths.get(path);
-            return directory;
+            return Paths.get(path);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -344,7 +328,7 @@ public class MusicPlayer extends Application {
     private static void createLibraryXML() {
         try {
             FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
-            BorderPane importView = (BorderPane) loader.load();
+            BorderPane importView = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -380,11 +364,11 @@ public class MusicPlayer extends Application {
     /**
      * Initializes the main layout.
      */
-    public void initMain() {
+    private void initMain() {
         try {
             // Load main layout from fxml file.
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "Main.fxml"));
-            view = (BorderPane) loader.load();
+            BorderPane view = loader.load();
 
             // Shows the scene containing the layout.
             double width = stage.getScene().getWidth();
@@ -572,11 +556,11 @@ public class MusicPlayer extends Application {
      * @return arraylist of now playing songs
      */
     public static ArrayList<Song> getNowPlayingList() {
-        return nowPlayingList == null ? new ArrayList<Song>() : new ArrayList<Song>(nowPlayingList);
+        return nowPlayingList == null ? new ArrayList<>() : new ArrayList<>(nowPlayingList);
     }
 
     public static void setNowPlayingList(List<Song> list) {
-        nowPlayingList = new ArrayList<Song>(list);
+        nowPlayingList = new ArrayList<>(list);
         Library.savePlayingList();
     }
 
