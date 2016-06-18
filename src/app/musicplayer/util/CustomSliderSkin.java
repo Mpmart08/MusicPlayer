@@ -1,20 +1,17 @@
 package app.musicplayer.util;
 
+import com.sun.javafx.scene.control.behavior.SliderBehavior;
+import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-
-import com.sun.javafx.scene.control.behavior.SliderBehavior;
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
 
 /**
  * Region/css based skin for slider.
@@ -29,7 +26,6 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
 
     private boolean showTickMarks;
     private double thumbWidth;
-    private double thumbHeight;
 
     private double trackStart;
     private double trackLength;
@@ -67,58 +63,46 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         getChildren().clear();
         getChildren().addAll(track, thumb);
         setShowTickMarks(getSkinnable().isShowTickMarks(), getSkinnable().isShowTickLabels());
-        track.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-            	trackClicked = true;
-                getBehavior().trackPress(me, (me.getX() / trackLength));
-                getBehavior().thumbPressed(me, 0.0f);
-                dragStart = track.localToParent(me.getX(), me.getY());
-                preDragThumbPos = (me.getX() / trackLength);
-                thumbPressAnimation.play();
-            }
+        track.setOnMousePressed(me -> {
+            trackClicked = true;
+            getBehavior().trackPress(me, (me.getX() / trackLength));
+            getBehavior().thumbPressed(me, 0.0f);
+            dragStart = track.localToParent(me.getX(), me.getY());
+            preDragThumbPos = (me.getX() / trackLength);
+            thumbPressAnimation.play();
         });
 
-        track.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-                getBehavior().thumbReleased(me);
-                trackClicked = false;
-                thumbReleaseAnimation.play();
-            }
+        track.setOnMouseReleased(me -> {
+            getBehavior().thumbReleased(me);
+            trackClicked = false;
+            thumbReleaseAnimation.play();
         });
 
-        track.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-                Point2D cur = track.localToParent(me.getX(), me.getY());
-                double dragPos = (getSkinnable().getOrientation() == Orientation.HORIZONTAL)?
-                    cur.getX() - dragStart.getX() : -(cur.getY() - dragStart.getY());
-                getBehavior().thumbDragged(me, preDragThumbPos + dragPos / trackLength);
-            }
+        track.setOnMouseDragged(me -> {
+            Point2D cur = track.localToParent(me.getX(), me.getY());
+            double dragPos = (getSkinnable().getOrientation() == Orientation.HORIZONTAL)?
+                cur.getX() - dragStart.getX() : -(cur.getY() - dragStart.getY());
+            getBehavior().thumbDragged(me, preDragThumbPos + dragPos / trackLength);
         });
 
-        thumb.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-                getBehavior().thumbPressed(me, 0.0f);
-                dragStart = thumb.localToParent(me.getX(), me.getY());
-                preDragThumbPos = (getSkinnable().getValue() - getSkinnable().getMin()) /
-                        (getSkinnable().getMax() - getSkinnable().getMin());
-                thumbPressAnimation.play();
-            }
+        thumb.setOnMousePressed(me -> {
+            getBehavior().thumbPressed(me, 0.0f);
+            dragStart = thumb.localToParent(me.getX(), me.getY());
+            preDragThumbPos = (getSkinnable().getValue() - getSkinnable().getMin()) /
+                    (getSkinnable().getMax() - getSkinnable().getMin());
+            thumbPressAnimation.play();
         });
 
-        thumb.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-                getBehavior().thumbReleased(me);
-                thumbReleaseAnimation.play();
-            }
+        thumb.setOnMouseReleased(me -> {
+            getBehavior().thumbReleased(me);
+            thumbReleaseAnimation.play();
         });
 
-        thumb.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent me) {
-                Point2D cur = thumb.localToParent(me.getX(), me.getY());
-                double dragPos = (getSkinnable().getOrientation() == Orientation.HORIZONTAL)?
-                    cur.getX() - dragStart.getX() : -(cur.getY() - dragStart.getY());
-                getBehavior().thumbDragged(me, preDragThumbPos + dragPos / trackLength);
-            }
+        thumb.setOnMouseDragged(me -> {
+            Point2D cur = thumb.localToParent(me.getX(), me.getY());
+            double dragPos = (getSkinnable().getOrientation() == Orientation.HORIZONTAL)?
+                cur.getX() - dragStart.getX() : -(cur.getY() - dragStart.getY());
+            getBehavior().thumbDragged(me, preDragThumbPos + dragPos / trackLength);
         });
     }
     
@@ -166,7 +150,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
     	return track;
     }
 
-    StringConverter<Number> stringConverterWrapper = new StringConverter<Number>() {
+    private StringConverter<Number> stringConverterWrapper = new StringConverter<Number>() {
         Slider slider = getSkinnable();
         @Override public String toString(Number object) {
             return(object != null) ? slider.getLabelFormatter().toString(object.doubleValue()) : "";
@@ -224,7 +208,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
     /**
      * Called when ever either min, max or value changes, so thumb's layoutX, Y is recomputed.
      */
-    void positionThumb(final boolean animate) {
+    private void positionThumb(final boolean animate) {
         Slider s = getSkinnable();
         if (s.getValue() > s.getMax()) return;// this can happen if we are bound to something 
         boolean horizontal = s.getOrientation() == Orientation.HORIZONTAL;
@@ -264,7 +248,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
          // calculate the available space
         // resize thumb to preferred size
         thumbWidth = snapSize(thumb.prefWidth(-1));
-        thumbHeight = snapSize(thumb.prefHeight(-1));
+        double thumbHeight = snapSize(thumb.prefHeight(-1));
         thumb.resize(thumbWidth, thumbHeight);
         // we are assuming the is common radius's for all corners on the track
         double trackRadius = track.getBackground() == null ? 0 : track.getBackground().getFills().size() > 0 ?
@@ -273,13 +257,13 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         if (getSkinnable().getOrientation() == Orientation.HORIZONTAL) {
             double tickLineHeight =  (showTickMarks) ? tickLine.prefHeight(-1) : 0;
             double trackHeight = snapSize(track.prefHeight(-1));
-            double trackAreaHeight = Math.max(trackHeight,thumbHeight);
+            double trackAreaHeight = Math.max(trackHeight, thumbHeight);
             double totalHeightNeeded = trackAreaHeight  + ((showTickMarks) ? trackToTickGap+tickLineHeight : 0);
             double startY = y + ((h - totalHeightNeeded)/2); // center slider in available height vertically
             trackLength = snapSize(w - thumbWidth);
             trackStart = snapPosition(x + (thumbWidth/2));
             double trackTop = (int)(startY + ((trackAreaHeight-trackHeight)/2));
-            thumbTop = (int)(startY + ((trackAreaHeight-thumbHeight)/2));
+            thumbTop = (int)(startY + ((trackAreaHeight- thumbHeight)/2));
 
             positionThumb(false);
             // layout track
@@ -307,7 +291,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
             double totalWidthNeeded = trackAreaWidth  + ((showTickMarks) ? trackToTickGap+tickLineWidth : 0) ;
             double startX = x + ((w - totalWidthNeeded)/2); // center slider in available width horizontally
             trackLength = snapSize(h - thumbHeight);
-            trackStart = snapPosition(y + (thumbHeight/2));
+            trackStart = snapPosition(y + (thumbHeight /2));
             double trackLeft = (int)(startX + ((trackAreaWidth-trackWidth)/2));
             thumbLeft = (int)(startX + ((trackAreaWidth-thumbWidth)/2));
 
@@ -333,7 +317,7 @@ public class CustomSliderSkin extends BehaviorSkinBase<Slider, SliderBehavior> {
         }
     }
 
-    double minTrackLength() {
+    private double minTrackLength() {
         return 2*thumb.prefWidth(-1);
     }
 

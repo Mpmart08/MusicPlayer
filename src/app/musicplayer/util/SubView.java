@@ -4,7 +4,7 @@ import app.musicplayer.model.Song;
 
 public interface SubView {
 
-	public void scroll(char letter);
-	public void play();
-	public Song getSelectedSong();
+	void scroll(char letter);
+	void play();
+	Song getSelectedSong();
 }
