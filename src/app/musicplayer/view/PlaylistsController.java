@@ -64,7 +64,7 @@ public class PlaylistsController implements Initializable, SubView {
     // Used to store the individual playlist boxes from the playlistBox. 
     private HBox cell;
     
-    public Animation deletePlaylistAnimation = new Transition() {
+    private Animation deletePlaylistAnimation = new Transition() {
     	{
             setCycleDuration(Duration.millis(500));
             setInterpolator(Interpolator.EASE_BOTH);
@@ -89,19 +89,19 @@ public class PlaylistsController implements Initializable, SubView {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
-        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
-        artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+        playingColumn.setCellFactory(x -> new PlayingTableCell<>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<>());
+        artistColumn.setCellFactory(x -> new ClippedTableCell<>());
+        albumColumn.setCellFactory(x -> new ClippedTableCell<>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<>());
 
-        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
-        albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
-        playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        playingColumn.setCellValueFactory(new PropertyValueFactory<>("playing"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        playsColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
         
         tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
         	tableView.requestFocus();
@@ -110,13 +110,12 @@ public class PlaylistsController implements Initializable, SubView {
 
         tableView.setRowFactory(x -> {
 
-            TableRow<Song> row = new TableRow<Song>();
+            TableRow<Song> row = new TableRow<>();
 
             PseudoClass playing = PseudoClass.getPseudoClass("playing");
 
-            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(playing, newValue.booleanValue());
-            };
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) ->
+                    row.pseudoClassStateChanged(playing, newValue);
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
             	if (previousSong != null) {
@@ -135,7 +134,7 @@ public class PlaylistsController implements Initializable, SubView {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
                 } else if (event.isShiftDown()) {
-                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	ArrayList<Integer> indices = new ArrayList<>(sm.getSelectedIndices());
                 	if (indices.size() < 1) {
                 		if (indices.contains(row.getIndex())) {
                     		sm.clearSelection(row.getIndex());
@@ -231,7 +230,7 @@ public class PlaylistsController implements Initializable, SubView {
         MusicPlayer.play();
     }
 
-    public void selectPlaylist(Playlist playlist) {
+    void selectPlaylist(Playlist playlist) {
     	// Displays the delete button only if the user has not selected one of the default playlists.
     	if (playlist instanceof MostPlayedPlaylist || playlist instanceof RecentlyPlayedPlaylist) {
     		deleteButton.setVisible(false);
@@ -259,18 +258,18 @@ public class PlaylistsController implements Initializable, SubView {
     }
     
     @Override
-    public void scroll(char letter) {};
-    
+    public void scroll(char letter) {}
+
     @Override
     public Song getSelectedSong() {
     	return selectedSong;
     }
     
-    public Playlist getSelectedPlaylist() {
+    Playlist getSelectedPlaylist() {
     	return selectedPlaylist;
     }
     
-    public void deleteSelectedRow() {    	
+    void deleteSelectedRow() {
 		// Retrieves the table view items and the selected item.
     	ObservableList<Song> allSongs, selectedSong;
     	allSongs = tableView.getItems();
