@@ -63,21 +63,18 @@ public class ControlPanelController implements Initializable {
 		for (String title : playlistTitles) {
 			MenuItem item = new MenuItem(title);
 			item.setStyle("-fx-text-fill: black");
-			
-			item.setOnAction(new EventHandler<ActionEvent>() {
-			    public void handle(ActionEvent e) {
-			        
-			        // Finds the desired playlist and adds the currently selected song to it.
-			        String targetPlaylistTitle = item.getText();
-			        
-			        // Finds the correct playlist and adds the song to it.
-			        for (Playlist playlist : playlists) {
-			        	if (playlist.getTitle().equals(targetPlaylistTitle)) {
-			        		playlist.addSong(selectedSong);
-			        	}
-			        }
-			    }
-			});
+
+			item.setOnAction(e1 -> {
+                // Finds the desired playlist and adds the currently selected song to it.
+                String targetPlaylistTitle = item.getText();
+
+                // Finds the correct playlist and adds the song to it.
+				for (Playlist playlist : playlists) {
+					if (playlist.getTitle().equals(targetPlaylistTitle)) {
+						playlist.addSong(selectedSong);
+					}
+				}
+            });
 			
 			contextMenu.getItems().add(item);
 		}

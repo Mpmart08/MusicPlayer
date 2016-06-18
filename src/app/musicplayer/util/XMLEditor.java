@@ -42,23 +42,23 @@ public class XMLEditor {
 	
 	// Initializes array lists to store the file names of the songs in the xml file.
 	// This array lists will be checked to determine if a song has been added or deleted from the music directory.
-	private static ArrayList<String> xmlSongsFileNames = new ArrayList<String> ();
+	private static ArrayList<String> xmlSongsFileNames = new ArrayList<>();
 	// Stores the file paths of the xml songs.
 	// This is important if a song has to be removed from the xml file as it is used to find the node to remove. 
-	private static ArrayList<String> xmlSongsFilePaths = new ArrayList<String> ();
+	private static ArrayList<String> xmlSongsFilePaths = new ArrayList<>();
 	
 	// Initializes array lists to store the filenames of the songs in the music directory.
 	// This array lists will be checked to determine if a song has been added or deleted from the music directory.
-	private static ArrayList<String> musicDirFileNames = new ArrayList<String> ();
+	private static ArrayList<String> musicDirFileNames = new ArrayList<>();
 	// Stores files in the music directory.
 	// This is important if a song has to be added to the xml file and it is used to find the file to add.
-	private static ArrayList<File> musicDirFiles = new ArrayList<File> ();
+	private static ArrayList<File> musicDirFiles = new ArrayList<>();
 	
 	// Initializes array list with song files of songs to be added to library.xml
-	private static ArrayList<File> songFilesToAdd = new ArrayList<File>();	
+	private static ArrayList<File> songFilesToAdd = new ArrayList<>();
 	
 	// Initializes array list with song paths of songs to be deleted from library.xml
-	private static ArrayList<String> songPathsToDelete = new ArrayList<String>();
+	private static ArrayList<String> songPathsToDelete = new ArrayList<>();
 	
 	// Initializes booleans used to determine how the library.xml file needs to be edited.
 	private static boolean addSongs;
@@ -304,7 +304,7 @@ public class XMLEditor {
 	            String artist = (artistTitle == null || artistTitle.equals("") || artistTitle.equals("null")) ? "" : artistTitle;
 	            String album = tag.getFirst(FieldKey.ALBUM);
 	            // Gets the track length (as an int), converts to long and saves it as a duration object.                
-	            Duration length = Duration.ofSeconds(Long.valueOf(header.getTrackLength()));
+	            Duration length = Duration.ofSeconds((long) header.getTrackLength());
 	            // Gets the track number and converts to an int. Assigns 0 if a track number is null.
 	            String track = tag.getFirst(FieldKey.TRACK);                
 	            int trackNumber = Integer.parseInt((track == null || track.equals("") || track.equals("null")) ? "0" : track);
@@ -443,7 +443,7 @@ public class XMLEditor {
 			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
 			
 			String element = null;
-			String location = null;
+			String location;
 			
 			String currentSongId = null;
 			String xmlNewLastIdAssigned = null;

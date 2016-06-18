@@ -56,19 +56,19 @@ public class NowPlayingController implements Initializable, SubView {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
-        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
-        artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+        playingColumn.setCellFactory(x -> new PlayingTableCell<>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<>());
+        artistColumn.setCellFactory(x -> new ClippedTableCell<>());
+        albumColumn.setCellFactory(x -> new ClippedTableCell<>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<>());
 
-        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
-        albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
-        playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        playingColumn.setCellValueFactory(new PropertyValueFactory<>("playing"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        playsColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
         
         tableView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
         	tableView.requestFocus();
@@ -79,13 +79,12 @@ public class NowPlayingController implements Initializable, SubView {
 
         tableView.setRowFactory(x -> {
 
-            TableRow<Song> row = new TableRow<Song>();
+            TableRow<Song> row = new TableRow<>();
 
             PseudoClass playing = PseudoClass.getPseudoClass("playing");
 
-            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(playing, newValue.booleanValue());
-            };
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) ->
+                    row.pseudoClassStateChanged(playing, newValue);
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
             	if (previousSong != null) {
@@ -104,7 +103,7 @@ public class NowPlayingController implements Initializable, SubView {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
                 } else if (event.isShiftDown()) {
-                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	ArrayList<Integer> indices = new ArrayList<>(sm.getSelectedIndices());
                 	if (indices.size() < 1) {
                 		if (indices.contains(row.getIndex())) {
                     		sm.clearSelection(row.getIndex());

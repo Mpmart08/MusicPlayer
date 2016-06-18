@@ -61,9 +61,7 @@ public class ArtistsController implements Initializable, SubView {
         	
             for (int j = 25; j < artists.size(); j++) {
                 Artist artist = artists.get(j);
-                Platform.runLater(() -> {
-                    grid.getChildren().add(createCell(artist));
-                });
+                Platform.runLater(() -> grid.getChildren().add(createCell(artist)));
             }
 
         }).start();
@@ -133,17 +131,17 @@ public class ArtistsController implements Initializable, SubView {
     	int index = 0;
     	double cellHeight = 0;
     	ObservableList<Node> children = grid.getChildren();
-    	
-    	for (int i = 0; i < children.size(); i++) {
-    		
-    		VBox cell = (VBox) children.get(i);
-    		cellHeight = cell.getHeight();
-    		Label label = (Label) cell.getChildren().get(1);
-    		char firstLetter = removeArticle(label.getText()).charAt(0);
-    		if (firstLetter < letter) {
-    			index++;
-    		}
-    	}
+
+        for (Node node : children) {
+
+            VBox cell = (VBox) node;
+            cellHeight = cell.getHeight();
+            Label label = (Label) cell.getChildren().get(1);
+            char firstLetter = removeArticle(label.getText()).charAt(0);
+            if (firstLetter < letter) {
+                index++;
+            }
+        }
     	
     	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
     	

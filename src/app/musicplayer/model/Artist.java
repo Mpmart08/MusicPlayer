@@ -30,14 +30,14 @@ public final class Artist implements Comparable<Artist> {
     /**
      * Constructor for the Artist class.
      * Creates an artist object and obtains the artist artwork.
-     * 
+     *
      * @param title Artist name
      * @param albums List of artist albums
      */
     public Artist(String title, ArrayList<Album> albums) {
         this.title = title;
         this.albums = albums;
-        this.artistImageProperty = new SimpleObjectProperty<Image>(getArtistImage());
+        this.artistImageProperty = new SimpleObjectProperty<>(getArtistImage());
     }
 
     /**
@@ -53,11 +53,11 @@ public final class Artist implements Comparable<Artist> {
      * @return artist albums
      */
     public ArrayList<Album> getAlbums() {
-        return new ArrayList<Album>(this.albums);
+        return new ArrayList<>(this.albums);
     }
-    
+
     public ObjectProperty<Image> artistImageProperty() {
-    	return this.artistImageProperty;
+        return this.artistImageProperty;
     }
 
     /**
@@ -67,10 +67,10 @@ public final class Artist implements Comparable<Artist> {
     public Image getArtistImage() {
         if (artistImage == null) {
             try {
-            	File file = new File(Resources.JAR + "/img/" + this.title + ".jpg");
+                File file = new File(Resources.JAR + "/img/" + this.title + ".jpg");
                 artistImage = new Image(file.toURI().toURL().toString());
                 if (artistImage.isError()) {
-                	file.delete();
+                    file.delete();
                     artistImage = new Image(Resources.IMG + "artistsIcon.png");
                 }
             } catch (Exception ex) {
@@ -79,19 +79,19 @@ public final class Artist implements Comparable<Artist> {
                 artistImage = new Image(Resources.IMG + "artistsIcon.png");
             }
         }
-        
+
         return artistImage;
     }
-    
+
     public void downloadArtistImage() {
-    	try {
-        	File file = new File(Resources.JAR + "/img/" + this.title + ".jpg");
+        try {
+            File file = new File(Resources.JAR + "/img/" + this.title + ".jpg");
             file.mkdirs();
             XMLInputFactory factory = XMLInputFactory.newInstance();
             URL xmlData = new URL(Resources.APIBASE
-                + "method=artist.getinfo"
-                + "&artist=" + URLEncoder.encode(this.title, "UTF-8")
-                + "&api_key=" + Resources.APIKEY);
+                    + "method=artist.getinfo"
+                    + "&artist=" + URLEncoder.encode(this.title, "UTF-8")
+                    + "&api_key=" + Resources.APIKEY);
             XMLStreamReader reader = factory.createXMLStreamReader(xmlData.openStream(), "UTF-8");
             boolean imageFound = false;
 
@@ -99,30 +99,30 @@ public final class Artist implements Comparable<Artist> {
                 reader.next();
 
                 if (reader.isStartElement()
-                    && reader.getName().getLocalPart().equals("image")
-                    && reader.getAttributeValue(0).equals("extralarge")) {
+                        && reader.getName().getLocalPart().equals("image")
+                        && reader.getAttributeValue(0).equals("extralarge")) {
 
                     reader.next();
 
                     if (reader.hasText()) {
                         BufferedImage bufferedImage = ImageIO.read(new URL(reader.getText()));
                         BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
-                            bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                                bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
                         newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
                         ImageIO.write(newBufferedImage, "jpg", file);
                         imageFound = true;
                     }
                 }
             }
-            
+
             artistImage = new Image(file.toURI().toURL().toString());
             if (artistImage.isError()) {
-            	file.delete();
+                file.delete();
                 artistImage = new Image(Resources.IMG + "artistsIcon.png");
             }
             this.artistImageProperty.setValue(artistImage);
-            
-    	} catch (Exception ex) {
+
+        } catch (Exception ex) {
             File file = new File(Resources.JAR + "/img/" + this.title + ".jpg");
             file.delete();
         }

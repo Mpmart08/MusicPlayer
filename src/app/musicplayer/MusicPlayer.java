@@ -29,7 +29,6 @@ import app.musicplayer.view.MainController;
 import app.musicplayer.view.NowPlayingController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -40,7 +39,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class MusicPlayer extends Application {
@@ -57,19 +55,15 @@ public class MusicPlayer extends Application {
     private static boolean isShuffleActive = false;
     private static boolean isMuted = false;
     private static Object draggedItem;
-    
+
     private static Stage stage;
-    private static BorderPane view;
-    
-    private static Path musicDirectory;
-    
-    // Stores the number of files in library.xml and in the music directory.
-    // These are compared when starting up the application to determine if the xml file needs to be updated
-    // by adding song to it or deleting them.
+
+    // Stores the number of files in library.xml.
+    // This will then be compared to the number of files in the music directory when starting up the application to
+    // determine if the xml file needs to be updated by adding or deleting songs.
     private static int xmlFileNum;
-    private static int musicDirFileNum;
-    
-    // Stores the last id that was assigned to a song. 
+
+    // Stores the last id that was assigned to a song.
     // This is important when adding new songs after others have been deleted because the last id assigned
     // may not necessarily be equal to the number of songs in the xml file if songs have been deleted.
     private static int lastIdAssigned;
@@ -80,8 +74,8 @@ public class MusicPlayer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-    	
-    	// Suppresses warning caused by converting music library data into xml file. 
+
+        // Suppresses warning caused by converting music library data into xml file.
         LogManager.getLogManager().reset();
         PrintStream dummyStream = new PrintStream(new OutputStream() {
             public void write(int b) {
@@ -90,7 +84,7 @@ public class MusicPlayer extends Application {
         });
         System.setOut(dummyStream);
         System.setErr(dummyStream);
-        
+
         timer = new Timer();
         timerCounter = 0;
         secondsPlayed = 0;
@@ -98,50 +92,47 @@ public class MusicPlayer extends Application {
         MusicPlayer.stage = stage;
         MusicPlayer.stage.setTitle("Music Player");
         MusicPlayer.stage.getIcons().add(new Image(this.getClass().getResource(Resources.IMG + "Icon.png").toString()));
-        MusicPlayer.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
+        MusicPlayer.stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
         });
 
         try {
-    		// Load main layout from fxml file.
-    		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
-    		VBox view = (VBox) loader.load();
-    		
-    		// Shows the scene containing the layout.
-    		Scene scene = new Scene(view);
-    		stage.setScene(scene);
-    		stage.setMaximized(true);
-    		stage.show();
-    		
+            // Load main layout from fxml file.
+            FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "SplashScreen.fxml"));
+            VBox view = loader.load();
+
+            // Shows the scene containing the layout.
+            Scene scene = new Scene(view);
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.show();
+
             // Calls the function to check in the library.xml file exists. If it does not, the file is created.
             checkLibraryXML();
         } catch (Exception ex) {
-        	ex.printStackTrace();
-        	System.exit(0);
+            ex.printStackTrace();
+            System.exit(0);
         }
-        
+
         Thread thread = new Thread(() -> {
-        	// Retrieves song, album, artist, and playlist data from library.
-            Library.getSongs();        
+            // Retrieves song, album, artist, and playlist data from library.
+            Library.getSongs();
             Library.getAlbums();
             Library.getArtists();
             Library.getPlaylists();
-            
+
             nowPlayingList = Library.loadPlayingList();
-            
+
             if (nowPlayingList.isEmpty()) {
-            	
-            	Artist artist = Library.getArtists().get(0);
-            	
-            	for (Album album : artist.getAlbums()) {
-            		nowPlayingList.addAll(album.getSongs());
-            	}
-            	
-            	Collections.sort(nowPlayingList, (first, second) -> {
+
+                Artist artist = Library.getArtists().get(0);
+
+                for (Album album : artist.getAlbums()) {
+                    nowPlayingList.addAll(album.getSongs());
+                }
+
+                Collections.sort(nowPlayingList, (first, second) -> {
                     Album firstAlbum = Library.getAlbum(first.getAlbum());
                     Album secondAlbum = Library.getAlbum(second.getAlbum());
                     if (firstAlbum.compareTo(secondAlbum) != 0) {
@@ -151,7 +142,7 @@ public class MusicPlayer extends Application {
                     }
                 });
             }
-            
+
             nowPlaying = nowPlayingList.get(0);
             nowPlayingIndex = 0;
             nowPlaying.setPlaying(true);
@@ -163,246 +154,239 @@ public class MusicPlayer extends Application {
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setVolume(0.5);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
-            
+
             File imgFolder = new File(Resources.JAR + "/img");
-        	if (!imgFolder.exists()) {
-        		
-        		Thread thread1 = new Thread(() -> {
-        			for (Artist artist : Library.getArtists()) {
-            			artist.downloadArtistImage();
-            		}
-        		});
-        		
-        		Thread thread2 = new Thread(() -> {
-        			for (Album album : Library.getAlbums()) {
-            			album.downloadArtwork();
-            		}
-        		});
-        		
-        		thread1.start();
-        		thread2.start();
-        	}
+            if (!imgFolder.exists()) {
+
+                Thread thread1 = new Thread(() -> {
+                    Library.getArtists().forEach(Artist::downloadArtistImage);
+                });
+
+                Thread thread2 = new Thread(() -> {
+                    Library.getAlbums().forEach(Album::downloadArtwork);
+                });
+
+                thread1.start();
+                thread2.start();
+            }
 
             // Calls the function to initialize the main layout.
-            Platform.runLater(() -> {
-            	initMain();
-            });
+            Platform.runLater(this::initMain);
         });
-        
+
         thread.start();
     }
-    
+
     private static void checkLibraryXML() {
-    	// Finds the jar file and the path of its parent folder.
-    	File musicPlayerJAR = null;
-		try {
-			musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-    	String jarFilePath = musicPlayerJAR.getParentFile().getPath();
-    	
-    	// Assigns the filepath to the XML filepath set in Resources.java
-    	Resources.JAR = jarFilePath + "/";
-    	
-    	// Specifies library.xml file and its location.
-    	File libraryXML = new File(Resources.JAR + "library.xml");
-    	
-		// If the file exists, check if the music directory has changed.
-    	if (libraryXML.exists()) {
-    		// Gets music directory path from xml file so that the number of files in the
-    		// music directory can be counted and compared to the data in the xml file.
-    		// It is then passed as an argument when creating the directory watch.
-        	musicDirectory = xmlMusicDirPathFinder();
-    		
-        	// Try/catch block to deal with case where music directory has been renamed.
-    		try {
-    			// Gets the number of files in the music directory and the number of files saved in the xml file.
-    			// These values will be compared to determine if the xml file needs to be updated.
-				musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0); 
-	    		xmlFileNum = xmlMusicDirFileNumFinder();
-				
-				// If the number of files stored in the xml file is not the same as the number of files in the music directory.
-				// Music library has changed; update the xml file.
-				if (musicDirFileNum != xmlFileNum) {
-					// Updates the xml file from the saved music directory.
-					updateLibraryXML(musicDirectory);
-				}
-				// NullPointerException thrown by musicDirFileNumFinder().
-				// It occurs if the music directory has been renamed
-			} catch (NullPointerException npe) {
-	    		createLibraryXML();
-	    		// Gets the number of files saved in the xml file.
-	    		xmlFileNum = xmlMusicDirFileNumFinder();
-	    		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
-	        	musicDirectory = xmlMusicDirPathFinder();
-			}
-    		
-        	// If the library.xml file does not exist, the file is created from the user specified music library location.
-    	} else if (!libraryXML.exists()) {
-    		createLibraryXML();
-    		// Gets the number of files saved in the xml file.
-    		xmlFileNum = xmlMusicDirFileNumFinder();
-    		// Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
-        	musicDirectory = xmlMusicDirPathFinder();
-    	}
+        // Finds the jar file and the path of its parent folder.
+        File musicPlayerJAR = null;
+        try {
+            musicPlayerJAR = new File(MusicPlayer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        String jarFilePath = musicPlayerJAR.getParentFile().getPath();
+
+        // Assigns the filepath to the XML filepath set in Resources.java
+        Resources.JAR = jarFilePath + "/";
+
+        // Specifies library.xml file and its location.
+        File libraryXML = new File(Resources.JAR + "library.xml");
+
+        // If the file exists, check if the music directory has changed.
+        Path musicDirectory;
+        if (libraryXML.exists()) {
+            // Gets music directory path from xml file so that the number of files in the
+            // music directory can be counted and compared to the data in the xml file.
+            // It is then passed as an argument when creating the directory watch.
+            musicDirectory = xmlMusicDirPathFinder();
+
+            // Try/catch block to deal with case where music directory has been renamed.
+            try {
+                // Gets the number of files in the music directory and the number of files saved in the xml file.
+                // These values will be compared to determine if the xml file needs to be updated.
+                int musicDirFileNum = musicDirFileNumFinder(musicDirectory.toFile(), 0);
+                xmlFileNum = xmlMusicDirFileNumFinder();
+
+                // If the number of files stored in the xml file is not the same as the number of files in the music directory.
+                // Music library has changed; update the xml file.
+                if (musicDirFileNum != xmlFileNum) {
+                    // Updates the xml file from the saved music directory.
+                    updateLibraryXML(musicDirectory);
+                }
+                // NullPointerException thrown by musicDirFileNumFinder().
+                // It occurs if the music directory has been renamed
+            } catch (NullPointerException npe) {
+                createLibraryXML();
+                // Gets the number of files saved in the xml file.
+                xmlFileNum = xmlMusicDirFileNumFinder();
+                // Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
+                musicDirectory = xmlMusicDirPathFinder();
+            }
+
+            // If the library.xml file does not exist, the file is created from the user specified music library location.
+        } else if (!libraryXML.exists()) {
+            createLibraryXML();
+            // Gets the number of files saved in the xml file.
+            xmlFileNum = xmlMusicDirFileNumFinder();
+            // Gets music directory path from xml file so that it can be passed as an argument when creating the directory watch.
+            musicDirectory = xmlMusicDirPathFinder();
+        }
     }
-    
+
     private static Path xmlMusicDirPathFinder() {
-		try {
-			// Creates reader for xml file.
-			XMLInputFactory factory = XMLInputFactory.newInstance();
-			factory.setProperty("javax.xml.stream.isCoalescing", true);
-			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
-			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
-			
-			String element = null;
-			String path = null;
-			
-			// Loops through xml file looking for the music directory file path.
-			while(reader.hasNext()) {
-			    reader.next();
-			    if (reader.isWhiteSpace()) {
-			        continue;
-			    } else if (reader.isStartElement()) {
-			    	element = reader.getName().getLocalPart();
-			    } else if (reader.isCharacters() && element.equals("path")) {
-			    	path = reader.getText();               	
-			    	break;
-			    }
-			}
-			// Closes xml reader.
-			reader.close();
-			
-			// Gets the directory and watches for file creation, deletion, or modification.
-			Path directory = Paths.get(path);
-			return directory;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+        try {
+            // Creates reader for xml file.
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty("javax.xml.stream.isCoalescing", true);
+            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+
+            String element = null;
+            String path = null;
+
+            // Loops through xml file looking for the music directory file path.
+            while(reader.hasNext()) {
+                reader.next();
+                if (reader.isWhiteSpace()) {
+                    continue;
+                } else if (reader.isStartElement()) {
+                    element = reader.getName().getLocalPart();
+                } else if (reader.isCharacters() && element.equals("path")) {
+                    path = reader.getText();
+                    break;
+                }
+            }
+            // Closes xml reader.
+            reader.close();
+
+            return Paths.get(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    
+
     private static int xmlMusicDirFileNumFinder() {
-		try {
-			// Creates reader for xml file.
-			XMLInputFactory factory = XMLInputFactory.newInstance();
-			factory.setProperty("javax.xml.stream.isCoalescing", true);
-			FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
-			XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
-			
-			String element = null;
-			String fileNum = null;
-			
-			// Loops through xml file looking for the music directory file path.
-			while(reader.hasNext()) {
-			    reader.next();
-			    if (reader.isWhiteSpace()) {
-			        continue;
-			    } else if (reader.isStartElement()) {
-			    	element = reader.getName().getLocalPart();
-			    } else if (reader.isCharacters() && element.equals("fileNum")) {
-			    	fileNum = reader.getText();               	
-			    	break;
-			    }
-			}
-			// Closes xml reader.
-			reader.close();
-			
-			// Converts the file number to an int and returns the value. 
-			return Integer.parseInt(fileNum);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
+        try {
+            // Creates reader for xml file.
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty("javax.xml.stream.isCoalescing", true);
+            FileInputStream is = new FileInputStream(new File(Resources.JAR + "library.xml"));
+            XMLStreamReader reader = factory.createXMLStreamReader(is, "UTF-8");
+
+            String element = null;
+            String fileNum = null;
+
+            // Loops through xml file looking for the music directory file path.
+            while(reader.hasNext()) {
+                reader.next();
+                if (reader.isWhiteSpace()) {
+                    continue;
+                } else if (reader.isStartElement()) {
+                    element = reader.getName().getLocalPart();
+                } else if (reader.isCharacters() && element.equals("fileNum")) {
+                    fileNum = reader.getText();
+                    break;
+                }
+            }
+            // Closes xml reader.
+            reader.close();
+
+            // Converts the file number to an int and returns the value.
+            return Integer.parseInt(fileNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
-    
+
     private static int musicDirFileNumFinder(File musicDirectory, int i) {
-    	// Lists all the files in the music directory and stores them in an array.
+        // Lists all the files in the music directory and stores them in an array.
         File[] files = musicDirectory.listFiles();
 
         // Loops through the files, increments counter if file is found.
         for (File file : files) {
             if (file.isFile() && Library.isSupportedFileType(file.getName())) {
-            	i++;
+                i++;
             } else if (file.isDirectory()) {
                 i = musicDirFileNumFinder(file, i);
             }
         }
-    	return i;
+        return i;
     }
-    
-    private static void updateLibraryXML(Path musicDirectory) {
-    	// Sets the music directory for the XMLEditor.
-    	XMLEditor.setMusicDirectory(musicDirectory);
-    	
-    	// Checks if songs have to be added, deleted, or both to the xml file and
-    	// performs the corresponding operation.
-    	XMLEditor.addDeleteChecker();
-    }
-    
-    private static void createLibraryXML() {    	
-    	try {
-			FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
-			BorderPane importView = (BorderPane) loader.load();
-			
-			// Create the dialog Stage.
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Music Player Configuration");
-			// Forces user to focus on dialog.
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			// Sets minimal decorations for dialog.
-			dialogStage.initStyle(StageStyle.UTILITY);
-			// Prevents the alert from being re-sizable.
-			dialogStage.setResizable(false);
-			dialogStage.initOwner(stage);
-			
-			// Sets the import music dialog scene in the stage.
-			dialogStage.setScene(new Scene(importView));
 
-			// Set the dialog into the controller.
-			ImportMusicDialogController controller = loader.getController();
-			controller.setDialogStage(dialogStage);
-			
-	        // Show the dialog and wait until the user closes it.
-	        dialogStage.showAndWait();
-	        
-	        // Checks if the music was imported successfully. Closes the application otherwise.
-	        boolean musicImported = controller.isMusicImported();
-	        if (!musicImported) {
-	        	System.exit(0);
-	        }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    private static void updateLibraryXML(Path musicDirectory) {
+        // Sets the music directory for the XMLEditor.
+        XMLEditor.setMusicDirectory(musicDirectory);
+
+        // Checks if songs have to be added, deleted, or both to the xml file and
+        // performs the corresponding operation.
+        XMLEditor.addDeleteChecker();
     }
-    
+
+    private static void createLibraryXML() {
+        try {
+            FXMLLoader loader = new FXMLLoader(MusicPlayer.class.getResource(Resources.FXML + "ImportMusicDialog.fxml"));
+            BorderPane importView = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Music Player Configuration");
+            // Forces user to focus on dialog.
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            // Sets minimal decorations for dialog.
+            dialogStage.initStyle(StageStyle.UTILITY);
+            // Prevents the alert from being re-sizable.
+            dialogStage.setResizable(false);
+            dialogStage.initOwner(stage);
+
+            // Sets the import music dialog scene in the stage.
+            dialogStage.setScene(new Scene(importView));
+
+            // Set the dialog into the controller.
+            ImportMusicDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            // Show the dialog and wait until the user closes it.
+            dialogStage.showAndWait();
+
+            // Checks if the music was imported successfully. Closes the application otherwise.
+            boolean musicImported = controller.isMusicImported();
+            if (!musicImported) {
+                System.exit(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Initializes the main layout.
      */
-    public void initMain() {
-    	try {
-    		// Load main layout from fxml file.
-    		FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "Main.fxml"));
-    		view = (BorderPane) loader.load();
-    		
-    		// Shows the scene containing the layout.
-    		double width = stage.getScene().getWidth();
-    		double height = stage.getScene().getHeight();
+    private void initMain() {
+        try {
+            // Load main layout from fxml file.
+            FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "Main.fxml"));
+            BorderPane view = loader.load();
 
-    		view.setPrefWidth(width);
-    		view.setPrefHeight(height);
-    		
-    		Scene scene = new Scene(view);
-    		stage.setScene(scene);
-    		
-    		// Gives the controller access to the music player main application.
-    		mainController = loader.getController();
-    		mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
-    		
-    	} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
+            // Shows the scene containing the layout.
+            double width = stage.getScene().getWidth();
+            double height = stage.getScene().getHeight();
+
+            view.setPrefWidth(width);
+            view.setPrefHeight(height);
+
+            Scene scene = new Scene(view);
+            stage.setScene(scene);
+
+            // Gives the controller access to the music player main application.
+            mainController = loader.getController();
+            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private static class SongSkipper implements Runnable {
@@ -424,13 +408,13 @@ public class MusicPlayer extends Application {
                         secondsPlayed++;
                     }
                     if (!mainController.isTimeSliderPressed()) {
-                    	mainController.updateTimeSlider();
+                        mainController.updateTimeSlider();
                     }
                 }
             });
         }
     }
-    
+
     /**
      * Plays selected song.
      */
@@ -441,7 +425,7 @@ public class MusicPlayer extends Application {
             mainController.updatePlayPauseIcon(true);
         }
     }
-    
+
     /**
      * Checks if a song is playing.
      */
@@ -474,22 +458,22 @@ public class MusicPlayer extends Application {
      */
     public static void skip() {
         if (nowPlayingIndex < nowPlayingList.size() - 1) {
-        	boolean isPlaying = isPlaying();
-        	mainController.updatePlayPauseIcon(isPlaying);
+            boolean isPlaying = isPlaying();
+            mainController.updatePlayPauseIcon(isPlaying);
             setNowPlaying(nowPlayingList.get(nowPlayingIndex + 1));
             if (isPlaying) {
-            	play();
+                play();
             }
         } else if (isLoopActive) {
-        	boolean isPlaying = isPlaying();
-        	mainController.updatePlayPauseIcon(isPlaying);
-        	nowPlayingIndex = 0;
-        	setNowPlaying(nowPlayingList.get(nowPlayingIndex));
-        	if (isPlaying) {
-            	play();
+            boolean isPlaying = isPlaying();
+            mainController.updatePlayPauseIcon(isPlaying);
+            nowPlayingIndex = 0;
+            setNowPlaying(nowPlayingList.get(nowPlayingIndex));
+            if (isPlaying) {
+                play();
             }
         } else {
-        	mainController.updatePlayPauseIcon(false);
+            mainController.updatePlayPauseIcon(false);
             nowPlayingIndex = 0;
             setNowPlaying(nowPlayingList.get(nowPlayingIndex));
         }
@@ -500,65 +484,65 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeSlider();
             seek(0);
         } else {
-        	boolean isPlaying = isPlaying();
+            boolean isPlaying = isPlaying();
             setNowPlaying(nowPlayingList.get(nowPlayingIndex - 1));
             if (isPlaying) {
-            	play();
+                play();
             }
         }
     }
-    
+
     public static void mute(boolean isMuted) {
-    	MusicPlayer.isMuted = !isMuted;
-    	if (mediaPlayer != null) {
-    		mediaPlayer.setMute(!isMuted);
-    	}
+        MusicPlayer.isMuted = !isMuted;
+        if (mediaPlayer != null) {
+            mediaPlayer.setMute(!isMuted);
+        }
     }
-    
+
     public static void toggleLoop() {
-    	isLoopActive = !isLoopActive;
+        isLoopActive = !isLoopActive;
     }
-    
+
     public static boolean isLoopActive() {
-    	return isLoopActive;
+        return isLoopActive;
     }
-    
+
     public static void toggleShuffle() {
-    	
-    	isShuffleActive = !isShuffleActive;
-    	
-    	if (isShuffleActive) {
-    		Collections.shuffle(nowPlayingList);
-    	} else {
-    		Collections.sort(nowPlayingList, (first, second) -> {
-    			int result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
-    			if (result != 0) {
-    				return result;
-    			}
-    			result = first.compareTo(second);
-    			return result;
-    		});
-    	}
-    	
-    	nowPlayingIndex = nowPlayingList.indexOf(nowPlaying);
-    	
-    	if (mainController.getSubViewController() instanceof NowPlayingController) {
-    		mainController.loadView("nowPlaying");
-    	}
+
+        isShuffleActive = !isShuffleActive;
+
+        if (isShuffleActive) {
+            Collections.shuffle(nowPlayingList);
+        } else {
+            Collections.sort(nowPlayingList, (first, second) -> {
+                int result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
+                if (result != 0) {
+                    return result;
+                }
+                result = Library.getAlbum(first.getAlbum()).compareTo(Library.getAlbum(second.getAlbum()));
+                if (result != 0) {
+                    return result;
+                }
+                result = first.compareTo(second);
+                return result;
+            });
+        }
+
+        nowPlayingIndex = nowPlayingList.indexOf(nowPlaying);
+
+        if (mainController.getSubViewController() instanceof NowPlayingController) {
+            mainController.loadView("nowPlaying");
+        }
     }
-    
+
     public static boolean isShuffleActive() {
-    	return isShuffleActive;
+        return isShuffleActive;
     }
-    
+
     public static Stage getStage() {
-    	return stage;
+        return stage;
     }
-    
+
     /**
      * Gets main controller object.
      * @return MainController
@@ -572,11 +556,11 @@ public class MusicPlayer extends Application {
      * @return arraylist of now playing songs
      */
     public static ArrayList<Song> getNowPlayingList() {
-        return nowPlayingList == null ? new ArrayList<Song>() : new ArrayList<Song>(nowPlayingList);
+        return nowPlayingList == null ? new ArrayList<>() : new ArrayList<>(nowPlayingList);
     }
 
     public static void setNowPlayingList(List<Song> list) {
-        nowPlayingList = new ArrayList<Song>(list);
+        nowPlayingList = new ArrayList<>(list);
         Library.savePlayingList();
     }
 
@@ -610,7 +594,7 @@ public class MusicPlayer extends Application {
             mainController.initializeTimeLabels();
         }
     }
-    
+
     private static void updatePlayCount() {
         if (nowPlaying != null) {
             int length = (int) nowPlaying.getLengthInSeconds();
@@ -619,7 +603,7 @@ public class MusicPlayer extends Application {
             }
         }
     }
-    
+
     public static Song getNowPlaying() {
         return nowPlaying;
     }
@@ -639,28 +623,28 @@ public class MusicPlayer extends Application {
         long seconds = secondsRemaining % 60;
         return Long.toString(minutes) + ":" + (seconds < 10 ? "0" + seconds : Long.toString(seconds));
     }
-    
+
     public static void setDraggedItem(Object item) {
-    	draggedItem = item;
+        draggedItem = item;
     }
-    
+
     public static Object getDraggedItem() {
-    	return draggedItem;
+        return draggedItem;
     }
-    
+
     public static int getXMLFileNum() {
-    	return xmlFileNum;
+        return xmlFileNum;
     }
-    
+
     public static void setXMLFileNum(int i) {
-    	xmlFileNum = i;
+        xmlFileNum = i;
     }
-    
+
     public static int getLastIdAssigned() {
-    	return lastIdAssigned;
+        return lastIdAssigned;
     }
-    
+
     public static void setLastIdAssigned(int i) {
-    	lastIdAssigned = i;
+        lastIdAssigned = i;
     }
 }

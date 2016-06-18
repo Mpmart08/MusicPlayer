@@ -53,15 +53,14 @@ import javafx.util.Duration;
 
 public class ArtistsMainController implements Initializable, SubView {
 
-    public class ArtistCell extends ListCell<Artist> {
+    private class ArtistCell extends ListCell<Artist> {
 
         private HBox cell = new HBox();
         private ImageView artistImage = new ImageView();
         private Label title = new Label();
         private Artist artist;
 
-        public ArtistCell() {
-
+        ArtistCell() {
             super();
             artistImage.setFitWidth(40);
             artistImage.setFitHeight(40);
@@ -74,9 +73,7 @@ public class ArtistsMainController implements Initializable, SubView {
             HBox.setMargin(artistImage, new Insets(0, 10, 0, 0));
             this.setPrefWidth(248);
             
-            this.setOnMouseClicked(event -> {
-            	artistList.getSelectionModel().select(artist);
-            });
+            this.setOnMouseClicked(event -> artistList.getSelectionModel().select(artist));
             
             this.setOnDragDetected(event -> {
             	Dragboard db = this.startDragAndDrop(TransferMode.ANY);
@@ -108,13 +105,12 @@ public class ArtistsMainController implements Initializable, SubView {
         }
     }
 
-    public class AlbumCell extends ListCell<Album> {
+    private class AlbumCell extends ListCell<Album> {
 
         private ImageView albumArtwork = new ImageView();
         private Album album;
 
-        public AlbumCell() {
-
+        AlbumCell() {
             super();
             setAlignment(Pos.CENTER);
             setPrefHeight(140);
@@ -125,9 +121,7 @@ public class ArtistsMainController implements Initializable, SubView {
             albumArtwork.setSmooth(true);
             albumArtwork.setCache(true);
             
-            this.setOnMouseClicked(event -> {
-            	albumList.getSelectionModel().select(album);
-            });
+            this.setOnMouseClicked(event -> albumList.getSelectionModel().select(album));
             
             this.setOnDragDetected(event -> {
             	Dragboard db = this.startDragAndDrop(TransferMode.ANY);
@@ -186,38 +180,30 @@ public class ArtistsMainController implements Initializable, SubView {
     	
     	loadedLatch = new CountDownLatch(1);
     	
-    	artistLoadAnimation.setOnFinished(x -> {
-    		loadedLatch.countDown();
-    	});
+    	artistLoadAnimation.setOnFinished(x -> loadedLatch.countDown());
     	
-    	albumLoadAnimation.setOnFinished(x -> {
-    		loadedLatch.countDown();
-    	});
+    	albumLoadAnimation.setOnFinished(x -> loadedLatch.countDown());
     	
     	titleColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.5));
         lengthColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
         playsColumn.prefWidthProperty().bind(songTable.widthProperty().subtract(50).multiply(0.25));
 
-        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
-        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+        playingColumn.setCellFactory(x -> new PlayingTableCell<>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<>());
 
-        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
-        playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        playingColumn.setCellValueFactory(new PropertyValueFactory<>("playing"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        playsColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
 
         albumList.setCellFactory(listView -> new AlbumCell());
         artistList.setCellFactory(listView -> new ArtistCell());
         
-        artistList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-        	event.consume();
-        });
+        artistList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> event.consume());
         
-        albumList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-        	event.consume();
-        });
+        albumList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> event.consume());
         
         songTable.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
         	songTable.requestFocus();
@@ -237,9 +223,7 @@ public class ArtistsMainController implements Initializable, SubView {
                 ObservableList<Album> albums = FXCollections.observableArrayList();
                 for (Album album : selectedArtist.getAlbums()) {
                     albums.add(album);
-                    for (Song song : album.getSongs()) {
-                        songs.add(song);
-                    }
+                    songs.addAll(album.getSongs());
                 }
                 
                 if (MusicPlayer.isShuffleActive()) {
@@ -279,18 +263,14 @@ public class ArtistsMainController implements Initializable, SubView {
     	        	}
             	};
             	
-            	task.setOnSucceeded(x -> {
-            		Platform.runLater(() -> {
-    	        		subViewRoot.setVisible(true);
-    		        	artistLoadAnimation.play();
-    	        	});
-            	});
+            	task.setOnSucceeded(x -> Platform.runLater(() -> {
+                    subViewRoot.setVisible(true);
+                    artistLoadAnimation.play();
+                }));
             	
             	Thread thread = new Thread(task);
 
-            	artistUnloadAnimation.setOnFinished(x -> {
-            		thread.start();
-            	});
+            	artistUnloadAnimation.setOnFinished(x -> thread.start());
             	
             	artistUnloadAnimation.play();
             }
@@ -330,18 +310,14 @@ public class ArtistsMainController implements Initializable, SubView {
     	        	}                		
             	};
             	
-            	task.setOnSucceeded(x -> {
-            		Platform.runLater(() -> {
-    	        		songTable.setVisible(true);
-    		        	albumLoadAnimation.play();
-    	        	});
-            	});
+            	task.setOnSucceeded(x -> Platform.runLater(() -> {
+                    songTable.setVisible(true);
+                    albumLoadAnimation.play();
+                }));
             	
             	Thread thread = new Thread(task);
 
-            	albumUnloadAnimation.setOnFinished(x -> {
-            		thread.start();
-            	});
+            	albumUnloadAnimation.setOnFinished(x -> thread.start());
             	
             	albumUnloadAnimation.play();
             }
@@ -349,12 +325,12 @@ public class ArtistsMainController implements Initializable, SubView {
 
         songTable.setRowFactory(x -> {
 
-            TableRow<Song> row = new TableRow<Song>();
+            TableRow<Song> row = new TableRow<>();
 
             PseudoClass playing = PseudoClass.getPseudoClass("playing");
 
             ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(playing, newValue.booleanValue());
+                row.pseudoClassStateChanged(playing, newValue);
             };
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
@@ -374,7 +350,7 @@ public class ArtistsMainController implements Initializable, SubView {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
                 } else if (event.isShiftDown()) {
-                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	ArrayList<Integer> indices = new ArrayList<>(sm.getSelectedIndices());
                 	if (indices.size() < 1) {
                 		if (indices.contains(row.getIndex())) {
                     		sm.clearSelection(row.getIndex());
@@ -472,7 +448,7 @@ public class ArtistsMainController implements Initializable, SubView {
         artistListLoadAnimation.play();
     }
 
-    public void selectAlbum(Album album) {
+    void selectAlbum(Album album) {
 
         if (selectedAlbum == album) {
 
@@ -521,7 +497,7 @@ public class ArtistsMainController implements Initializable, SubView {
         }
     }
     
-    public void selectArtist(Artist artist) {
+    void selectArtist(Artist artist) {
     	
     	selectedArtist = artist;
         artistList.getSelectionModel().select(artist);
@@ -548,7 +524,7 @@ public class ArtistsMainController implements Initializable, SubView {
         separator.setVisible(true);
     }
     
-    public void selectSong(Song song) {
+    void selectSong(Song song) {
     	
     	new Thread(() -> {
             try {
@@ -577,10 +553,7 @@ public class ArtistsMainController implements Initializable, SubView {
 
             albums.add(album);
 
-            for (Song song : album.getSongs()) {
-
-                songs.add(song);
-            }
+            songs.addAll(album.getSongs());
         }
 
         Collections.sort(songs, (first, second) -> {
@@ -623,9 +596,7 @@ public class ArtistsMainController implements Initializable, SubView {
         	}
         };
         
-        songTableLoadAnimation.setOnFinished(x -> {
-        	loadedLatch.countDown();
-        });
+        songTableLoadAnimation.setOnFinished(x -> loadedLatch.countDown());
         
         new Thread(() -> {
         	try {
@@ -647,20 +618,13 @@ public class ArtistsMainController implements Initializable, SubView {
     public void play() {
     	
     	Song song = selectedSong;
-        ArrayList<Song> songs = new ArrayList<Song>();
+        ArrayList<Song> songs = new ArrayList<>();
 
         if (selectedAlbum != null) {
-
-            for (Song s : selectedAlbum.getSongs()) {
-                songs.add(s);
-            }
-
+            songs.addAll(selectedAlbum.getSongs());
         } else {
-
             for (Album album : selectedArtist.getAlbums()) {
-                for (Song s : album.getSongs()) {
-                    songs.add(s);
-                }
+                songs.addAll(album.getSongs());
             }
         }
         
@@ -693,14 +657,14 @@ public class ArtistsMainController implements Initializable, SubView {
     	
     	int selectedCell = 0;
 
-    	for (int i = 0; i < artistListItems.size(); i++) {
-    		// Removes article from artist title and compares it to selected letter.
-    		String artistTitle = artistListItems.get(i).getTitle();
-    		char firstLetter = removeArticle(artistTitle).charAt(0);
-    		if (firstLetter < letter) {
-        		selectedCell++;
-    		}
-    	}
+        for (Artist artist : artistListItems) {
+            // Removes article from artist title and compares it to selected letter.
+            String artistTitle = artist.getTitle();
+            char firstLetter = removeArticle(artistTitle).charAt(0);
+            if (firstLetter < letter) {
+                selectedCell++;
+            }
+        }
     	
     	double startVvalue = artistListScrollPane.getVvalue();
     	double finalVvalue = (double) (selectedCell * 50) / (Library.getArtists().size() * 50 - artistListScrollPane.getHeight());

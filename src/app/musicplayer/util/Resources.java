@@ -2,7 +2,6 @@ package app.musicplayer.util;
 
 public final class Resources {
 
-    public static final String CSS = "/app/musicplayer/util/css/";
     public static final String FXML = "/app/musicplayer/view/";
     public static final String IMG = "/app/musicplayer/util/img/";
     public static String JAR;

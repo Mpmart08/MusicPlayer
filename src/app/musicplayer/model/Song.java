@@ -101,17 +101,9 @@ public final class Song implements Comparable<Song> {
     public String getTitle() {
         return this.title.get();
     }
-    
-    public StringProperty titleProperty() {
-    	return this.title;
-    }
 
     public String getArtist() {
         return this.artist.get();
-    }
-    
-    public StringProperty artistProperty() {
-    	return this.artist;
     }
 
     public String getAlbum() {
@@ -121,19 +113,11 @@ public final class Song implements Comparable<Song> {
     public Image getArtwork() {
         return Library.getAlbum(this.album.get()).getArtwork();
     }
-    
-    public StringProperty albumProperty() {
-    	return this.album;
-    }
 
     public String getLength() {
         return this.length.get();
     }
 
-    public StringProperty lengthProperty() {
-        return this.length;
-    }
-    
     public long getLengthInSeconds() {
     	return this.lengthInSeconds;
     }
@@ -148,10 +132,6 @@ public final class Song implements Comparable<Song> {
 
     public int getPlayCount() {
         return this.playCount.get();
-    }
-    
-    public IntegerProperty playCountProperty() {
-    	return this.playCount;
     }
 
     public LocalDateTime getPlayDate() {

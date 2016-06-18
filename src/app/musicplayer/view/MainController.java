@@ -189,11 +189,11 @@ public class MainController implements Initializable, IntellitypeListener {
     	});
     }
     
-    public void resetLatch() {
+    void resetLatch() {
     	viewLoadedLatch = new CountDownLatch(1);
     }
     
-    public CountDownLatch getLatch() {
+    CountDownLatch getLatch() {
     	return viewLoadedLatch;
     }
     
@@ -202,7 +202,7 @@ public class MainController implements Initializable, IntellitypeListener {
     		
     		Stage stage = MusicPlayer.getStage();
         	FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "VolumePopup.fxml"));
-        	HBox view = (HBox) loader.load();
+        	HBox view = loader.load();
         	volumePopupController = loader.getController();
         	Stage popup = new Stage();
         	popup.setScene(new Scene(view));
@@ -215,9 +215,7 @@ public class MainController implements Initializable, IntellitypeListener {
         			popupHideAnimation.play();
         		}
         	});
-        	popupHideAnimation.setOnFinished(x -> {
-        		popup.hide();
-        	});
+        	popupHideAnimation.setOnFinished(x -> popup.hide());
         	
         	popup.show();
         	popup.hide();
@@ -287,7 +285,7 @@ public class MainController implements Initializable, IntellitypeListener {
     	for (Playlist playlist : Library.getPlaylists()) {
     		try {
     			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "PlaylistCell.fxml"));
-				HBox cell = (HBox) loader.load();
+				HBox cell = loader.load();
 				Label label = (Label) cell.getChildren().get(1);
 				label.setText(playlist.getTitle());
 				
@@ -443,7 +441,7 @@ public class MainController implements Initializable, IntellitypeListener {
     		try {
         		
     			FXMLLoader loader = new FXMLLoader(this.getClass().getResource(Resources.FXML + "PlaylistCell.fxml"));
-    			HBox cell = (HBox) loader.load();
+    			HBox cell = loader.load();
     			
     			Label label = (Label) cell.getChildren().get(1);
     			label.setVisible(false);
@@ -626,8 +624,8 @@ public class MainController implements Initializable, IntellitypeListener {
     public SubView loadView(String viewName) {
         try {
         	
-        	boolean loadLetters = false;
-        	boolean unloadLetters = false;
+        	boolean loadLetters;
+        	boolean unloadLetters;
         	
         	switch (viewName.toLowerCase()) {
         	case "artists":
@@ -665,7 +663,7 @@ public class MainController implements Initializable, IntellitypeListener {
             String fileName = viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + ".fxml";
             
             FXMLLoader loader = new FXMLLoader(this.getClass().getResource(fileName));
-            Node view = (Node) loader.load();
+            Node view = loader.load();
             
             CountDownLatch latch = new CountDownLatch(1);
             
@@ -682,32 +680,26 @@ public class MainController implements Initializable, IntellitypeListener {
 	        	}
 	        };
 	        
-	        task.setOnSucceeded(x -> {
-	        	new Thread(() -> {
-	        		try {
-						latch.await();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-		        	Platform.runLater(() -> {
-		        		subViewRoot.setVisible(true);
-		        		if (loadLettersFinal) {
-			        		loadLettersAnimation.play();
-			        	}
-			        	loadViewAnimation.play();
-		        	});
-	        	}).start();
-	        });
+	        task.setOnSucceeded(x -> new Thread(() -> {
+                try {
+                    latch.await();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(() -> {
+                    subViewRoot.setVisible(true);
+                    if (loadLettersFinal) {
+                        loadLettersAnimation.play();
+                    }
+                    loadViewAnimation.play();
+                });
+            }).start());
 	        
 	        Thread thread = new Thread(task);
             
-            unloadViewAnimation.setOnFinished(x -> {
-            	thread.start();
-            });
+            unloadViewAnimation.setOnFinished(x -> thread.start());
             
-            loadViewAnimation.setOnFinished(x -> {
-            	viewLoadedLatch.countDown();
-            });
+            loadViewAnimation.setOnFinished(x -> viewLoadedLatch.countDown());
             
             if (subViewRoot.getContent() != null) {
             	if (unloadLettersFinal) {
@@ -851,11 +843,11 @@ public class MainController implements Initializable, IntellitypeListener {
     	return subViewController;
     }
     
-    public ScrollPane getScrollPane() {
+    ScrollPane getScrollPane() {
     	return this.subViewRoot;
     }
 
-    public VBox getPlaylistBox() {
+    VBox getPlaylistBox() {
     	return playlistBox;
     }
 
@@ -910,7 +902,7 @@ public class MainController implements Initializable, IntellitypeListener {
         {
             setCycleDuration(Duration.millis(250));
             setInterpolator(Interpolator.EASE_BOTH);
-            setOnFinished(x -> {setSlideDirection();});
+            setOnFinished(x -> setSlideDirection());
         }
         protected void interpolate(double frac) {
             double curWidth = collapsedWidth + (expandedWidth - collapsedWidth) * (frac);

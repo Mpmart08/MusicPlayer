@@ -8,14 +8,14 @@ import javafx.collections.ObservableList;
 
 public class RecentlyPlayedPlaylist extends Playlist {
 
-    public RecentlyPlayedPlaylist(int id) {
+    RecentlyPlayedPlaylist(int id) {
         super(id, "Recently Played");
     }
 
     @Override
     public ObservableList<Song> getSongs() {
 
-        ArrayList<Song> songs = new ArrayList<Song>(Library.getSongs());
+        ArrayList<Song> songs = new ArrayList<>(Library.getSongs());
         Collections.sort(songs, (x, y) -> y.getPlayDate().compareTo(x.getPlayDate()));
         try {
 			return FXCollections.observableArrayList(songs.subList(0, 100));

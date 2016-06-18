@@ -65,19 +65,19 @@ public class SongsController implements Initializable, SubView {
         lengthColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
         playsColumn.prefWidthProperty().bind(tableView.widthProperty().subtract(50).multiply(0.11));
 
-        playingColumn.setCellFactory(x -> new PlayingTableCell<Song, Boolean>());
-        titleColumn.setCellFactory(x -> new ControlPanelTableCell<Song, String>());
-        artistColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        albumColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        lengthColumn.setCellFactory(x -> new ClippedTableCell<Song, String>());
-        playsColumn.setCellFactory(x -> new ClippedTableCell<Song, Integer>());
+        playingColumn.setCellFactory(x -> new PlayingTableCell<>());
+        titleColumn.setCellFactory(x -> new ControlPanelTableCell<>());
+        artistColumn.setCellFactory(x -> new ClippedTableCell<>());
+        albumColumn.setCellFactory(x -> new ClippedTableCell<>());
+        lengthColumn.setCellFactory(x -> new ClippedTableCell<>());
+        playsColumn.setCellFactory(x -> new ClippedTableCell<>());
 
-        playingColumn.setCellValueFactory(new PropertyValueFactory<Song, Boolean>("playing"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
-        artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
-        albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("length"));
-        playsColumn.setCellValueFactory(new PropertyValueFactory<Song, Integer>("playCount"));
+        playingColumn.setCellValueFactory(new PropertyValueFactory<>("playing"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
+        albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
+        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
+        playsColumn.setCellValueFactory(new PropertyValueFactory<>("playCount"));
         
         lengthColumn.setSortable(false);
         playsColumn.setSortable(false);
@@ -95,13 +95,12 @@ public class SongsController implements Initializable, SubView {
         tableView.setItems(songs);
 
         tableView.setRowFactory(x -> {
-            TableRow<Song> row = new TableRow<Song>();
+            TableRow<Song> row = new TableRow<>();
 
             PseudoClass playing = PseudoClass.getPseudoClass("playing");
 
-            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(playing, newValue.booleanValue());
-            };
+            ChangeListener<Boolean> changeListener = (obs, oldValue, newValue) ->
+                    row.pseudoClassStateChanged(playing, newValue);
 
             row.itemProperty().addListener((obs, previousSong, currentSong) -> {
             	if (previousSong != null) {
@@ -120,7 +119,7 @@ public class SongsController implements Initializable, SubView {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     play();
                 } else if (event.isShiftDown()) {
-                	ArrayList<Integer> indices = new ArrayList<Integer>(sm.getSelectedIndices());
+                	ArrayList<Integer> indices = new ArrayList<>(sm.getSelectedIndices());
                 	if (indices.size() < 1) {
                 		if (indices.contains(row.getIndex())) {
                     		sm.clearSelection(row.getIndex());
@@ -217,13 +216,9 @@ public class SongsController implements Initializable, SubView {
         	return compareSongs(first, second);
         });
         
-        artistColumn.setComparator((first, second) -> {
-        	return Library.getArtist(first).compareTo(Library.getArtist(second));
-        });
+        artistColumn.setComparator((first, second) -> Library.getArtist(first).compareTo(Library.getArtist(second)));
         
-        albumColumn.setComparator((first, second) -> {
-        	return Library.getAlbum(first).compareTo(Library.getAlbum(second));
-        });
+        albumColumn.setComparator((first, second) -> Library.getAlbum(first).compareTo(Library.getAlbum(second)));
     }
     
     private int compareSongs(Song x, Song y) {
@@ -281,60 +276,64 @@ public class SongsController implements Initializable, SubView {
     	if (scrollBar == null) {
     		scrollBar = (ScrollBar) tableView.lookup(".scroll-bar");
     	}
-    	
-    	if (currentSortColumn.equals("titleColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Gets song title and compares first letter to selected letter.
-        		String songTitle = songTableItems.get(i).getTitle();
-        		try {
-					char firstLetter = songTitle.charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-//					System.out.println("Null Song Title");
-				}
-        		
-        	}
-    	} else if (currentSortColumn.equals("artistColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from song artist and compares it to selected letter.
-        		String songArtist = songTableItems.get(i).getArtist();
-        		try {
-					char firstLetter = removeArticle(songArtist).charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-					System.out.println("Null Song Artist");
-				}
-        	}
-    	} else if (currentSortColumn.equals("albumColumn")) {
-        	for (int i = 0; i < songTableItems.size(); i++) {
-        		// Removes article from song album and compares it to selected letter.
-        		String songAlbum = songTableItems.get(i).getAlbum();
-        		try {
-					char firstLetter = removeArticle(songAlbum).charAt(0);
-					if (firstLetter < letter) {
-						selectedCell++;
-					} else if (firstLetter == letter) {
-						selectedLetterCount ++;
-					}
-				} catch (NullPointerException npe) {
-					System.out.println("Null Song Album");
-				}
-        	}
-    	}
+
+        switch (currentSortColumn) {
+            case "titleColumn":
+                for (Song song : songTableItems) {
+                    // Gets song title and compares first letter to selected letter.
+                    String songTitle = song.getTitle();
+                    try {
+                        char firstLetter = songTitle.charAt(0);
+                        if (firstLetter < letter) {
+                            selectedCell++;
+                        } else if (firstLetter == letter) {
+                            selectedLetterCount++;
+                        }
+                    } catch (NullPointerException npe) {
+                        System.out.println("Null Song Title");
+                    }
+
+                }
+                break;
+            case "artistColumn":
+                for (Song song : songTableItems) {
+                    // Removes article from song artist and compares it to selected letter.
+                    String songArtist = song.getArtist();
+                    try {
+                        char firstLetter = removeArticle(songArtist).charAt(0);
+                        if (firstLetter < letter) {
+                            selectedCell++;
+                        } else if (firstLetter == letter) {
+                            selectedLetterCount++;
+                        }
+                    } catch (NullPointerException npe) {
+                        System.out.println("Null Song Artist");
+                    }
+                }
+                break;
+            case "albumColumn":
+                for (Song song : songTableItems) {
+                    // Removes article from song album and compares it to selected letter.
+                    String songAlbum = song.getAlbum();
+                    try {
+                        char firstLetter = removeArticle(songAlbum).charAt(0);
+                        if (firstLetter < letter) {
+                            selectedCell++;
+                        } else if (firstLetter == letter) {
+                            selectedLetterCount++;
+                        }
+                    } catch (NullPointerException npe) {
+                        System.out.println("Null Song Album");
+                    }
+                }
+                break;
+        }
     	
     	double startVvalue = scrollBar.getValue();
     	double finalVvalue;
     	
     	if ("descending".equals(currentSortOrder)) {
-    		finalVvalue = 1 - ((double) ((selectedCell + selectedLetterCount) * 50 - scrollBar.getHeight()) /
+    		finalVvalue = 1 - (((selectedCell + selectedLetterCount) * 50 - scrollBar.getHeight()) /
     				(songTableItems.size() * 50 - scrollBar.getHeight()));
     	} else {
     		finalVvalue = (double) (selectedCell * 50) / (songTableItems.size() * 50 - scrollBar.getHeight());
