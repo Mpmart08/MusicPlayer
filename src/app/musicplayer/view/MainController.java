@@ -162,8 +162,10 @@ public class MainController implements Initializable, IntellitypeListener {
         initializeTimeLabels();
         initializePlaylists();
         
-        // register media keys on Windows
-        JIntellitype.getInstance().addIntellitypeListener(this);
+        // Register media keys on Windows
+        if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+        	JIntellitype.getInstance().addIntellitypeListener(this);
+        }
         
         // Loads the default view: artists.
         loadView("artists");
@@ -171,7 +173,7 @@ public class MainController implements Initializable, IntellitypeListener {
     
     @Override
     public void onIntellitype(int key) {
-    	// skip/play/pause/back using Windows media keys
+    	// Skip/play/pause/back using Windows media keys
     	Platform.runLater(() -> {
     		switch (key) {
         	case JIntellitype.APPCOMMAND_MEDIA_NEXTTRACK:
