@@ -170,6 +170,16 @@ public class MusicPlayer extends Application {
                 thread2.start();
             }
 
+            new Thread(() -> {
+                XMLEditor.getNewSongs().forEach(song -> {
+                    try {
+                        Library.getArtist(song.getArtist()).downloadArtistImage();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }).start();
+
             // Calls the function to initialize the main layout.
             Platform.runLater(this::initMain);
         });

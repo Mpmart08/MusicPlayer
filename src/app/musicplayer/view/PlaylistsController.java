@@ -71,9 +71,9 @@ public class PlaylistsController implements Initializable, SubView {
         }
         protected void interpolate(double frac) {        	    		
     		if (frac < 0.5) {
-    			cell.setPrefHeight(cell.getHeight() - frac * 10);
+				cell.setOpacity(1.0 - frac * 2);
     		} else {
-    			cell.setPrefHeight(0);
+				cell.setPrefHeight(cell.getHeight() - (frac - 0.5) * 10);
     			cell.setOpacity(0);
     		}
         }
@@ -213,6 +213,12 @@ public class PlaylistsController implements Initializable, SubView {
         	if (event.getCode().equals(KeyCode.ENTER)) {
         		play();
         	}
+        });
+
+        ObservableList<Node> playlistBoxChildren = MusicPlayer.getMainController().getPlaylistBox().getChildren();
+
+        deletePlaylistAnimation.setOnFinished(event -> {
+            playlistBoxChildren.remove(cell);
         });
     }
     

@@ -59,17 +59,21 @@ public class XMLEditor {
 	
 	// Initializes array list with song paths of songs to be deleted from library.xml
 	private static ArrayList<String> songPathsToDelete = new ArrayList<>();
+
+	private static ArrayList<Song> songsToAdd = new ArrayList<>();
 	
 	// Initializes booleans used to determine how the library.xml file needs to be edited.
 	private static boolean addSongs;
 	private static boolean deleteSongs;
-	
+
+	public static ArrayList<Song> getNewSongs() { return songsToAdd; }
+
 	public static void setMusicDirectory(Path musicDirectoryPath) {
 		musicDirectory = musicDirectoryPath.toString();
 	}
-	
+
 	public static void addDeleteChecker() {
-		// Finds the file name of the songs in the library xml file and 
+		// Finds the file name of the songs in the library xml file and
 		// stores them in the xmlSongsFileNames array list.
 		xmlSongsFilePathFinder();
 
@@ -179,7 +183,7 @@ public class XMLEditor {
 	
 	private static void addSongToXML() {
 		// Initializes the array list with song objects to add to the xml file.
-		ArrayList<Song> songsToAdd = createNewSongObject();
+		createNewSongObject();
 		
 		if (songsToAdd.size() == 0) {
 			return;
@@ -278,9 +282,7 @@ public class XMLEditor {
 		}
 	}
 	
-	private static ArrayList<Song> createNewSongObject() {
-		
-		ArrayList<Song> newSongObjects = new ArrayList<>();
+	private static void createNewSongObject() {
 		
 		// Searches the xml file to get the last id assigned.
 		int lastIdAssigned = xmlLastIdAssignedFinder();
@@ -317,18 +319,15 @@ public class XMLEditor {
 	            
 	            // Creates a new song object for the added song and adds it to the newSongs array list.
 	            Song newSong = new Song(id, title, artist, album, length, trackNumber, discNumber, playCount, playDate, location);
-	            
+
 	            // Adds the new song to the songsToAdd array list.
-	            newSongObjects.add(newSong);
+	            songsToAdd.add(newSong);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 		// Updates the lastIdAssigned in MusicPlayer to account for the new songs.
 		MusicPlayer.setLastIdAssigned(lastIdAssigned);
-		
-		// Returns the array list with all the song objects so that they can be added to the xml file.
-		return newSongObjects;
 	}
 	
     private static int xmlLastIdAssignedFinder() {
