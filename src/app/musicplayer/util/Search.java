@@ -50,6 +50,12 @@ public class Search {
                             if (xStartWith && yStartWith) return 0;
                             if (xStartWith) return -1;
                             if (yStartWith) return 1;
+
+                            boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            if (xContains && yContains) return 0;
+                            if (xContains) return -1;
+                            if (yContains) return 1;
                             return 0;
                         })
                         .collect(Collectors.toList());
@@ -70,6 +76,12 @@ public class Search {
                             if (xStartWith && yStartWith) return 0;
                             if (xStartWith) return -1;
                             if (yStartWith) return 1;
+
+                            boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            if (xContains && yContains) return 0;
+                            if (xContains) return -1;
+                            if (yContains) return 1;
                             return 0;
                         })
                         .collect(Collectors.toList());
@@ -90,6 +102,12 @@ public class Search {
                             if (xStartWith && yStartWith) return 0;
                             if (xStartWith) return -1;
                             if (yStartWith) return 1;
+
+                            boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            if (xContains && yContains) return 0;
+                            if (xContains) return -1;
+                            if (yContains) return 1;
                             return 0;
                         })
                         .collect(Collectors.toList());
