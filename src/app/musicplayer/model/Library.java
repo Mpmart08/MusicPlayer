@@ -5,10 +5,7 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -60,9 +57,6 @@ public final class Library {
     private static ArrayList<Playlist> playlists;
     private static int maxProgress;
     private static ImportMusicTask<Boolean> task;
-
-    // Stores the currently selected playlist.
-    private static Playlist selectedPlaylist;
 
     public static void importMusic(String path, ImportMusicTask<Boolean> task) throws Exception {
 
@@ -592,14 +586,6 @@ public final class Library {
             getPlaylists();
         }
         return playlists.stream().filter(playlist -> title.equals(playlist.getTitle())).findFirst().get();
-    }
-
-    public static Playlist getSelectedPlaylist() {
-        return selectedPlaylist;
-    }
-
-    public static void setSelectedPlaylist(Playlist playlist) {
-        selectedPlaylist = playlist;
     }
 
     public static ArrayList<Song> loadPlayingList() {

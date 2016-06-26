@@ -224,6 +224,7 @@
 	-fx-background-color: #f2f2f2;
     -fx-border-width: 2;
     -fx-border-color: #dadada;
+    -fx-effect: null;
 }
 
 .menu-item:focused {
@@ -232,4 +233,27 @@
 
 .menu-item:pressed {
     -fx-background-color: #c2c2c2;
+}
+
+.searchBox, .searchBox:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-color: #dadada;
+    -fx-accent: rgb(52, 109, 207);
+    -fx-padding: 0 5 0 5;
+}
+
+.searchResult:hover {
+    -fx-background-color: #dadada;
+}
+
+.searchResult:pressed {
+    -fx-background-color: #c2c2c2;
+}
+
+.searchLabel {
+    -fx-font-family: verdana;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-text-fill: black;
 }

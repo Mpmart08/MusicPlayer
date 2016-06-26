@@ -8,6 +8,9 @@ import app.musicplayer.model.Library;
 import app.musicplayer.model.Playlist;
 import app.musicplayer.model.Song;
 import app.musicplayer.util.SubView;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,11 +22,24 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 public class ControlPanelController implements Initializable {
 	
 	@FXML private Pane playButton;
 	@FXML private Pane playlistButton;
+
+	private ContextMenu contextMenu;
+
+	private Animation showMenuAnimation = new Transition() {
+		{
+			setCycleDuration(Duration.millis(250));
+			setInterpolator(Interpolator.EASE_BOTH);
+		}
+		protected void interpolate(double frac) {
+			contextMenu.setOpacity(frac);
+		}
+	};
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {}
@@ -57,7 +73,7 @@ public class ControlPanelController implements Initializable {
 			}
 		}
 		
-		final ContextMenu contextMenu = new ContextMenu();
+		contextMenu = new ContextMenu();
 		
 		// Creates a menu item for each playlist title and adds it to the context menu.
 		for (String title : playlistTitles) {
@@ -69,17 +85,19 @@ public class ControlPanelController implements Initializable {
                 String targetPlaylistTitle = item.getText();
 
                 // Finds the correct playlist and adds the song to it.
-				for (Playlist playlist : playlists) {
+				playlists.forEach(playlist -> {
 					if (playlist.getTitle().equals(targetPlaylistTitle)) {
 						playlist.addSong(selectedSong);
 					}
-				}
+				});
             });
 			
 			contextMenu.getItems().add(item);
 		}
-		
+
+		contextMenu.setOpacity(0);
 		contextMenu.show(playButton, x, y);
+		showMenuAnimation.play();
 		
 		e.consume();
 	}

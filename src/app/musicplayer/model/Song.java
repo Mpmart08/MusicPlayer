@@ -24,11 +24,9 @@ import org.w3c.dom.NodeList;
 
 import app.musicplayer.util.Resources;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 public final class Song implements Comparable<Song> {
