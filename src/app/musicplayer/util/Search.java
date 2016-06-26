@@ -52,7 +52,7 @@ public class Search {
                             if (yStartWith) return 1;
 
                             boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
-                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().contains(" " + text);
                             if (xContains && yContains) return 0;
                             if (xContains) return -1;
                             if (yContains) return 1;
@@ -78,7 +78,7 @@ public class Search {
                             if (yStartWith) return 1;
 
                             boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
-                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().contains(" " + text);
                             if (xContains && yContains) return 0;
                             if (xContains) return -1;
                             if (yContains) return 1;
@@ -104,7 +104,7 @@ public class Search {
                             if (yStartWith) return 1;
 
                             boolean xContains = x.getTitle().toUpperCase().contains(" " + text);
-                            boolean yContains = y.getTitle().toUpperCase().startsWith(" " + text);
+                            boolean yContains = y.getTitle().toUpperCase().contains(" " + text);
                             if (xContains && yContains) return 0;
                             if (xContains) return -1;
                             if (yContains) return 1;

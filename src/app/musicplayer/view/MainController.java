@@ -991,7 +991,7 @@ public class MainController implements Initializable, IntellitypeListener {
         }
         if (!searchPopup.isShowing()) {
             Stage stage = MusicPlayer.getStage();
-            searchPopup.setX(stage.getX() + 17);
+            searchPopup.setX(stage.getX() + 18);
             searchPopup.setY(stage.getY() + 80);
             searchPopup.show();
             searchShowAnimation.play();
