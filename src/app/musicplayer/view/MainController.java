@@ -174,6 +174,18 @@ public class MainController implements Initializable, IntellitypeListener {
             }
 		});
 
+		MusicPlayer.getStage().xProperty().addListener((observable, oldValue, newValue) -> {
+            if (searchPopup.isShowing() && !searchHideAnimation.getStatus().equals(Status.RUNNING)) {
+                searchHideAnimation.play();
+            }
+        });
+
+        MusicPlayer.getStage().yProperty().addListener((observable, oldValue, newValue) -> {
+            if (searchPopup.isShowing() && !searchHideAnimation.getStatus().equals(Status.RUNNING)) {
+                searchHideAnimation.play();
+            }
+        });
+
 		for (Node node : letterBox.getChildren()) {
         	Label label = (Label)node;
         	label.prefWidthProperty().bind(letterBox.widthProperty().subtract(50).divide(26).subtract(1));
@@ -255,7 +267,7 @@ public class MainController implements Initializable, IntellitypeListener {
 			Stage stage = MusicPlayer.getStage();
 			VBox view = new VBox();
             view.getStylesheets().add(Resources.CSS + "MainStyle.css");
-            view.getStyleClass().add("popup");
+            view.getStyleClass().add("searchPopup");
 			Stage popup = new Stage();
 			popup.setScene(new Scene(view));
 			popup.initStyle(StageStyle.UNDECORATED);
@@ -880,7 +892,7 @@ public class MainController implements Initializable, IntellitypeListener {
             result.getArtistResults().forEach(artist -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
-                cell.setPrefWidth(250);
+                cell.setPrefWidth(226);
                 cell.setPrefHeight(50);
                 ImageView image = new ImageView();
                 image.setFitHeight(40);
@@ -903,7 +915,7 @@ public class MainController implements Initializable, IntellitypeListener {
                 list.add(cell);
             });
             Separator separator = new Separator();
-            separator.setPrefWidth(230);
+            separator.setPrefWidth(206);
             list.add(separator);
             VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
@@ -914,7 +926,7 @@ public class MainController implements Initializable, IntellitypeListener {
             result.getAlbumResults().forEach(album -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
-                cell.setPrefWidth(250);
+                cell.setPrefWidth(226);
                 cell.setPrefHeight(50);
                 ImageView image = new ImageView();
                 image.setFitHeight(40);
@@ -939,7 +951,7 @@ public class MainController implements Initializable, IntellitypeListener {
                 list.add(cell);
             });
             Separator separator = new Separator();
-            separator.setPrefWidth(230);
+            separator.setPrefWidth(206);
             list.add(separator);
             VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
@@ -950,7 +962,7 @@ public class MainController implements Initializable, IntellitypeListener {
             result.getSongResults().forEach(song -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
-                cell.setPrefWidth(250);
+                cell.setPrefWidth(226);
                 cell.setPrefHeight(50);
                 Label label = new Label(song.getTitle());
                 label.setTextOverrun(OverrunStyle.CLIP);
@@ -978,8 +990,9 @@ public class MainController implements Initializable, IntellitypeListener {
             VBox.setMargin(label, new Insets(10, 10, 10, 10));
         }
         if (!searchPopup.isShowing()) {
-            searchPopup.setX(searchBox.getLayoutX());
-            searchPopup.setY(searchBox.getLayoutY() + 60);
+            Stage stage = MusicPlayer.getStage();
+            searchPopup.setX(stage.getX() + 17);
+            searchPopup.setY(stage.getY() + 80);
             searchPopup.show();
             searchShowAnimation.play();
         }

@@ -187,6 +187,12 @@
     -fx-border-color: #dadada;
 }
 
+.searchPopup {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-color: #dadada;
+}
+
 .volumeIcon {
     -fx-fill: rgb(52, 109, 207);
 }
