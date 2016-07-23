@@ -14,6 +14,7 @@ import app.musicplayer.model.Song;
 import app.musicplayer.util.ClippedTableCell;
 import app.musicplayer.util.ControlPanelTableCell;
 import app.musicplayer.util.PlayingTableCell;
+import app.musicplayer.util.Resources;
 import app.musicplayer.util.SubView;
 import app.musicplayer.util.XMLEditor;
 import javafx.animation.Animation;
@@ -25,6 +26,8 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -34,6 +37,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -42,6 +46,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 public class PlaylistsController implements Initializable, SubView {
@@ -254,12 +260,23 @@ public class PlaylistsController implements Initializable, SubView {
         // Clears the song table.
         tableView.getSelectionModel().clearSelection();
         
-        if (songs.isEmpty()) {
-            songs.add(null);
-        }
-        
         // Populates the song table with the playlist's songs.
         tableView.setItems(songs);
+
+        Label message = new Label(selectedPlaylist.getPlaceholder());
+        message.setTextAlignment(TextAlignment.CENTER);
+
+        ImageView image = new ImageView();
+        image.setFitHeight(150);
+        image.setFitWidth(150);
+        image.setImage(new Image(Resources.IMG + "playlistsIcon.png"));
+
+        VBox placeholder = new VBox();
+        placeholder.setAlignment(Pos.CENTER);
+        placeholder.getChildren().addAll(image, message);
+        VBox.setMargin(image, new Insets(0, 0, 50, 0));
+
+        tableView.setPlaceholder(placeholder);
     }
     
     @Override

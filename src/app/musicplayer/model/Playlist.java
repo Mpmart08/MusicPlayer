@@ -30,6 +30,9 @@ public class Playlist {
     private int id;
     private String title;
     private ArrayList<Song> songs;
+    private String placeholder =
+            "Add songs to this playlist by dragging items to the sidebar\n" +
+            "or by clicking the Add to Playlist button";
 
     /**
      * Constructor for the Playlist class.
@@ -45,10 +48,11 @@ public class Playlist {
         this.songs = songs;
     }
 
-    protected Playlist(int id, String title) {
+    protected Playlist(int id, String title, String placeholder) {
         this.id = id;
         this.title = title;
         this.songs = null;
+        this.placeholder = placeholder;
     }
 
     public int getId() {
@@ -57,6 +61,10 @@ public class Playlist {
 
     public String getTitle() {
         return this.title;
+    }
+
+    public String getPlaceholder() {
+        return this.placeholder;
     }
 
     public ObservableList<Song> getSongs() {
