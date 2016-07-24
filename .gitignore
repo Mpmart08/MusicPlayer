@@ -2,3 +2,8 @@
 .classpath
 .project
 build.fxbuild
+.idea/
+bin/
+out/
+src/META-INF/
+MusicPlayer.iml
