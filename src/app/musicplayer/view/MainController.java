@@ -37,14 +37,12 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import java.util.List;
 
 public class MainController implements Initializable, IntellitypeListener {
 
@@ -61,6 +59,8 @@ public class MainController implements Initializable, IntellitypeListener {
     private Stage searchPopup;
     private VolumePopupController volumePopupController;
     private CountDownLatch viewLoadedLatch;
+    private SearchResult searchResult;
+    private String searchText;
 
     @FXML private ScrollPane subViewRoot;
     @FXML private VBox sideBar;
@@ -83,6 +83,7 @@ public class MainController implements Initializable, IntellitypeListener {
     @FXML private HBox controlBox;
 
 	@FXML private TextField searchBox;
+    @FXML private HBox searchButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -155,21 +156,37 @@ public class MainController implements Initializable, IntellitypeListener {
 			}
 		});
 
+        searchBox.setOnKeyPressed(e -> {
+            System.out.println(e.getCode());
+            if (e.getCode().equals(KeyCode.ENTER) && !searchBox.getText().trim().equals(""))  {
+                search(e);
+            }
+        });
+
 		Search.hasResultsProperty().addListener((observable, hadResults, hasResults) -> {
 			if (hasResults) {
-                SearchResult result = Search.getResult();
+                searchResult = Search.getResult();
                 Platform.runLater(() -> {
-                    showSearchResults(result);
+                    showSearchResults();
                     MusicPlayer.getStage().toFront();
                 });
                 int height = 0;
-                int artists = result.getArtistResults().size();
-                int albums = result.getAlbumResults().size();
-                int songs = result.getSongResults().size();
-                if (artists > 0) height += (artists * 50) + 50;
-                if (albums > 0) height += (albums * 50) + 50;
-                if (songs > 0) height += (songs * 50) + 50;
-                if (height == 0) height = 50;
+                int artists = searchResult.getArtistResults().size();
+                int albums = searchResult.getAlbumResults().size();
+                int songs = searchResult.getSongResults().size();
+                if (artists > 3) artists = 3;
+                if (albums > 3) albums = 3;
+                if (songs > 3) songs = 3;
+                int sections = 0;
+                if (artists > 0) sections++;
+                if (albums > 0) sections++;
+                if (songs > 0) sections++;
+                height += (artists + albums + songs) * 50; // hboxes
+                if (sections > 0) {
+                    height += (sections * 43); // labels
+                    height += (sections - 1) * 11; // separators
+                }
+                if (height == 0) height = 43; // no results label
                 searchPopup.setHeight(height);
             }
 		});
@@ -456,27 +473,45 @@ public class MainController implements Initializable, IntellitypeListener {
 			}
     	}
     }
+
+    @FXML
+    private void search(Event e) {
+        searchText = searchBox.getText();
+        if (isSideBarExpanded) {
+            selectView(e);
+        } else {
+            expandSideBar();
+            searchBox.requestFocus();
+        }
+    }
     
     @FXML
     private void selectView(Event e) {
 
-        HBox eventSource = ((HBox)e.getSource());
+        Node eventSource = ((Node)e.getSource());
 
-        eventSource.requestFocus();
+        searchBox.clear();
+        sideBar.requestFocus();
 
         Optional<Node> previous = sideBar.getChildren().stream()
-            .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
+                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+                .findFirst();
+
+        if (!previous.isPresent()) {
+            previous = searchButton.getChildren().stream()
+                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+                    .findFirst();
+        }
+
+        if (!previous.isPresent()) {
+            previous = playlistBox.getChildren().stream()
+                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+                    .findFirst();
+        }
 
         if (previous.isPresent()) {
             HBox previousItem = (HBox) previous.get();
             previousItem.getStyleClass().setAll("sideBarItem");
-        } else {
-        	previous = playlistBox.getChildren().stream()
-                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-        	if (previous.isPresent()) {
-                HBox previousItem = (HBox) previous.get();
-                previousItem.getStyleClass().setAll("sideBarItem");
-            }
         }
 
         ObservableList<String> styles = eventSource.getStyleClass();
@@ -484,7 +519,7 @@ public class MainController implements Initializable, IntellitypeListener {
         if (styles.get(0).equals("sideBarItem")) {
             styles.setAll("sideBarItemSelected");
             loadView(eventSource.getId());
-        } else if (styles.get(0).equals("bottomBarItem")) {
+        } else {
             loadView(eventSource.getId());
         }
     }
@@ -522,7 +557,7 @@ public class MainController implements Initializable, IntellitypeListener {
     			});
     			
     			textBox.setOnKeyPressed(x -> {
-    				if (x.getCode() == KeyCode.ENTER)  {
+    				if (x.getCode().equals(KeyCode.ENTER))  {
     		            sideBar.requestFocus();
     		        }
     			});
@@ -782,23 +817,32 @@ public class MainController implements Initializable, IntellitypeListener {
     
     @FXML
     private void navigateToCurrentSong() {
-    	
-    	Optional<Node> previous = sideBar.getChildren().stream()
-                .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
 
-        if (previous.isPresent()) {
-            HBox previousItem = (HBox) previous.get();
-            previousItem.getStyleClass().setAll("sideBarItem");
-        } else {
-        	previous = playlistBox.getChildren().stream()
-                    .filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected")).findFirst();
-        	if (previous.isPresent()) {
-                HBox previousItem = (HBox) previous.get();
-                previousItem.getStyleClass().setAll("sideBarItem");
-            }
-        }
+		searchBox.clear();
+		sideBar.requestFocus();
+
+		Optional<Node> previous = sideBar.getChildren().stream()
+				.filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+				.findFirst();
+
+		if (!previous.isPresent()) {
+			previous = searchButton.getChildren().stream()
+					.filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+					.findFirst();
+		}
+
+		if (!previous.isPresent()) {
+			previous = playlistBox.getChildren().stream()
+					.filter(x -> x.getStyleClass().get(0).equals("sideBarItemSelected"))
+					.findFirst();
+		}
+
+		if (previous.isPresent()) {
+			HBox previousItem = (HBox) previous.get();
+			previousItem.getStyleClass().setAll("sideBarItem");
+		}
         
-        sideBar.getChildren().get(2).getStyleClass().setAll("sideBarItemSelected");
+        sideBar.getChildren().get(3).getStyleClass().setAll("sideBarItemSelected");
         
         ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
         Song song = MusicPlayer.getNowPlaying();
@@ -810,9 +854,9 @@ public class MainController implements Initializable, IntellitypeListener {
     }
 
     @FXML
-    private void slideSideBar(Event e) {
-    	sideBar.requestFocus();
-    	searchBox.setText("");
+    private void slideSideBar() {
+    	searchBox.clear();
+		sideBar.requestFocus();
         if (isSideBarExpanded) {
             collapseSideBar();
         } else {
@@ -881,15 +925,17 @@ public class MainController implements Initializable, IntellitypeListener {
     	}
     }
 
-    public void showSearchResults(SearchResult result) {
+    public void showSearchResults() {
         VBox root = (VBox) searchPopup.getScene().getRoot();
         ObservableList<Node> list = root.getChildren();
         list.clear();
-        if (result.getArtistResults().size() > 0) {
+        if (searchResult.getArtistResults().size() > 0) {
+            List<Artist> artistResults = searchResult.getArtistResults();
+            if (artistResults.size() > 3) artistResults = artistResults.subList(0, 3);
             Label header = new Label("Artists");
             list.add(header);
             VBox.setMargin(header, new Insets(10, 10, 10, 10));
-            result.getArtistResults().forEach(artist -> {
+            artistResults.forEach(artist -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
                 cell.setPrefWidth(226);
@@ -909,8 +955,8 @@ public class MainController implements Initializable, IntellitypeListener {
                     loadView("ArtistsMain");
                     ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
                     artistsMainController.selectArtist(artist);
-                    searchBox.setText("");
-                    sideBar.requestFocus();
+					searchBox.clear();
+					sideBar.requestFocus();
                 });
                 list.add(cell);
             });
@@ -919,11 +965,13 @@ public class MainController implements Initializable, IntellitypeListener {
             list.add(separator);
             VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
-        if (result.getAlbumResults().size() > 0) {
+        if (searchResult.getAlbumResults().size() > 0) {
+            List<Album> albumResults = searchResult.getAlbumResults();
+            if (albumResults.size() > 3) albumResults = albumResults.subList(0, 3);
             Label header = new Label("Albums");
             list.add(header);
             VBox.setMargin(header, new Insets(10, 10, 10, 10));
-            result.getAlbumResults().forEach(album -> {
+            albumResults.forEach(album -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
                 cell.setPrefWidth(226);
@@ -945,8 +993,6 @@ public class MainController implements Initializable, IntellitypeListener {
                     ArtistsMainController artistsMainController = (ArtistsMainController) loadView("ArtistsMain");
                     artistsMainController.selectArtist(artist);
                     artistsMainController.selectAlbum(album);
-                    searchBox.setText("");
-                    sideBar.requestFocus();
                 });
                 list.add(cell);
             });
@@ -955,11 +1001,13 @@ public class MainController implements Initializable, IntellitypeListener {
             list.add(separator);
             VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
-        if (result.getSongResults().size() > 0) {
+        if (searchResult.getSongResults().size() > 0) {
+            List<Song> songResults = searchResult.getSongResults();
+            if (songResults.size() > 3) songResults = songResults.subList(0, 3);
             Label header = new Label("Songs");
             list.add(header);
             VBox.setMargin(header, new Insets(10, 10, 10, 10));
-            result.getSongResults().forEach(song -> {
+            songResults.forEach(song -> {
                 HBox cell = new HBox();
                 cell.setAlignment(Pos.CENTER_LEFT);
                 cell.setPrefWidth(226);
@@ -968,7 +1016,7 @@ public class MainController implements Initializable, IntellitypeListener {
                 label.setTextOverrun(OverrunStyle.CLIP);
                 label.getStyleClass().setAll("searchLabel");
                 cell.getChildren().add(label);
-                HBox.setMargin(label, new Insets(10, 10, 10, 10));
+				HBox.setMargin(label, new Insets(10, 10, 10, 10));
                 cell.getStyleClass().add("searchResult");
                 cell.setOnMouseClicked(event -> {
                     loadView("ArtistsMain");
@@ -978,8 +1026,6 @@ public class MainController implements Initializable, IntellitypeListener {
                     artistsMainController.selectArtist(artist);
                     artistsMainController.selectAlbum(album);
                     artistsMainController.selectSong(song);
-                    searchBox.setText("");
-                    sideBar.requestFocus();
                 });
                 list.add(cell);
             });
@@ -992,7 +1038,7 @@ public class MainController implements Initializable, IntellitypeListener {
         if (!searchPopup.isShowing()) {
             Stage stage = MusicPlayer.getStage();
             searchPopup.setX(stage.getX() + 18);
-            searchPopup.setY(stage.getY() + 80);
+            searchPopup.setY(stage.getY() + 130);
             searchPopup.show();
             searchShowAnimation.play();
         }
@@ -1011,7 +1057,7 @@ public class MainController implements Initializable, IntellitypeListener {
     	return subViewController;
     }
     
-    ScrollPane getScrollPane() {
+    public ScrollPane getScrollPane() {
     	return this.subViewRoot;
     }
 

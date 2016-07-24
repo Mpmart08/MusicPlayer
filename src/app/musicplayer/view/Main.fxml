@@ -16,32 +16,47 @@
    <left>
       <VBox fx:id="sideBar" maxWidth="-Infinity" minWidth="50.0" prefWidth="250.0" styleClass="sideBar" BorderPane.alignment="CENTER">
          <children>
-            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" prefHeight="50.0" prefWidth="50.0" styleClass="hbox">
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#slideSideBar" prefHeight="50.0" prefWidth="50.0" styleClass="sideBarItem">
                <children>
-                  <HBox onMouseClicked="#slideSideBar" styleClass="sideBarItem">
+                  <ImageView fx:id="sideBarSlideButton" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin>
+                     <image>
+                        <Image url="@/app/musicplayer/util/img/MenuIcon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <HBox id="artists" fx:id="searchButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="50.0" prefHeight="50.0" prefWidth="250.0" styleClass="hbox">
+               <children>
+                  <HBox id="searchResults" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#search" prefHeight="50.0" prefWidth="50.0" styleClass="sideBarItem">
                      <children>
-                        <ImageView fx:id="sideBarSlideButton" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <VBox.margin>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </VBox.margin>
-                           <image>
-                              <Image url="@/app/musicplayer/util/img/MenuIcon.png" />
-                           </image>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="30.0" styleClass="iconContainer">
+                           <children>
+                              <SVGPath content="M 166.96,109.00           C 166.67,116.47 164.68,125.13 161.77,132.00             160.49,135.01 157.00,139.94 158.09,143.00             159.01,145.56 166.69,152.69 169.00,155.00             169.00,155.00 196.00,182.00 196.00,182.00             198.78,184.78 206.21,191.51 207.16,195.00             208.38,199.52 200.12,210.79 193.00,205.67             193.00,205.67 181.00,194.00 181.00,194.00             181.00,194.00 157.00,170.00 157.00,170.00             157.00,170.00 145.00,158.42 145.00,158.42             143.59,157.51 142.70,157.11 141.00,157.40             141.02,157.39 129.24,163.21 123.00,164.84             109.85,168.30 96.42,167.33 84.00,161.69             50.59,146.52 39.33,103.62 60.78,74.00             70.82,60.14 83.59,53.47 100.00,50.44             134.83,45.97 168.37,72.72 166.96,109.00 Z           M 87.00,74.35           C 65.84,86.92 62.53,118.36 79.18,135.91             87.62,144.81 98.06,148.14 110.00,148.00             138.67,147.66 156.53,116.36 144.37,91.00             136.94,75.52 124.42,69.41 108.00,68.57             99.90,68.99 94.12,70.12 87.00,74.35 Z" scaleX="0.15" scaleY="0.15" styleClass="icon" translateX="-113.0" translateY="-113.0" />
+                           </children>
                            <HBox.margin>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </HBox.margin>
-                        </ImageView>
+                        </Pane>
                      </children>
                   </HBox>
-                  <TextField fx:id="searchBox" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="180.0" promptText="Search" styleClass="searchBox">
+                  <TextField id="searchResults" fx:id="searchBox" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="180.0" promptText="Search" styleClass="searchBox">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                   </TextField>
                </children>
-               <VBox.margin>
+               <opaqueInsets>
                   <Insets />
-               </VBox.margin>
+               </opaqueInsets>
             </HBox>
             <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="30.0" prefHeight="25.0" prefWidth="230.0">
                <VBox.margin>
@@ -136,7 +151,7 @@
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
             </Separator>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportHeight="50.0" prefViewportWidth="250.0" styleClass="playlistBox" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportWidth="250.0" styleClass="playlistBox" vbarPolicy="NEVER">
                <content>
                   <VBox fx:id="playlistBox">
                      <children>

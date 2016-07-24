@@ -241,10 +241,26 @@
     -fx-background-color: #c2c2c2;
 }
 
-.searchBox, .searchBox:focused {
+.searchBox {
     -fx-background-color: #ffffff;
     -fx-border-width: 2;
     -fx-border-color: #dadada;
+    -fx-accent: rgb(52, 109, 207);
+    -fx-padding: 0 5 0 5;
+}
+
+.searchBox:hover {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-color: #c2c2c2;
+    -fx-accent: rgb(52, 109, 207);
+    -fx-padding: 0 5 0 5;
+}
+
+.searchBox:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-border-color: rgb(52, 109, 207);
     -fx-accent: rgb(52, 109, 207);
     -fx-padding: 0 5 0 5;
 }

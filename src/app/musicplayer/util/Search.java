@@ -114,9 +114,6 @@ public class Search {
 
                 if (searchThread.isInterrupted()) { throw new InterruptedException(); }
 
-                if (songResults.size() > 3) songResults = songResults.subList(0, 3);
-                if (albumResults.size() > 3) albumResults = albumResults.subList(0, 3);
-                if (artistResults.size() > 3) artistResults = artistResults.subList(0, 3);
                 result = new SearchResult(songResults, albumResults, artistResults);
 
                 hasResults.set(true);
