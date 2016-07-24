@@ -10,7 +10,7 @@
    <children>
       <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@/app/musicplayer/util/img/Logo.png" />
+            <Image url="@/app/musicplayer/util/img/Icon.png" />
          </image>
       </ImageView>
       <Label text="M   U   S   I   C      P   L   A   Y   E   R" />

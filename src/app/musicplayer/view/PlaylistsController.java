@@ -227,6 +227,11 @@ public class PlaylistsController implements Initializable, SubView {
             playlistBoxChildren.remove(cell);
         });
     }
+
+    @Override
+    public void dispose() {
+
+    }
     
     @Override
     public void play() {

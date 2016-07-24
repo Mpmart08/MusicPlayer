@@ -1,6 +1,7 @@
 package app.musicplayer.view;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
@@ -8,31 +9,25 @@ import app.musicplayer.MusicPlayer;
 import app.musicplayer.model.Artist;
 import app.musicplayer.model.Library;
 import app.musicplayer.model.Song;
+import app.musicplayer.util.ArtistListCell;
 import app.musicplayer.util.SubView;
+import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.util.Duration;
 
 public class ArtistsController implements Initializable, SubView {
 
-    @FXML private FlowPane grid;
+    @FXML private ListView<ArrayList<Artist>> grid;
+    private ScrollBar scrollBar;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -40,86 +35,27 @@ public class ArtistsController implements Initializable, SubView {
         ObservableList<Artist> artists = Library.getArtists();
         Collections.sort(artists);
 
-        int limit = (artists.size() < 25) ? artists.size() : 25;
+        grid.setCellFactory(x -> new ArtistListCell<>());
 
-        for (int i = 0; i < limit; i++) {
+        ObservableList<ArrayList<Artist>> rows = FXCollections.observableArrayList();
+        ArrayList<Artist> row = new ArrayList<>();
+        int col;
 
-            Artist artist = artists.get(i);
-            grid.getChildren().add(createCell(artist));
+        for (int i = 0; i < artists.size(); i++) {
+            col = i % 5;
+            if (col == 0) {
+                row = new ArrayList<>();
+                rows.add(row);
+            }
+            row.add(artists.get(i));
         }
 
-        int rows = (artists.size() % 5 == 0) ? artists.size() / 5 : artists.size() / 5 + 1;
-        grid.prefHeightProperty().bind(grid.widthProperty().divide(5).add(16).multiply(rows));
-
-        new Thread(() -> {
-
-        	try {
-        		Thread.sleep(1000);
-        	} catch (Exception ex) {
-        		ex.printStackTrace();
-        	}
-        	
-            for (int j = 25; j < artists.size(); j++) {
-                Artist artist = artists.get(j);
-                Platform.runLater(() -> grid.getChildren().add(createCell(artist)));
-            }
-
-        }).start();
+        grid.setItems(rows);
     }
-    
-    private VBox createCell(Artist artist) {
 
-        VBox cell = new VBox();
-        Label title = new Label(artist.getTitle());
-        ImageView image = new ImageView(artist.getArtistImage());
-        image.imageProperty().bind(artist.artistImageProperty());
-        VBox imageBox = new VBox();
+    @Override
+    public void dispose() {
 
-        title.setTextOverrun(OverrunStyle.CLIP);
-        title.setWrapText(true);
-        title.setPadding(new Insets(10, 0, 10, 0));
-        title.setAlignment(Pos.TOP_LEFT);
-        title.setPrefHeight(66);
-        title.prefWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
-
-        image.fitWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
-        image.fitHeightProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
-        image.setPreserveRatio(true);
-        image.setSmooth(true);
-
-        imageBox.prefWidthProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
-        imageBox.prefHeightProperty().bind(grid.widthProperty().subtract(100).divide(5).subtract(1));
-        imageBox.setAlignment(Pos.CENTER);
-        imageBox.getChildren().add(image);
-
-        cell.getChildren().addAll(imageBox, title);
-        cell.setPadding(new Insets(10, 10, 0, 10));
-        cell.getStyleClass().add("artist-cell");
-        cell.setAlignment(Pos.CENTER);
-        cell.setOnMouseClicked(event -> {
-
-            MainController mainController = MusicPlayer.getMainController();
-            ArtistsMainController artistsMainController = (ArtistsMainController) mainController.loadView("ArtistsMain");
-
-            VBox artistCell = (VBox) event.getSource();
-            String artistTitle = ((Label) artistCell.getChildren().get(1)).getText();
-            Artist a = Library.getArtist(artistTitle);
-            artistsMainController.selectArtist(a);
-        });
-        
-        cell.setOnDragDetected(event -> {
-        	PseudoClass pressed = PseudoClass.getPseudoClass("pressed");
-        	cell.pseudoClassStateChanged(pressed, false);
-        	Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
-        	ClipboardContent content = new ClipboardContent();
-            content.putString("Artist");
-            db.setContent(content);
-        	MusicPlayer.setDraggedItem(artist);
-        	db.setDragView(cell.snapshot(null, null), cell.widthProperty().divide(2).get(), cell.heightProperty().divide(2).get());
-            event.consume();
-        });
-
-        return cell;
     }
     
     @Override
@@ -127,38 +63,38 @@ public class ArtistsController implements Initializable, SubView {
     
     @Override
     public void scroll(char letter) {
-    	
+
     	int index = 0;
-    	double cellHeight = 0;
-    	ObservableList<Node> children = grid.getChildren();
+        double cellHeight = ((ArtistListCell) grid.lookup(".artist-list-cell")).getHeight();
 
-        for (Node node : children) {
+    	ObservableList<ArrayList<Artist>> children = grid.getItems();
 
-            VBox cell = (VBox) node;
-            cellHeight = cell.getHeight();
-            Label label = (Label) cell.getChildren().get(1);
-            char firstLetter = removeArticle(label.getText()).charAt(0);
-            if (firstLetter < letter) {
-                index++;
+        for (ArrayList<Artist> row : children) {
+            for (Artist artist : row) {
+                char firstLetter = removeArticle(artist.getTitle()).charAt(0);
+                if (firstLetter < letter) {
+                    index++;
+                }
             }
         }
-    	
-    	ScrollPane scrollpane = MusicPlayer.getMainController().getScrollPane();
-    	
-    	double row = (index / 5) * cellHeight;
-    	double finalVvalue = row / (grid.getHeight() - scrollpane.getHeight());
-    	double startVvalue = scrollpane.getVvalue();
-    	
-    	Animation scrollAnimation = new Transition() {
+
+        if (scrollBar == null) {
+            scrollBar = (ScrollBar) grid.lookup(".scroll-bar");
+        }
+
+        double row = index / 5;
+        double startVvalue = scrollBar.getValue();
+        double finalVvalue = (row * cellHeight) / (grid.getItems().size() * cellHeight - scrollBar.getHeight());
+
+        Animation scrollAnimation = new Transition() {
             {
                 setCycleDuration(Duration.millis(500));
             }
             protected void interpolate(double frac) {
                 double vValue = startVvalue + ((finalVvalue - startVvalue) * frac);
-                scrollpane.setVvalue(vValue);
+                scrollBar.setValue(vValue);
             }
         };
-        
         scrollAnimation.play();
     }
     

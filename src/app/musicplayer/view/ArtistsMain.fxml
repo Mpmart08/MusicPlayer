@@ -58,10 +58,6 @@
       </ScrollPane>
    </center>
    <left>
-      <ScrollPane fx:id="artistListScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportHeight="600.0" prefViewportWidth="248.0" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
-         <content>
-            <ListView fx:id="artistList" fixedCellSize="50.0" focusTraversable="false" BorderPane.alignment="CENTER" />
-         </content>
-      </ScrollPane>
+      <ListView fx:id="artistList" fixedCellSize="50.0" focusTraversable="false" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

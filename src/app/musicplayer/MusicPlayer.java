@@ -82,8 +82,8 @@ public class MusicPlayer extends Application {
                 //do nothing
             }
         });
-        System.setOut(dummyStream);
-        System.setErr(dummyStream);
+        //System.setOut(dummyStream);
+        //System.setErr(dummyStream);
 
         timer = new Timer();
         timerCounter = 0;
@@ -152,7 +152,7 @@ public class MusicPlayer extends Application {
             String path = nowPlaying.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setVolume(0.5);
+            mediaPlayer.setVolume(1);
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
 
             File imgFolder = new File(Resources.JAR + "/img");
@@ -174,6 +174,7 @@ public class MusicPlayer extends Application {
                 XMLEditor.getNewSongs().forEach(song -> {
                     try {
                         Library.getArtist(song.getArtist()).downloadArtistImage();
+                        Library.getAlbum(song.getAlbum()).downloadArtwork();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -392,7 +393,7 @@ public class MusicPlayer extends Application {
 
             // Gives the controller access to the music player main application.
             mainController = loader.getController();
-            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
+            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(100));
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -586,6 +587,8 @@ public class MusicPlayer extends Application {
             nowPlaying.setPlaying(true);
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
+                mediaPlayer.volumeProperty().unbind();
+                mediaPlayer.dispose();
             }
             if (timer != null) {
                 timer.cancel();
@@ -596,7 +599,7 @@ public class MusicPlayer extends Application {
             String path = song.getLocation();
             Media media = new Media(Paths.get(path).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(200));
+            mediaPlayer.volumeProperty().bind(mainController.getVolumeSlider().valueProperty().divide(100));
             mediaPlayer.setOnEndOfMedia(new SongSkipper());
             mediaPlayer.setMute(isMuted);
             mainController.updateNowPlayingButton();

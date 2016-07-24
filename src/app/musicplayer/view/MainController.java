@@ -770,7 +770,10 @@ public class MainController implements Initializable, IntellitypeListener {
         		}
         		loadViewAnimation.play();
         	}
-            
+
+			if (subViewController != null) {
+				subViewController.dispose();
+			}
             subViewController = loader.getController();
             return subViewController;
 

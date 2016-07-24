@@ -8,11 +8,7 @@
 
 <StackPane stylesheets="@../util/css/AlbumsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.AlbumsController">
    <children>
-      <ScrollPane fx:id="gridBox" hbarPolicy="NEVER" prefViewportWidth="400.0" vbarPolicy="NEVER">
-         <content>
-            <FlowPane fx:id="grid" />
-         </content>
-      </ScrollPane>
+      <ListView fx:id="grid" focusTraversable="false" />
       <VBox fx:id="songBox" alignment="TOP_CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="200.0" styleClass="songTable-box" StackPane.alignment="BOTTOM_CENTER">
          <children>
             <Separator fx:id="horizontalSeparator" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="15.0">

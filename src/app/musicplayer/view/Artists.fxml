@@ -6,8 +6,5 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<FlowPane fx:id="grid" stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsController">
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
-</FlowPane>
+
+<ListView fx:id="grid" focusTraversable="false" stylesheets="@/app/musicplayer/util/css/ArtistsStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.musicplayer.view.ArtistsController" />

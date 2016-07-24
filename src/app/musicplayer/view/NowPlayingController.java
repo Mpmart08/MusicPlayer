@@ -184,6 +184,11 @@ public class NowPlayingController implements Initializable, SubView {
         	}
         });
     }
+
+    @Override
+    public void dispose() {
+
+    }
     
     @Override
     public void play() {

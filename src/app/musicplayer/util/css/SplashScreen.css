@@ -7,7 +7,3 @@
     -fx-font-size: 14px;
     -fx-font-family: verdana;
 }
-
-.progress-indicator {
-    -fx-progress-color: rgb(52, 109, 207);
-}

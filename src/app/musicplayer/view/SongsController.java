@@ -220,6 +220,11 @@ public class SongsController implements Initializable, SubView {
         
         albumColumn.setComparator((first, second) -> Library.getAlbum(first).compareTo(Library.getAlbum(second)));
     }
+
+    @Override
+    public void dispose() {
+
+    }
     
     private int compareSongs(Song x, Song y) {
     	if (x == null && y == null) {
