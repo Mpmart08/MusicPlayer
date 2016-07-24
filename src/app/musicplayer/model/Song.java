@@ -24,9 +24,11 @@ import org.w3c.dom.NodeList;
 
 import app.musicplayer.util.Resources;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 public final class Song implements Comparable<Song> {
@@ -47,7 +49,7 @@ public final class Song implements Comparable<Song> {
 
     /**
      * Constructor for the song class.
-     * 
+     *
      * @param id
      * @param title
      * @param artist
@@ -60,22 +62,22 @@ public final class Song implements Comparable<Song> {
      * @param location
      */
     public Song(int id, String title, String artist, String album, Duration length,
-        int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
+                int trackNumber, int discNumber, int playCount, LocalDateTime playDate, String location) {
 
-    	if (title == null) {
-    		Path path = Paths.get(location);
-    		String fileName = path.getFileName().toString();
-    		title = fileName.substring(0, fileName.lastIndexOf('.'));
-    	}
-    	
-    	if (album == null) {
-    		album = "Unknown Album";
-    	}
-    	
-    	if (artist == null) {
-    		artist = "Unknown Artist";
-    	}
-    	
+        if (title == null) {
+            Path path = Paths.get(location);
+            String fileName = path.getFileName().toString();
+            title = fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+
+        if (album == null) {
+            album = "Unknown Album";
+        }
+
+        if (artist == null) {
+            artist = "Unknown Artist";
+        }
+
         this.id = id;
         this.title = new SimpleStringProperty(title);
         this.artist = new SimpleStringProperty(artist);
@@ -100,24 +102,40 @@ public final class Song implements Comparable<Song> {
         return this.title.get();
     }
 
+    public StringProperty titleProperty() {
+        return this.title;
+    }
+
     public String getArtist() {
         return this.artist.get();
+    }
+
+    public StringProperty artistProperty() {
+        return this.artist;
     }
 
     public String getAlbum() {
         return this.album.get();
     }
-    
+
     public Image getArtwork() {
         return Library.getAlbum(this.album.get()).getArtwork();
+    }
+
+    public StringProperty albumProperty() {
+        return this.album;
     }
 
     public String getLength() {
         return this.length.get();
     }
 
+    public StringProperty lengthProperty() {
+        return this.length;
+    }
+
     public long getLengthInSeconds() {
-    	return this.lengthInSeconds;
+        return this.lengthInSeconds;
     }
 
     public int getTrackNumber() {
@@ -132,6 +150,10 @@ public final class Song implements Comparable<Song> {
         return this.playCount.get();
     }
 
+    public IntegerProperty playCountProperty() {
+        return this.playCount;
+    }
+
     public LocalDateTime getPlayDate() {
         return this.playDate;
     }
@@ -139,7 +161,7 @@ public final class Song implements Comparable<Song> {
     public String getLocation() {
         return this.location;
     }
-    
+
     public BooleanProperty playingProperty() {
         return this.playing;
     }
@@ -155,7 +177,7 @@ public final class Song implements Comparable<Song> {
     public BooleanProperty selectedProperty() {
         return this.selected;
     }
-    
+
     public boolean getSelected() {
         return this.selected.get();
     }
@@ -210,7 +232,7 @@ public final class Song implements Comparable<Song> {
     @Override
     public int compareTo(Song other) throws NullPointerException {
         int discComparison = Integer.compare(this.discNumber, other.discNumber);
-        
+
         if (discComparison != 0) {
             return discComparison;
         } else {
