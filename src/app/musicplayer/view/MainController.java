@@ -170,24 +170,6 @@ public class MainController implements Initializable, IntellitypeListener {
                     showSearchResults();
                     MusicPlayer.getStage().toFront();
                 });
-                int height = 0;
-                int artists = searchResult.getArtistResults().size();
-                int albums = searchResult.getAlbumResults().size();
-                int songs = searchResult.getSongResults().size();
-                if (artists > 3) artists = 3;
-                if (albums > 3) albums = 3;
-                if (songs > 3) songs = 3;
-                int sections = 0;
-                if (artists > 0) sections++;
-                if (albums > 0) sections++;
-                if (songs > 0) sections++;
-                height += (artists + albums + songs) * 50; // hboxes
-                if (sections > 0) {
-                    height += (sections * 43); // labels
-                    height += (sections - 1) * 11; // separators
-                }
-                if (height == 0) height = 43; // no results label
-                searchPopup.setHeight(height);
             }
 		});
 
@@ -960,12 +942,14 @@ public class MainController implements Initializable, IntellitypeListener {
                 });
                 list.add(cell);
             });
-            Separator separator = new Separator();
-            separator.setPrefWidth(206);
-            list.add(separator);
-            VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
         if (searchResult.getAlbumResults().size() > 0) {
+			if (list.size() > 0) {
+				Separator separator = new Separator();
+				separator.setPrefWidth(206);
+				list.add(separator);
+				VBox.setMargin(separator, new Insets(10, 10, 0, 10));
+			}
             List<Album> albumResults = searchResult.getAlbumResults();
             if (albumResults.size() > 3) albumResults = albumResults.subList(0, 3);
             Label header = new Label("Albums");
@@ -996,12 +980,14 @@ public class MainController implements Initializable, IntellitypeListener {
                 });
                 list.add(cell);
             });
-            Separator separator = new Separator();
-            separator.setPrefWidth(206);
-            list.add(separator);
-            VBox.setMargin(separator, new Insets(10, 10, 0, 10));
         }
         if (searchResult.getSongResults().size() > 0) {
+			if (list.size() > 0) {
+				Separator separator = new Separator();
+				separator.setPrefWidth(206);
+				list.add(separator);
+				VBox.setMargin(separator, new Insets(10, 10, 0, 10));
+			}
             List<Song> songResults = searchResult.getSongResults();
             if (songResults.size() > 3) songResults = songResults.subList(0, 3);
             Label header = new Label("Songs");
@@ -1032,9 +1018,11 @@ public class MainController implements Initializable, IntellitypeListener {
         }
         if (list.size() == 0) {
             Label label = new Label("No Results");
+			label.setPrefWidth(206);
             list.add(label);
             VBox.setMargin(label, new Insets(10, 10, 10, 10));
         }
+		searchPopup.sizeToScene();
         if (!searchPopup.isShowing()) {
             Stage stage = MusicPlayer.getStage();
             searchPopup.setX(stage.getX() + 18);

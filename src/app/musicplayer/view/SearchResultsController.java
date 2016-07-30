@@ -41,9 +41,6 @@ public class SearchResultsController implements Initializable, SubView {
     public void initialize(URL location, ResourceBundle resources) {}
 
     @Override
-    public void dispose() {}
-
-    @Override
     public Song getSelectedSong() { return Library.getSongs().get(0); }
 
     @Override
