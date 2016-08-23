@@ -569,6 +569,13 @@ public class MusicPlayer extends Application {
         return nowPlayingList == null ? new ArrayList<>() : new ArrayList<>(nowPlayingList);
     }
 
+    public static void addSongToNowPlayingList(Song song) {
+        if (!nowPlayingList.contains(song)) {
+            nowPlayingList.add(song);
+            Library.savePlayingList();
+        }
+    }
+
     public static void setNowPlayingList(List<Song> list) {
         nowPlayingList = new ArrayList<>(list);
         Library.savePlayingList();
